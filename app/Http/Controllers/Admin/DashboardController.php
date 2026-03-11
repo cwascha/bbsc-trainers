@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Availability;
+use App\Models\TrainingDay;
+use App\Models\User;
+
+class DashboardController extends Controller
+{
+    public function index()
+    {
+        $totalTrainers = User::where('role', 'trainer')->count();
+        $upcomingDays = TrainingDay::where('date', '>=', now()->toDateString())
+            ->orderBy('date')
+            ->take(6)
+            ->withCount(['availabilities as assigned_count' => fn($q) => $q->whereIn('status', ['assigned', 'confirmed'])])
+            ->withCount(['availabilities as pending_count' => fn($q) => $q->where('status', 'pending')])
+            ->get();
+
+        $recentSignups = Availability::with(['user', 'trainingDay'])
+            ->orderByDesc('signed_up_at')
+            ->take(10)
+            ->get();
+
+        return view('admin.dashboard', compact('totalTrainers', 'upcomingDays', 'recentSignups'));
+    }
+}

@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(composer create-project laravel/laravel . --prefer-dist)",
+      "Bash(composer create-project laravel/laravel /tmp/bbsc-app --prefer-dist)",
+      "Bash(composer require laravel/breeze twilio/sdk --no-interaction)",
+      "Bash(php artisan breeze:install blade --no-interaction)",
+      "Bash(php artisan migrate:fresh --seed)",
+      "Bash(php artisan storage:link)",
+      "Bash(php artisan route:list --path=admin)",
+      "Bash(php artisan route:list)",
+      "Bash(php artisan config:clear)",
+      "Bash(php artisan route:clear)",
+      "Bash(php artisan view:clear)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"http://127.0.0.1:8000/register\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"http://127.0.0.1:8000/login\")",
+      "Bash(php artisan tinker --execute=\":*)",
+      "Bash(sips -g pixelWidth -g pixelHeight /Users/cwascha/Desktop/BBSCTrainers/public/images/BBSClogo.png)",
+      "Bash(npm run build)",
+      "Bash(composer require league/flysystem-aws-s3-v3 --no-interaction)"
+    ]
+  }
+}

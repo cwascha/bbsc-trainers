@@ -1,0 +1,19 @@
+# Laravel Cloud Deployment Configuration
+# https://cloud.laravel.com/docs
+
+environment:
+  php: "8.4"
+
+build:
+  steps:
+    - npm ci
+    - npm run build
+
+deploy:
+  steps:
+    - php artisan migrate --force --seed
+    - php artisan config:cache
+    - php artisan event:cache
+    - php artisan route:cache
+    - php artisan view:cache
+    - php artisan storage:link

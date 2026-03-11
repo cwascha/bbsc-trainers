@@ -17,10 +17,11 @@ class DatabaseSeeder extends Seeder
         User::firstOrCreate(
             ['email' => env('ADMIN_EMAIL', 'admin@bbsc.com')],
             [
-                'name'     => 'BBSC Admin',
-                'phone'    => null,
-                'role'     => 'admin',
-                'password' => Hash::make(env('ADMIN_PASSWORD', 'password')),
+                'name'              => 'BBSC Admin',
+                'phone'             => null,
+                'role'              => 'admin',
+                'password'          => Hash::make(env('ADMIN_PASSWORD', 'password')),
+                'email_verified_at' => now(),
             ]
         );
 

@@ -16,6 +16,11 @@ Route::get('/', fn() => redirect()->route('dashboard'));
 Route::view('/privacy', 'privacy')->name('privacy');
 Route::view('/terms', 'terms')->name('terms');
 
+// ─── Signed Training Plan Download (SMS link, no login required) ───────────
+Route::get('/training-plans/{trainingPlan}/view', [TrainingPlanController::class, 'viewSigned'])
+    ->middleware('signed')
+    ->name('training-plans.view-signed');
+
 // ─── Trainer Routes ────────────────────────────────────────────────────────
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

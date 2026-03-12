@@ -8,6 +8,7 @@ use App\Models\TrainingDay;
 use App\Models\User;
 use Twilio\Rest\Client;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 
 class SmsService
 {
@@ -37,7 +38,7 @@ class SmsService
 
         $plan = TrainingPlan::where('weekend_number', $day->weekend_number)->first();
         $planLink = $plan
-            ? url("/training-plans/{$plan->id}/download")
+            ? URL::signedRoute('training-plans.view-signed', ['trainingPlan' => $plan->id], now()->addDays(7))
             : null;
 
         $date = $day->date->format('l, F j, Y');
@@ -59,7 +60,9 @@ class SmsService
         }
 
         $plan = TrainingPlan::where('weekend_number', $day->weekend_number)->first();
-        $planLink = $plan ? url("/training-plans/{$plan->id}/download") : null;
+        $planLink = $plan
+            ? URL::signedRoute('training-plans.view-signed', ['trainingPlan' => $plan->id], now()->addDays(7))
+            : null;
 
         $date = $day->date->format('l, F j, Y');
         $message = "Hi {$user->name}! A spot has opened up at BBSC on {$date} from 8:30 AM – 3:30 PM and you've been assigned. ";

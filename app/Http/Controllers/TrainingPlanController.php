@@ -26,4 +26,14 @@ class TrainingPlanController extends Controller
 
         return Storage::download($trainingPlan->file_path, $trainingPlan->title . '.pdf');
     }
+
+    // Used by signed SMS links — no login required, URL expires after 7 days
+    public function viewSigned(TrainingPlan $trainingPlan)
+    {
+        if (! Storage::exists($trainingPlan->file_path)) {
+            abort(404, 'Training plan file not found.');
+        }
+
+        return Storage::download($trainingPlan->file_path, $trainingPlan->title . '.pdf');
+    }
 }

@@ -13,7 +13,7 @@ class DashboardController extends Controller
     {
         $totalTrainers = User::where('role', 'trainer')->count();
         $w9Received    = User::where('role', 'trainer')->whereNotNull('w9_received_at')->count();
-        $w9Missing     = User::where('role', 'trainer')->whereNull('w9_path')->count();
+        $w9Missing     = User::where('role', 'trainer')->whereNull('w9_path')->whereNull('w9_received_at')->count();
 
         $upcomingDays = TrainingDay::where('date', '>=', now()->toDateString())
             ->orderBy('date')

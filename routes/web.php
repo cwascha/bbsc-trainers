@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\Admin\EmailController;
 use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HoursController;
@@ -40,6 +41,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [Admin\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/trainers', [Admin\TrainerController::class, 'index'])->name('trainers.index');
+    Route::post('/trainers/import', [Admin\TrainerController::class, 'import'])->name('trainers.import');
+    Route::get('/email', [Admin\EmailController::class, 'index'])->name('email.index');
+    Route::post('/email/send', [Admin\EmailController::class, 'send'])->name('email.send');
     Route::get('/sessions', [Admin\AssignmentController::class, 'index'])->name('sessions.index');
     Route::post('/assignments/run', [Admin\AssignmentController::class, 'run'])->name('assignments.run');
     Route::get('/training-plans', [Admin\TrainingPlanController::class, 'index'])->name('training-plans.index');

@@ -17,7 +17,16 @@
       "Bash(php artisan tinker --execute=\":*)",
       "Bash(sips -g pixelWidth -g pixelHeight /Users/cwascha/Desktop/BBSCTrainers/public/images/BBSClogo.png)",
       "Bash(npm run build)",
-      "Bash(composer require league/flysystem-aws-s3-v3 --no-interaction)"
+      "Bash(composer require league/flysystem-aws-s3-v3 --no-interaction)",
+      "Bash(git add database/seeders/DatabaseSeeder.php)",
+      "Bash(git commit -m \"Fix admin seeder to set email_verified_at\")",
+      "Bash(git push)",
+      "Bash(git add resources/views/auth/register.blade.php)",
+      "Bash(git commit -m \"Add SMS consent language to registration form for Twilio verification\")",
+      "Bash(git add app/Services/SmsService.php app/Http/Controllers/TrainingPlanController.php routes/web.php)",
+      "Bash(git commit -m \"Use signed URLs for training plan links in SMS — no login required\")",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }

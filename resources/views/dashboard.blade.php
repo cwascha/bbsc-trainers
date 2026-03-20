@@ -83,6 +83,54 @@
                 @endif
             </div>
 
+            {{-- W9 Upload --}}
+            @php $user = Auth::user(); @endphp
+            <div class="bg-white rounded-lg shadow">
+                <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                    <h3 class="font-semibold text-gray-800">W9 Form</h3>
+                    @if($user->w9_received_at)
+                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">✓ Received by BBSC</span>
+                    @elseif($user->w9_uploaded_at)
+                        <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full font-medium">Uploaded — Pending Review</span>
+                    @else
+                        <span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full font-medium">Not Uploaded</span>
+                    @endif
+                </div>
+                <div class="px-6 py-4">
+                    @if($user->w9_received_at)
+                        <p class="text-sm text-green-700">
+                            Your W9 was received by BBSC on {{ $user->w9_received_at->format('M j, Y') }}. No further action needed.
+                        </p>
+                    @elseif($user->w9_uploaded_at)
+                        <p class="text-sm text-gray-600 mb-3">
+                            W9 uploaded on {{ $user->w9_uploaded_at->format('M j, Y') }}. BBSC will confirm receipt.
+                            You can replace it below if needed.
+                        </p>
+                        <form method="POST" action="{{ route('w9.upload') }}" enctype="multipart/form-data" class="flex items-center gap-3">
+                            @csrf
+                            <input type="file" name="w9" accept=".pdf" required
+                                   class="block text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-sm file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 cursor-pointer">
+                            <button type="submit" class="px-4 py-1.5 bg-gray-800 text-white text-sm rounded hover:bg-gray-700 whitespace-nowrap">
+                                Replace W9
+                            </button>
+                        </form>
+                    @else
+                        <p class="text-sm text-gray-600 mb-3">
+                            Please upload your W9 form so BBSC can process your payment. PDF files only, max 5MB.
+                        </p>
+                        <form method="POST" action="{{ route('w9.upload') }}" enctype="multipart/form-data" class="flex items-center gap-3">
+                            @csrf
+                            <input type="file" name="w9" accept=".pdf" required
+                                   class="block text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-sm file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 cursor-pointer">
+                            <button type="submit" class="px-4 py-1.5 bg-gray-800 text-white text-sm rounded hover:bg-gray-700 whitespace-nowrap">
+                                Upload W9
+                            </button>
+                        </form>
+                    @endif
+                    @error('w9') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
+                </div>
+            </div>
+
             {{-- Season Info --}}
             <div class="bg-blue-50 border border-blue-200 rounded-lg px-6 py-4">
                 <h3 class="font-semibold text-blue-800 mb-1">2026 Spring Season</h3>

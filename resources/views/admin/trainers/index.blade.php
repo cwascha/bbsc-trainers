@@ -88,8 +88,9 @@
                     <th class="px-6 py-3 text-left">Name</th>
                     <th class="px-6 py-3 text-left">Email</th>
                     <th class="px-6 py-3 text-left">Phone</th>
-                    <th class="px-6 py-3 text-left">Sessions Worked</th>
-                    <th class="px-6 py-3 text-left">Hours Worked</th>
+                    <th class="px-6 py-3 text-left">Sessions</th>
+                    <th class="px-6 py-3 text-left">Hours</th>
+                    <th class="px-6 py-3 text-left">W9</th>
                     <th class="px-6 py-3 text-left">Registered</th>
                 </tr>
             </thead>
@@ -101,11 +102,40 @@
                     <td class="px-6 py-3 text-gray-600">{{ $trainer->phone ?? '—' }}</td>
                     <td class="px-6 py-3 text-gray-600">{{ $trainer->sessions_worked }}</td>
                     <td class="px-6 py-3 text-gray-600">{{ $trainer->sessions_worked * 7 }}</td>
+                    <td class="px-6 py-3">
+                        @if($trainer->w9_received_at)
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium whitespace-nowrap">
+                                    ✓ Received {{ $trainer->w9_received_at->format('M j') }}
+                                </span>
+                                <form method="POST" action="{{ route('admin.trainers.w9.received', $trainer) }}">
+                                    @csrf
+                                    <button type="submit" class="text-xs text-gray-400 hover:text-red-500" title="Unmark received">✕</button>
+                                </form>
+                            </div>
+                        @elseif($trainer->w9_uploaded_at)
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <a href="{{ route('admin.trainers.w9.download', $trainer) }}"
+                                   class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-medium whitespace-nowrap hover:bg-blue-200">
+                                    ↓ View W9
+                                </a>
+                                <form method="POST" action="{{ route('admin.trainers.w9.received', $trainer) }}">
+                                    @csrf
+                                    <button type="submit"
+                                            class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs hover:bg-green-100 hover:text-green-700 whitespace-nowrap">
+                                        Mark Received
+                                    </button>
+                                </form>
+                            </div>
+                        @else
+                            <span class="text-xs text-red-400 font-medium">Not uploaded</span>
+                        @endif
+                    </td>
                     <td class="px-6 py-3 text-gray-500">{{ $trainer->created_at->format('M j, Y') }}</td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="px-6 py-8 text-center text-gray-400">No trainers registered yet.</td>
+                    <td colspan="7" class="px-6 py-8 text-center text-gray-400">No trainers registered yet.</td>
                 </tr>
                 @endforelse
             </tbody>

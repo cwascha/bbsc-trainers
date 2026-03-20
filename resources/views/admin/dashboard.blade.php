@@ -5,7 +5,7 @@
     <h1 class="text-2xl font-bold text-gray-800">Admin Overview</h1>
 
     {{-- Stats --}}
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div class="bg-white rounded-lg shadow p-6">
             <p class="text-sm text-gray-500">Total Trainers</p>
             <p class="text-3xl font-bold text-gray-800">{{ $totalTrainers }}</p>
@@ -15,9 +15,16 @@
             <p class="text-3xl font-bold text-gray-800">{{ $upcomingDays->count() }}</p>
         </div>
         <div class="bg-white rounded-lg shadow p-6">
-            <p class="text-sm text-gray-500">Season</p>
-            <p class="text-xl font-bold text-gray-800">Apr 11 – Jun 7, 2026</p>
+            <p class="text-sm text-gray-500">W9s Received</p>
+            <p class="text-3xl font-bold text-gray-800">{{ $w9Received }}</p>
+            <p class="text-xs text-gray-400 mt-1">of {{ $totalTrainers }} trainers</p>
         </div>
+        <a href="{{ route('admin.trainers.index') }}"
+           class="bg-white rounded-lg shadow p-6 block hover:bg-gray-50 transition {{ $w9Missing > 0 ? 'border-l-4 border-red-400' : '' }}">
+            <p class="text-sm text-gray-500">W9s Missing</p>
+            <p class="text-3xl font-bold {{ $w9Missing > 0 ? 'text-red-500' : 'text-gray-800' }}">{{ $w9Missing }}</p>
+            <p class="text-xs text-gray-400 mt-1">not yet uploaded</p>
+        </a>
     </div>
 
     {{-- Upcoming Days --}}

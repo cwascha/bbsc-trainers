@@ -8,6 +8,7 @@ use App\Http\Controllers\HoursController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\TrainingPlanController;
+use App\Http\Controllers\W9Controller;
 use App\Http\Controllers\Webhooks\TwilioController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +36,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::post('/w9', [W9Controller::class, 'upload'])->name('w9.upload');
+    Route::delete('/w9', [W9Controller::class, 'destroy'])->name('w9.destroy');
 });
 
 // ─── Admin Routes ──────────────────────────────────────────────────────────
@@ -54,6 +58,9 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::post('/notifications/send', [Admin\NotificationController::class, 'send'])->name('notifications.send');
     Route::get('/reports', [Admin\ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/export', [Admin\ReportController::class, 'export'])->name('reports.export');
+
+    Route::get('/trainers/{user}/w9', [Admin\W9Controller::class, 'download'])->name('trainers.w9.download');
+    Route::post('/trainers/{user}/w9-received', [Admin\W9Controller::class, 'markReceived'])->name('trainers.w9.received');
 });
 
 // ─── Twilio Webhook (no auth, CSRF exempt) ────────────────────────────────

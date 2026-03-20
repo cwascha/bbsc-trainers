@@ -20,6 +20,9 @@ class User extends Authenticatable
         'phone',
         'role',
         'password',
+        'w9_path',
+        'w9_uploaded_at',
+        'w9_received_at',
     ];
 
     protected $hidden = [
@@ -31,7 +34,9 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
+            'w9_uploaded_at'    => 'datetime',
+            'w9_received_at'    => 'datetime',
         ];
     }
 

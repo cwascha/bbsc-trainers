@@ -41,6 +41,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [Admin\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/trainers', [Admin\TrainerController::class, 'index'])->name('trainers.index');
+    Route::post('/trainers', [Admin\TrainerController::class, 'store'])->name('trainers.store');
     Route::post('/trainers/import', [Admin\TrainerController::class, 'import'])->name('trainers.import');
     Route::get('/email', [Admin\EmailController::class, 'index'])->name('email.index');
     Route::post('/email/send', [Admin\EmailController::class, 'send'])->name('email.send');

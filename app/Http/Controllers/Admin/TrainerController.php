@@ -23,6 +23,29 @@ class TrainerController extends Controller
         return view('admin.trainers.index', compact('trainers'));
     }
 
+    public function store(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'first_name' => 'required|string|max:100',
+            'last_name'  => 'nullable|string|max:100',
+            'email'      => 'required|email|unique:users,email',
+            'phone'      => 'nullable|string|max:30',
+        ]);
+
+        $name = trim($request->first_name . ' ' . $request->last_name);
+
+        User::create([
+            'name'              => $name,
+            'email'             => strtolower(trim($request->email)),
+            'phone'             => $request->phone ?: null,
+            'role'              => 'trainer',
+            'password'          => Str::random(24),
+            'email_verified_at' => now(),
+        ]);
+
+        return back()->with('success', "Trainer {$name} added. They can use \"Forgot Password\" to set their password.");
+    }
+
     public function import(Request $request): RedirectResponse
     {
         $request->validate(['file' => 'required|file|mimes:csv,txt|max:2048']);
@@ -41,22 +64,17 @@ class TrainerController extends Controller
             ->map(fn($n) => array_search($n, $headers))
             ->first(fn($i) => $i !== false);
 
-        $firstIdx = $col(['first name', 'firstname', 'first_name']);
+        $firstIdx = $col(['first name', 'firstname', 'first_name', 'name']);
         $lastIdx  = $col(['last name', 'lastname', 'last_name']);
         $emailIdx = $col(['email', 'email address', 'email_address']);
         $phoneIdx = $col(['phone', 'phone number', 'phone_number', 'mobile', 'cell']);
-
-        if ($emailIdx === null || $firstIdx === null) {
-            fclose($handle);
-            return back()->with('error', 'CSV must include at least "First Name" and "Email" columns.');
-        }
 
         $created = 0;
         $skipped = 0;
 
         while (($row = fgetcsv($handle)) !== false) {
-            $email = strtolower(trim($row[$emailIdx] ?? ''));
-
+            // Skip rows with no email or invalid email
+            $email = $emailIdx !== null ? strtolower(trim($row[$emailIdx] ?? '')) : '';
             if (! $email || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 continue;
             }
@@ -66,8 +84,8 @@ class TrainerController extends Controller
                 continue;
             }
 
-            $firstName = trim($row[$firstIdx] ?? '');
-            $lastName  = $lastIdx !== null ? trim($row[$lastIdx] ?? '') : '';
+            $firstName = $firstIdx !== null ? trim($row[$firstIdx] ?? '') : '';
+            $lastName  = $lastIdx  !== null ? trim($row[$lastIdx]  ?? '') : '';
             $name      = trim("$firstName $lastName") ?: $email;
             $phone     = $phoneIdx !== null ? trim($row[$phoneIdx] ?? '') : null;
 

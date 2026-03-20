@@ -47,10 +47,12 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::get('/trainers', [Admin\TrainerController::class, 'index'])->name('trainers.index');
     Route::post('/trainers', [Admin\TrainerController::class, 'store'])->name('trainers.store');
     Route::post('/trainers/import', [Admin\TrainerController::class, 'import'])->name('trainers.import');
+    Route::delete('/trainers/{user}', [Admin\TrainerController::class, 'destroy'])->name('trainers.destroy');
     Route::get('/email', [Admin\EmailController::class, 'index'])->name('email.index');
     Route::post('/email/send', [Admin\EmailController::class, 'send'])->name('email.send');
     Route::get('/sessions', [Admin\AssignmentController::class, 'index'])->name('sessions.index');
     Route::post('/assignments/run', [Admin\AssignmentController::class, 'run'])->name('assignments.run');
+    Route::delete('/availabilities/{availability}', [Admin\AssignmentController::class, 'removeTrainer'])->name('availabilities.destroy');
     Route::get('/training-plans', [Admin\TrainingPlanController::class, 'index'])->name('training-plans.index');
     Route::post('/training-plans', [Admin\TrainingPlanController::class, 'store'])->name('training-plans.store');
     Route::delete('/training-plans/{trainingPlan}', [Admin\TrainingPlanController::class, 'destroy'])->name('training-plans.destroy');

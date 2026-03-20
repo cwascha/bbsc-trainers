@@ -44,6 +44,11 @@
                     @if($av->status === 'confirmed')
                         <span class="text-green-600">✓</span>
                     @endif
+                    <form method="POST" action="{{ route('admin.availabilities.destroy', $av) }}"
+                          onsubmit="return confirm('Remove {{ addslashes($av->user->name) }} from this session?')">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="ml-1 text-gray-400 hover:text-red-500 leading-none" title="Remove">×</button>
+                    </form>
                 </div>
                 @endforeach
             </div>
@@ -55,9 +60,15 @@
             <p class="text-xs font-semibold text-gray-500 uppercase mb-2">Pending (signed up, not yet assigned)</p>
             <div class="flex flex-wrap gap-2">
                 @foreach($pendingAvs->sortBy('signed_up_at') as $av)
-                <span class="bg-yellow-50 border border-yellow-200 rounded px-2 py-1 text-xs text-yellow-800">
-                    {{ $av->user->name }} <span class="text-yellow-600">{{ $av->signed_up_at->format('M j g:ia') }}</span>
-                </span>
+                <div class="flex items-center space-x-1 bg-yellow-50 border border-yellow-200 rounded px-2 py-1 text-xs text-yellow-800">
+                    <span>{{ $av->user->name }}</span>
+                    <span class="text-yellow-600">{{ $av->signed_up_at->format('M j g:ia') }}</span>
+                    <form method="POST" action="{{ route('admin.availabilities.destroy', $av) }}"
+                          onsubmit="return confirm('Remove {{ addslashes($av->user->name) }} from this session?')">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="ml-1 text-yellow-400 hover:text-red-500 leading-none" title="Remove">×</button>
+                    </form>
+                </div>
                 @endforeach
             </div>
         </div>

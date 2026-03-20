@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Availability;
 use App\Models\TrainingDay;
 use App\Services\AssignmentService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class AssignmentController extends Controller
@@ -37,5 +38,21 @@ class AssignmentController extends Controller
 
         $this->assignmentService->assignUpcomingWeekend();
         return back()->with('success', 'Assignment run for the upcoming weekend.');
+    }
+
+    public function removeTrainer(Availability $availability): RedirectResponse
+    {
+        $wasAssigned = in_array($availability->status, ['assigned', 'confirmed']);
+        $day         = $availability->trainingDay;
+        $name        = $availability->user->name;
+
+        $availability->delete();
+
+        // If they were assigned, try to fill the spot from pending sign-ups
+        if ($wasAssigned) {
+            $this->assignmentService->assignDay($day);
+        }
+
+        return back()->with('success', "{$name} has been removed from {$day->formattedDate}.");
     }
 }

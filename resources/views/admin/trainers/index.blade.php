@@ -92,6 +92,7 @@
                     <th class="px-6 py-3 text-left">Hours</th>
                     <th class="px-6 py-3 text-left">W9</th>
                     <th class="px-6 py-3 text-left">Registered</th>
+                    <th class="px-6 py-3 text-left">Actions</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
@@ -144,10 +145,17 @@
                         @endif
                     </td>
                     <td class="px-6 py-3 text-gray-500">{{ $trainer->created_at->format('M j, Y') }}</td>
+                    <td class="px-6 py-3">
+                        <form method="POST" action="{{ route('admin.trainers.destroy', $trainer) }}"
+                              onsubmit="return confirm('Remove {{ addslashes($trainer->name) }}? This will also delete all their sign-ups and assignments.')">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="text-xs text-red-500 hover:text-red-700 font-medium">Remove</button>
+                        </form>
+                    </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" class="px-6 py-8 text-center text-gray-400">No trainers registered yet.</td>
+                    <td colspan="8" class="px-6 py-8 text-center text-gray-400">No trainers registered yet.</td>
                 </tr>
                 @endforelse
             </tbody>

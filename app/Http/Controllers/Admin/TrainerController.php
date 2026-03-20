@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class TrainerController extends Controller
@@ -104,5 +105,22 @@ class TrainerController extends Controller
         fclose($handle);
 
         return back()->with('success', "Import complete: {$created} trainer(s) added, {$skipped} skipped (already exist). Imported trainers can use \"Forgot Password\" to set their password.");
+    }
+
+    public function destroy(User $user): RedirectResponse
+    {
+        if ($user->role !== 'trainer') {
+            return back()->with('error', 'Only trainer accounts can be removed.');
+        }
+
+        if ($user->id === Auth::id()) {
+            return back()->with('error', 'You cannot remove your own account.');
+        }
+
+        $name = $user->name;
+        $user->availabilities()->delete();
+        $user->delete();
+
+        return back()->with('success', "{$name} has been removed.");
     }
 }

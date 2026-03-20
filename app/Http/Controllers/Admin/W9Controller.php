@@ -21,15 +21,13 @@ class W9Controller extends Controller
 
     public function markReceived(User $user): RedirectResponse
     {
-        if (! $user->w9_path) {
-            return back()->with('error', 'This trainer has not uploaded a W9.');
-        }
+        $nowReceived = ! $user->w9_received_at;
 
-        $user->update(['w9_received_at' => $user->w9_received_at ? null : now()]);
+        $user->update(['w9_received_at' => $nowReceived ? now() : null]);
 
-        $msg = $user->w9_received_at
+        $msg = $nowReceived
             ? "{$user->name}'s W9 marked as received."
-            : "{$user->name}'s W9 marked as not received.";
+            : "{$user->name}'s W9 unmarked.";
 
         return back()->with('success', $msg);
     }

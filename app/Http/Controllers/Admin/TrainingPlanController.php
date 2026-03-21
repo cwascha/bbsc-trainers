@@ -42,7 +42,11 @@ class TrainingPlanController extends Controller
             $existing->delete();
         }
 
-        $path = $request->file('file')->store('training-plans');
+        $path = $request->file('file')->store('training-plans', config('filesystems.default'));
+
+        if (! $path) {
+            return back()->with('error', 'File upload failed. Please check your storage configuration and try again.');
+        }
 
         TrainingPlan::create([
             'weekend_number' => $request->weekend_number,

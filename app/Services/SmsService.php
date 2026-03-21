@@ -91,7 +91,9 @@ class SmsService
                     'body' => $message,
                 ]);
                 $sid = $msg->sid;
-                $status = $msg->status;
+                // Twilio initially returns "queued" — if we have a SID the message
+                // was accepted successfully, so we log it as "sent".
+                $status = $sid ? 'sent' : $msg->status;
             } catch (\Exception $e) {
                 Log::error('Twilio SMS failed: ' . $e->getMessage());
                 $status = 'failed';

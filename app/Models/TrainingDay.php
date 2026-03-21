@@ -64,4 +64,19 @@ class TrainingDay extends Model
     {
         return $this->date->isPast();
     }
+
+    // Number of hours for this session, derived from start/end times
+    public function sessionHours(): float
+    {
+        return \Carbon\Carbon::parse($this->session_end)
+            ->diffInMinutes(\Carbon\Carbon::parse($this->session_start)) / 60;
+    }
+
+    // Formatted time range, e.g. "11:30 AM - 2:30 PM"
+    public function getSessionTimeRangeAttribute(): string
+    {
+        return \Carbon\Carbon::parse($this->session_start)->format('g:i A')
+            . ' - '
+            . \Carbon\Carbon::parse($this->session_end)->format('g:i A');
+    }
 }

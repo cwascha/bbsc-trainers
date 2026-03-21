@@ -62,11 +62,13 @@ class User extends Authenticatable
         return $this->hasMany(NotificationLog::class);
     }
 
-    public function hoursWorked(): int
+    public function hoursWorked(): float
     {
         return $this->availabilities()
             ->whereIn('status', ['assigned', 'confirmed'])
             ->whereHas('trainingDay', fn($q) => $q->where('date', '<', now()->toDateString()))
-            ->count() * 7;
+            ->with('trainingDay')
+            ->get()
+            ->sum(fn($a) => $a->trainingDay->sessionHours());
     }
 }

@@ -42,7 +42,7 @@ class SmsService
             : null;
 
         $date = $day->date->format('l, F j, Y');
-        $message = "Hi {$user->name}! You've been assigned to work at BBSC on {$date} from 8:30 AM – 3:30 PM. ";
+        $message = "Hi {$user->name}! You've been assigned to work at BBSC on {$date} from {$day->session_time_range}. ";
 
         if ($planLink) {
             $message .= "Training plan: {$planLink} ";
@@ -65,7 +65,7 @@ class SmsService
             : null;
 
         $date = $day->date->format('l, F j, Y');
-        $message = "Hi {$user->name}! A spot has opened up at BBSC on {$date} from 8:30 AM – 3:30 PM and you've been assigned. ";
+        $message = "Hi {$user->name}! A spot has opened up at BBSC on {$date} from {$day->session_time_range} and you've been assigned. ";
 
         if ($planLink) {
             $message .= "Training plan: {$planLink} ";

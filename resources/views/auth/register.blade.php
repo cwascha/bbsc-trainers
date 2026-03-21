@@ -23,6 +23,13 @@
             </p>
         </div>
 
+        <!-- Venmo -->
+        <div class="mt-4">
+            <x-input-label for="venmo" :value="__('Venmo Handle (optional)')" />
+            <x-text-input id="venmo" class="block mt-1 w-full" type="text" name="venmo" :value="old('venmo')" autocomplete="off" placeholder="e.g. @username" />
+            <x-input-error :messages="$errors->get('venmo')" class="mt-2" />
+        </div>
+
         <!-- Email Address -->
         <div class="mt-4">
             <x-input-label for="email" :value="__('Email')" />

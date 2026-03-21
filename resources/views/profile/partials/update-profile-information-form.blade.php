@@ -30,6 +30,12 @@
         </div>
 
         <div>
+            <x-input-label for="venmo" :value="__('Venmo Handle')" />
+            <x-text-input id="venmo" name="venmo" type="text" class="mt-1 block w-full" :value="old('venmo', $user->venmo)" autocomplete="off" placeholder="@username" />
+            <x-input-error class="mt-2" :messages="$errors->get('venmo')" />
+        </div>
+
+        <div>
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />

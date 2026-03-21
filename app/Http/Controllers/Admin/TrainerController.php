@@ -31,6 +31,7 @@ class TrainerController extends Controller
             'last_name'  => 'nullable|string|max:100',
             'email'      => 'required|email|unique:users,email',
             'phone'      => 'nullable|string|max:30',
+            'venmo'      => 'nullable|string|max:100',
         ]);
 
         $name = trim($request->first_name . ' ' . $request->last_name);
@@ -39,6 +40,7 @@ class TrainerController extends Controller
             'name'              => $name,
             'email'             => strtolower(trim($request->email)),
             'phone'             => $request->phone ?: null,
+            'venmo'             => $request->venmo ?: null,
             'role'              => 'trainer',
             'password'          => Str::random(24),
             'email_verified_at' => now(),
@@ -69,6 +71,7 @@ class TrainerController extends Controller
         $lastIdx  = $col(['last name', 'lastname', 'last_name']);
         $emailIdx = $col(['email', 'email address', 'email_address']);
         $phoneIdx = $col(['phone', 'phone number', 'phone_number', 'mobile', 'cell']);
+        $venmoIdx = $col(['venmo', 'venmo handle', 'venmo_handle']);
 
         $created = 0;
         $skipped = 0;
@@ -89,11 +92,13 @@ class TrainerController extends Controller
             $lastName  = $lastIdx  !== null ? trim($row[$lastIdx]  ?? '') : '';
             $name      = trim("$firstName $lastName") ?: $email;
             $phone     = $phoneIdx !== null ? trim($row[$phoneIdx] ?? '') : null;
+            $venmo     = $venmoIdx !== null ? trim($row[$venmoIdx] ?? '') : null;
 
             User::create([
                 'name'              => $name,
                 'email'             => $email,
                 'phone'             => $phone ?: null,
+                'venmo'             => $venmo ?: null,
                 'role'              => 'trainer',
                 'password'          => Str::random(24),
                 'email_verified_at' => now(),

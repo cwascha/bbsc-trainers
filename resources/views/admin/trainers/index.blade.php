@@ -45,6 +45,12 @@
                            class="block w-full rounded border-gray-300 text-sm focus:ring-gray-500 focus:border-gray-500"
                            placeholder="555-867-5309">
                 </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Venmo <span class="text-gray-400 font-normal">(optional)</span></label>
+                    <input type="text" name="venmo" value="{{ old('venmo') }}"
+                           class="block w-full rounded border-gray-300 text-sm focus:ring-gray-500 focus:border-gray-500"
+                           placeholder="@username">
+                </div>
                 <div class="pt-1">
                     <button type="submit"
                             class="w-full px-4 py-2 bg-gray-800 text-white text-sm rounded hover:bg-gray-700">
@@ -61,7 +67,7 @@
             <p class="text-sm text-gray-500 mb-4">
                 Upload a CSV with any of these columns:
                 <strong>First Name</strong>, <strong>Last Name</strong>,
-                <strong>Email</strong>, <strong>Phone</strong>.
+                <strong>Email</strong>, <strong>Phone</strong>, <strong>Venmo</strong>.
                 Email and phone are optional per row — rows without a valid email are skipped.
                 Existing accounts are skipped automatically.
                 <br><span class="text-xs text-gray-400 mt-1 block">Tip: Export as CSV from Excel or Google Sheets before uploading.</span>
@@ -88,6 +94,7 @@
                     <th class="px-6 py-3 text-left">Name</th>
                     <th class="px-6 py-3 text-left">Email</th>
                     <th class="px-6 py-3 text-left">Phone</th>
+                    <th class="px-6 py-3 text-left">Venmo</th>
                     <th class="px-6 py-3 text-left">Sessions</th>
                     <th class="px-6 py-3 text-left">Hours</th>
                     <th class="px-6 py-3 text-left">W9</th>
@@ -101,6 +108,7 @@
                     <td class="px-6 py-3 font-medium text-gray-800">{{ $trainer->name }}</td>
                     <td class="px-6 py-3 text-gray-600">{{ $trainer->email }}</td>
                     <td class="px-6 py-3 text-gray-600">{{ $trainer->phone ?? '—' }}</td>
+                    <td class="px-6 py-3 text-gray-600">{{ $trainer->venmo ?? '—' }}</td>
                     <td class="px-6 py-3 text-gray-600">{{ $trainer->sessions_worked }}</td>
                     <td class="px-6 py-3 text-gray-600">{{ $trainer->sessions_worked * 7 }}</td>
                     <td class="px-6 py-3">
@@ -155,7 +163,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" class="px-6 py-8 text-center text-gray-400">No trainers registered yet.</td>
+                    <td colspan="9" class="px-6 py-8 text-center text-gray-400">No trainers registered yet.</td>
                 </tr>
                 @endforelse
             </tbody>

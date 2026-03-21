@@ -18,6 +18,7 @@ class User extends Authenticatable
         'email',
         'email_verified_at',
         'phone',
+        'venmo',
         'role',
         'password',
         'w9_path',

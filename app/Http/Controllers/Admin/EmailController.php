@@ -39,6 +39,8 @@ class EmailController extends Controller
                 Mail::to($trainer->email, $trainer->name)
                     ->send(new TrainerEmail($request->subject, $request->body, $trainer->name));
                 $sent++;
+                // Stay under Resend's 5 requests/second SMTP rate limit
+                usleep(250000); // 250ms = max 4 emails/second
             } catch (\Exception $e) {
                 \Illuminate\Support\Facades\Log::error("Failed to send email to {$trainer->email}: " . $e->getMessage());
                 $failed++;

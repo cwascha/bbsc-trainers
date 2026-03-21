@@ -71,12 +71,13 @@
         <div class="bg-white rounded-lg shadow p-6">
             <h2 class="font-semibold text-gray-800 mb-1">Import from CSV</h2>
             <p class="text-sm text-gray-500 mb-4">
-                Upload a CSV with any of these columns:
+                Upload a CSV with columns: <strong>Email</strong> (required) plus any of
                 <strong>First Name</strong>, <strong>Last Name</strong>,
-                <strong>Email</strong>, <strong>Phone</strong>, <strong>Venmo</strong>, <strong>Pay Rate</strong>.
-                Email and phone are optional per row — rows without a valid email are skipped.
-                Existing accounts are skipped automatically.
-                <br><span class="text-xs text-gray-400 mt-1 block">Tip: Export as CSV from Excel or Google Sheets before uploading.</span>
+                <strong>Phone</strong>, <strong>Venmo</strong>, <strong>Pay Rate</strong>.
+                <br>
+                New trainers are created. Existing trainers have their <strong>Pay Rate</strong>, <strong>Venmo</strong>,
+                and <strong>Phone</strong> updated if those columns are present — other fields are left unchanged.
+                <br><span class="text-xs text-gray-400 mt-1 block">Tip: To bulk-set pay rates, use a CSV with just Email + Pay Rate columns.</span>
             </p>
             <form method="POST" action="{{ route('admin.trainers.import') }}" enctype="multipart/form-data"
                   class="flex items-center gap-3">

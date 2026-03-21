@@ -77,6 +77,7 @@ class TrainerController extends Controller
         $payRateIdx = $col(['pay rate', 'pay_rate', 'payrate', 'rate', 'hourly rate', 'hourly_rate']);
 
         $created = 0;
+        $updated = 0;
         $skipped = 0;
 
         while (($row = fgetcsv($handle)) !== false) {
@@ -86,20 +87,35 @@ class TrainerController extends Controller
                 continue;
             }
 
-            if (User::where('email', $email)->exists()) {
-                $skipped++;
+            // Parse shared fields
+            $phone   = $phoneIdx   !== null ? trim($row[$phoneIdx]   ?? '') : null;
+            $venmo   = $venmoIdx   !== null ? trim($row[$venmoIdx]   ?? '') : null;
+            $rawRate = $payRateIdx !== null ? trim($row[$payRateIdx] ?? '') : null;
+            $payRate = $rawRate && is_numeric(str_replace(['$', ','], '', $rawRate))
+                       ? (float) str_replace(['$', ','], '', $rawRate)
+                       : null;
+
+            $existing = User::where('email', $email)->first();
+
+            if ($existing) {
+                // Update only the fields that are present in this CSV and have a value
+                $changes = [];
+                if ($payRateIdx !== null && $payRate !== null) $changes['pay_rate'] = $payRate;
+                if ($venmoIdx   !== null && $venmo)            $changes['venmo']    = $venmo;
+                if ($phoneIdx   !== null && $phone)            $changes['phone']    = $phone;
+
+                if ($changes) {
+                    $existing->update($changes);
+                    $updated++;
+                } else {
+                    $skipped++;
+                }
                 continue;
             }
 
             $firstName = $firstIdx !== null ? trim($row[$firstIdx] ?? '') : '';
             $lastName  = $lastIdx  !== null ? trim($row[$lastIdx]  ?? '') : '';
             $name      = trim("$firstName $lastName") ?: $email;
-            $phone    = $phoneIdx   !== null ? trim($row[$phoneIdx]   ?? '') : null;
-            $venmo    = $venmoIdx   !== null ? trim($row[$venmoIdx]   ?? '') : null;
-            $payRate  = $payRateIdx !== null ? trim($row[$payRateIdx] ?? '') : null;
-            $payRate  = $payRate && is_numeric(str_replace(['$', ','], '', $payRate))
-                        ? (float) str_replace(['$', ','], '', $payRate)
-                        : null;
 
             User::create([
                 'name'              => $name,
@@ -117,7 +133,11 @@ class TrainerController extends Controller
 
         fclose($handle);
 
-        return back()->with('success', "Import complete: {$created} trainer(s) added, {$skipped} skipped (already exist). Imported trainers can use \"Forgot Password\" to set their password.");
+        $msg = "Import complete: {$created} added, {$updated} updated, {$skipped} skipped.";
+        if ($created > 0) {
+            $msg .= ' New trainers can use "Forgot Password" to set their password.';
+        }
+        return back()->with('success', $msg);
     }
 
     public function destroy(User $user): RedirectResponse

@@ -11,9 +11,15 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $totalTrainers = User::where('role', 'trainer')->count();
-        $w9Received    = User::where('role', 'trainer')->whereNotNull('w9_received_at')->count();
-        $w9Missing     = User::where('role', 'trainer')->whereNull('w9_path')->whereNull('w9_received_at')->count();
+        $totalTrainers  = User::where('role', 'trainer')->count();
+        $w9Received     = User::where('role', 'trainer')->whereNotNull('w9_received_at')->count();
+        $w9Missing      = User::where('role', 'trainer')->whereNull('w9_path')->whereNull('w9_received_at')->count();
+        $confirmed      = Availability::where('status', 'confirmed')
+                            ->whereHas('trainingDay', fn($q) => $q->where('date', '>=', now()->toDateString()))
+                            ->count();
+        $awaitingReply  = Availability::where('status', 'assigned')
+                            ->whereHas('trainingDay', fn($q) => $q->where('date', '>=', now()->toDateString()))
+                            ->count();
 
         $upcomingDays = TrainingDay::where('date', '>=', now()->toDateString())
             ->orderBy('date')
@@ -27,6 +33,6 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
-        return view('admin.dashboard', compact('totalTrainers', 'w9Received', 'w9Missing', 'upcomingDays', 'recentSignups'));
+        return view('admin.dashboard', compact('totalTrainers', 'w9Received', 'w9Missing', 'confirmed', 'awaitingReply', 'upcomingDays', 'recentSignups'));
     }
 }

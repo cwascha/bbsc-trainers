@@ -11,20 +11,15 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $totalTrainers  = User::where('role', 'trainer')->count();
-        $w9Received     = User::where('role', 'trainer')->whereNotNull('w9_received_at')->count();
-        $w9Missing      = User::where('role', 'trainer')->whereNull('w9_path')->whereNull('w9_received_at')->count();
-        $confirmed      = Availability::where('status', 'confirmed')
-                            ->whereHas('trainingDay', fn($q) => $q->where('date', '>=', now()->toDateString()))
-                            ->count();
-        $awaitingReply  = Availability::where('status', 'assigned')
-                            ->whereHas('trainingDay', fn($q) => $q->where('date', '>=', now()->toDateString()))
-                            ->count();
+        $totalTrainers = User::where('role', 'trainer')->count();
+        $w9Received    = User::where('role', 'trainer')->whereNotNull('w9_received_at')->count();
+        $w9Missing     = User::where('role', 'trainer')->whereNull('w9_path')->whereNull('w9_received_at')->count();
 
         $upcomingDays = TrainingDay::where('date', '>=', now()->toDateString())
             ->orderBy('date')
             ->take(6)
             ->withCount(['availabilities as assigned_count' => fn($q) => $q->whereIn('status', ['assigned', 'confirmed'])])
+            ->withCount(['availabilities as confirmed_count' => fn($q) => $q->where('status', 'confirmed')])
             ->withCount(['availabilities as pending_count' => fn($q) => $q->where('status', 'pending')])
             ->get();
 
@@ -33,6 +28,6 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
-        return view('admin.dashboard', compact('totalTrainers', 'w9Received', 'w9Missing', 'confirmed', 'awaitingReply', 'upcomingDays', 'recentSignups'));
+        return view('admin.dashboard', compact('totalTrainers', 'w9Received', 'w9Missing', 'upcomingDays', 'recentSignups'));
     }
 }

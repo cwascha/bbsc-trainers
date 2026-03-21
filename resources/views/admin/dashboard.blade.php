@@ -5,7 +5,7 @@
     <h1 class="text-2xl font-bold text-gray-800">Admin Overview</h1>
 
     {{-- Stats --}}
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div class="bg-white rounded-lg shadow p-6">
             <p class="text-sm text-gray-500">Total Trainers</p>
             <p class="text-3xl font-bold text-gray-800">{{ $totalTrainers }}</p>
@@ -18,19 +18,6 @@
             <p class="text-sm text-gray-500">W9s Received</p>
             <p class="text-3xl font-bold text-gray-800">{{ $w9Received }}</p>
             <p class="text-xs text-gray-400 mt-1">of {{ $totalTrainers }} trainers</p>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="bg-white rounded-lg shadow p-6 border-l-4 border-green-400">
-            <p class="text-sm text-gray-500">Confirmed (Upcoming)</p>
-            <p class="text-3xl font-bold text-green-600">{{ $confirmed }}</p>
-            <p class="text-xs text-gray-400 mt-1">replied YES to SMS</p>
-        </div>
-        <div class="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-400">
-            <p class="text-sm text-gray-500">Awaiting Reply (Upcoming)</p>
-            <p class="text-3xl font-bold text-yellow-600">{{ $awaitingReply }}</p>
-            <p class="text-xs text-gray-400 mt-1">assigned, no response yet</p>
         </div>
         <a href="{{ route('admin.trainers.index') }}"
            class="bg-white rounded-lg shadow p-6 block hover:bg-gray-50 transition {{ $w9Missing > 0 ? 'border-l-4 border-red-400' : '' }}">
@@ -52,6 +39,7 @@
                     <th class="px-6 py-3 text-left">Date</th>
                     <th class="px-6 py-3 text-left">Weekend</th>
                     <th class="px-6 py-3 text-left">Assigned</th>
+                    <th class="px-6 py-3 text-left">Confirmed</th>
                     <th class="px-6 py-3 text-left">Pending</th>
                     <th class="px-6 py-3 text-left">Spots Left</th>
                 </tr>
@@ -62,7 +50,10 @@
                     <td class="px-6 py-3 font-medium">{{ $day->formattedDate }}</td>
                     <td class="px-6 py-3 text-gray-600">Weekend {{ $day->weekend_number }}</td>
                     <td class="px-6 py-3">
-                        <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs">{{ $day->assigned_count }}</span>
+                        <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">{{ $day->assigned_count }}</span>
+                    </td>
+                    <td class="px-6 py-3">
+                        <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs">{{ $day->confirmed_count }}</span>
                     </td>
                     <td class="px-6 py-3">
                         <span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded text-xs">{{ $day->pending_count }}</span>

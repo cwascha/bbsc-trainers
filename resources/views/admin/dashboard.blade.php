@@ -46,17 +46,46 @@
             </thead>
             <tbody class="divide-y divide-gray-100">
                 @foreach($upcomingDays as $day)
-                <tr>
+                <tr class="overflow-visible">
                     <td class="px-6 py-3 font-medium">{{ $day->formattedDate }}</td>
                     <td class="px-6 py-3 text-gray-600">Weekend {{ $day->weekend_number }}</td>
+                    @php
+                        $assigned  = $day->availabilities->whereIn('status', ['assigned', 'confirmed']);
+                        $confirmed = $day->availabilities->where('status', 'confirmed');
+                        $pending   = $day->availabilities->where('status', 'pending');
+                    @endphp
                     <td class="px-6 py-3">
-                        <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">{{ $day->assigned_count }}</span>
+                        <div class="relative group inline-block">
+                            <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs cursor-default">{{ $day->assigned_count }}</span>
+                            @if($assigned->isNotEmpty())
+                            <div class="absolute z-20 hidden group-hover:block bottom-full left-1/2 -translate-x-1/2 mb-2 w-44 bg-gray-800 text-white text-xs rounded py-2 px-3 shadow-lg">
+                                @foreach($assigned as $av)<div>{{ $av->user->name }}</div>@endforeach
+                                <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+                            </div>
+                            @endif
+                        </div>
                     </td>
                     <td class="px-6 py-3">
-                        <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs">{{ $day->confirmed_count }}</span>
+                        <div class="relative group inline-block">
+                            <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs cursor-default">{{ $day->confirmed_count }}</span>
+                            @if($confirmed->isNotEmpty())
+                            <div class="absolute z-20 hidden group-hover:block bottom-full left-1/2 -translate-x-1/2 mb-2 w-44 bg-gray-800 text-white text-xs rounded py-2 px-3 shadow-lg">
+                                @foreach($confirmed as $av)<div>{{ $av->user->name }}</div>@endforeach
+                                <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+                            </div>
+                            @endif
+                        </div>
                     </td>
                     <td class="px-6 py-3">
-                        <span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded text-xs">{{ $day->pending_count }}</span>
+                        <div class="relative group inline-block">
+                            <span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded text-xs cursor-default">{{ $day->pending_count }}</span>
+                            @if($pending->isNotEmpty())
+                            <div class="absolute z-20 hidden group-hover:block bottom-full left-1/2 -translate-x-1/2 mb-2 w-44 bg-gray-800 text-white text-xs rounded py-2 px-3 shadow-lg">
+                                @foreach($pending as $av)<div>{{ $av->user->name }}</div>@endforeach
+                                <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+                            </div>
+                            @endif
+                        </div>
                     </td>
                     <td class="px-6 py-3 text-gray-600">{{ $day->max_spots - $day->assigned_count }}</td>
                 </tr>

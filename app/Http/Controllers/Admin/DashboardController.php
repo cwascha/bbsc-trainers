@@ -21,6 +21,7 @@ class DashboardController extends Controller
             ->withCount(['availabilities as assigned_count' => fn($q) => $q->whereIn('status', ['assigned', 'confirmed'])])
             ->withCount(['availabilities as confirmed_count' => fn($q) => $q->where('status', 'confirmed')])
             ->withCount(['availabilities as pending_count' => fn($q) => $q->where('status', 'pending')])
+            ->with(['availabilities' => fn($q) => $q->whereIn('status', ['assigned', 'confirmed', 'pending'])->with('user:id,name')])
             ->get();
 
         $recentSignups = Availability::with(['user', 'trainingDay'])

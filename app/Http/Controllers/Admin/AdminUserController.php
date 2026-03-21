@@ -35,7 +35,8 @@ class AdminUserController extends Controller
             'email_verified_at' => now(),
         ]);
 
-        // Generate a password reset token to use as the setup link
+        // Delete any existing token first to avoid duplicate key errors
+        Password::deleteToken($user);
         $token = Password::createToken($user);
 
         Mail::to($user->email)->send(new AdminInvitation($user, $token));

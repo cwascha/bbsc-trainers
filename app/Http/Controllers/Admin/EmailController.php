@@ -26,13 +26,29 @@ class EmailController extends Controller
             'body' => 'required|string|max:10000',
         ]);
 
+        // Allow enough time to send many emails over SMTP
+        ini_set('max_execution_time', 120);
+
         $trainers = User::whereIn('id', $request->recipients)->get();
 
+        $sent   = 0;
+        $failed = 0;
+
         foreach ($trainers as $trainer) {
-            Mail::to($trainer->email, $trainer->name)
-                ->send(new TrainerEmail($request->subject, $request->body, $trainer->name));
+            try {
+                Mail::to($trainer->email, $trainer->name)
+                    ->send(new TrainerEmail($request->subject, $request->body, $trainer->name));
+                $sent++;
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Failed to send email to {$trainer->email}: " . $e->getMessage());
+                $failed++;
+            }
         }
 
-        return back()->with('success', "Email sent to {$trainers->count()} trainer(s).");
+        if ($failed === 0) {
+            return back()->with('success', "Email sent to {$sent} trainer(s).");
+        }
+
+        return back()->with('success', "Email sent to {$sent} trainer(s). {$failed} failed — check the application logs for details.");
     }
 }

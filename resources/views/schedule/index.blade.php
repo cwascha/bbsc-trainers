@@ -35,7 +35,7 @@
                     <div class="px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div>
                             <p class="font-medium text-gray-800">{{ $day->formattedDate }}</p>
-                            <p class="text-sm text-gray-500">8:30 AM – 3:30 PM</p>
+                            <p class="text-sm text-gray-500">{{ $day->session_time_range }}</p>
                             <div class="mt-1 flex items-center space-x-3 text-xs text-gray-500">
                                 <span>{{ $assignedCount }}/{{ $day->max_spots }} assigned</span>
                                 @if($spotsLeft > 0 && !$isPast)

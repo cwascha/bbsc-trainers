@@ -32,6 +32,7 @@ class TrainerController extends Controller
             'email'      => 'required|email|unique:users,email',
             'phone'      => 'nullable|string|max:30',
             'venmo'      => 'nullable|string|max:100',
+            'pay_rate'   => 'nullable|numeric|min:0|max:999',
         ]);
 
         $name = trim($request->first_name . ' ' . $request->last_name);
@@ -41,6 +42,7 @@ class TrainerController extends Controller
             'email'             => strtolower(trim($request->email)),
             'phone'             => $request->phone ?: null,
             'venmo'             => $request->venmo ?: null,
+            'pay_rate'          => $request->pay_rate ?: null,
             'role'              => 'trainer',
             'password'          => Str::random(24),
             'email_verified_at' => now(),
@@ -70,8 +72,9 @@ class TrainerController extends Controller
         $firstIdx = $col(['first name', 'firstname', 'first_name', 'name']);
         $lastIdx  = $col(['last name', 'lastname', 'last_name']);
         $emailIdx = $col(['email', 'email address', 'email_address']);
-        $phoneIdx = $col(['phone', 'phone number', 'phone_number', 'mobile', 'cell']);
-        $venmoIdx = $col(['venmo', 'venmo handle', 'venmo_handle']);
+        $phoneIdx   = $col(['phone', 'phone number', 'phone_number', 'mobile', 'cell']);
+        $venmoIdx   = $col(['venmo', 'venmo handle', 'venmo_handle']);
+        $payRateIdx = $col(['pay rate', 'pay_rate', 'payrate', 'rate', 'hourly rate', 'hourly_rate']);
 
         $created = 0;
         $skipped = 0;
@@ -91,14 +94,19 @@ class TrainerController extends Controller
             $firstName = $firstIdx !== null ? trim($row[$firstIdx] ?? '') : '';
             $lastName  = $lastIdx  !== null ? trim($row[$lastIdx]  ?? '') : '';
             $name      = trim("$firstName $lastName") ?: $email;
-            $phone     = $phoneIdx !== null ? trim($row[$phoneIdx] ?? '') : null;
-            $venmo     = $venmoIdx !== null ? trim($row[$venmoIdx] ?? '') : null;
+            $phone    = $phoneIdx   !== null ? trim($row[$phoneIdx]   ?? '') : null;
+            $venmo    = $venmoIdx   !== null ? trim($row[$venmoIdx]   ?? '') : null;
+            $payRate  = $payRateIdx !== null ? trim($row[$payRateIdx] ?? '') : null;
+            $payRate  = $payRate && is_numeric(str_replace(['$', ','], '', $payRate))
+                        ? (float) str_replace(['$', ','], '', $payRate)
+                        : null;
 
             User::create([
                 'name'              => $name,
                 'email'             => $email,
                 'phone'             => $phone ?: null,
                 'venmo'             => $venmo ?: null,
+                'pay_rate'          => $payRate,
                 'role'              => 'trainer',
                 'password'          => Str::random(24),
                 'email_verified_at' => now(),

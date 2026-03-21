@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\TrainingDay;
 use App\Models\TrainingPlan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class TrainingPlanController extends Controller
@@ -33,7 +34,11 @@ class TrainingPlanController extends Controller
         // Replace existing plan for same weekend
         $existing = TrainingPlan::where('weekend_number', $request->weekend_number)->first();
         if ($existing) {
-            Storage::delete($existing->file_path);
+            try {
+                Storage::delete($existing->file_path);
+            } catch (\Exception $e) {
+                Log::warning('Could not delete existing training plan file: ' . $e->getMessage());
+            }
             $existing->delete();
         }
 
@@ -51,7 +56,12 @@ class TrainingPlanController extends Controller
 
     public function destroy(TrainingPlan $trainingPlan)
     {
-        Storage::delete($trainingPlan->file_path);
+        try {
+            Storage::delete($trainingPlan->file_path);
+        } catch (\Exception $e) {
+            Log::warning('Could not delete training plan file: ' . $e->getMessage());
+        }
+
         $trainingPlan->delete();
 
         return back()->with('success', 'Training plan deleted.');

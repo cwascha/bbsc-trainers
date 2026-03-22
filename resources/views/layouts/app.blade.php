@@ -7,6 +7,8 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
         <link rel="icon" type="image/png" href="/images/BBSClogo.png">
+        <link rel="apple-touch-icon" href="/images/BBSClogo.png">
+        <link rel="manifest" href="/manifest.json">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

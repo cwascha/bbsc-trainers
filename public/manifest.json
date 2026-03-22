@@ -1,0 +1,17 @@
+{
+    "name": "BBSC Trainer Dashboard",
+    "short_name": "BBSC",
+    "description": "BBSC Trainer Scheduling & Assignment Dashboard",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#111827",
+    "theme_color": "#111827",
+    "icons": [
+        {
+            "src": "/images/BBSClogo.png",
+            "sizes": "any",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

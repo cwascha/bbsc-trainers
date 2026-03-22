@@ -97,6 +97,15 @@
                     @endif
                 </div>
                 <div class="px-6 py-4">
+                    <div class="mb-4">
+                        <a href="{{ route('w9.template') }}" target="_blank"
+                           class="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 hover:underline">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Download blank W9 template
+                        </a>
+                    </div>
                     @if($user->w9_received_at)
                         <p class="text-sm text-green-700">
                             Your W9 was received by BBSC on {{ $user->w9_received_at->format('M j, Y') }}. No further action needed.

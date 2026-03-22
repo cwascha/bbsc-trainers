@@ -37,6 +37,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::get('/w9/template', [W9Controller::class, 'template'])->name('w9.template');
     Route::post('/w9', [W9Controller::class, 'upload'])->name('w9.upload');
     Route::delete('/w9', [W9Controller::class, 'destroy'])->name('w9.destroy');
 });

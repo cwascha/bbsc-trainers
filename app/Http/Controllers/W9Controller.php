@@ -5,9 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class W9Controller extends Controller
 {
+    public function template(): BinaryFileResponse
+    {
+        return response()->download(public_path('downloads/w9-template.pdf'), 'IRS-W9.pdf');
+    }
+
     public function upload(Request $request): RedirectResponse
     {
         $request->validate([

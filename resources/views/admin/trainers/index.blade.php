@@ -117,12 +117,16 @@
                     <td class="px-4 py-3 text-gray-600">{{ $trainer->email }}</td>
                     <td class="px-4 py-3 text-gray-600">{{ $trainer->phone ?? '—' }}</td>
                     <td class="px-4 py-3 text-gray-600">{{ $trainer->venmo ?? '—' }}</td>
-                    <td class="px-4 py-3 text-gray-600">
-                        @if($trainer->pay_rate)
-                            ${{ number_format($trainer->pay_rate, 2) }}/hr
-                        @else
-                            <span class="text-yellow-500 text-xs">Not set</span>
-                        @endif
+                    <td class="px-4 py-3">
+                        <form method="POST" action="{{ route('admin.trainers.pay-rate', $trainer) }}" class="flex items-center gap-1">
+                            @csrf @method('PATCH')
+                            <span class="text-gray-400 text-sm">$</span>
+                            <input type="number" name="pay_rate" value="{{ $trainer->pay_rate ?? '' }}"
+                                   step="0.01" min="0" max="999" required
+                                   class="w-16 text-sm border-gray-300 rounded px-1 py-0.5 focus:ring-gray-500 focus:border-gray-500"
+                                   placeholder="0.00">
+                            <button type="submit" class="text-xs text-gray-500 hover:text-green-600" title="Save">✓</button>
+                        </form>
                     </td>
                     <td class="px-4 py-3 text-gray-600">{{ $trainer->sessions_worked }}</td>
                     <td class="px-4 py-3 text-gray-600">{{ $trainer->sessions_worked * 7 }}</td>

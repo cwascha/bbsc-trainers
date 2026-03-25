@@ -140,6 +140,15 @@ class TrainerController extends Controller
         return back()->with('success', $msg);
     }
 
+    public function updatePayRate(Request $request, User $user): RedirectResponse
+    {
+        $request->validate(['pay_rate' => 'required|numeric|min:0|max:999']);
+
+        $user->update(['pay_rate' => $request->pay_rate]);
+
+        return back()->with('success', "{$user->name}'s pay rate updated to \${$request->pay_rate}/hr.");
+    }
+
     public function destroy(User $user): RedirectResponse
     {
         if ($user->role !== 'trainer') {

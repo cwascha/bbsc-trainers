@@ -94,39 +94,39 @@
     </div>
 
     {{-- Trainer Table --}}
-    <div class="bg-white rounded-lg shadow overflow-hidden">
-        <table class="w-full text-sm">
+    <div class="bg-white rounded-lg shadow overflow-x-auto">
+        <table class="w-full text-sm whitespace-nowrap">
             <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
                 <tr>
-                    <th class="px-6 py-3 text-left">Name</th>
-                    <th class="px-6 py-3 text-left">Email</th>
-                    <th class="px-6 py-3 text-left">Phone</th>
-                    <th class="px-6 py-3 text-left">Venmo</th>
-                    <th class="px-6 py-3 text-left">Pay Rate</th>
-                    <th class="px-6 py-3 text-left">Sessions</th>
-                    <th class="px-6 py-3 text-left">Hours</th>
-                    <th class="px-6 py-3 text-left">W9</th>
-                    <th class="px-6 py-3 text-left">Registered</th>
-                    <th class="px-6 py-3 text-left">Actions</th>
+                    <th class="px-4 py-3 text-left">Name</th>
+                    <th class="px-4 py-3 text-left">Email</th>
+                    <th class="px-4 py-3 text-left">Phone</th>
+                    <th class="px-4 py-3 text-left">Venmo</th>
+                    <th class="px-4 py-3 text-left">Pay Rate</th>
+                    <th class="px-4 py-3 text-left">Sessions</th>
+                    <th class="px-4 py-3 text-left">Hours</th>
+                    <th class="px-4 py-3 text-left">W9</th>
+                    <th class="px-4 py-3 text-left">Registered</th>
+                    <th class="px-4 py-3 text-left">Actions</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
                 @forelse($trainers as $trainer)
                 <tr>
-                    <td class="px-6 py-3 font-medium text-gray-800">{{ $trainer->name }}</td>
-                    <td class="px-6 py-3 text-gray-600">{{ $trainer->email }}</td>
-                    <td class="px-6 py-3 text-gray-600">{{ $trainer->phone ?? '—' }}</td>
-                    <td class="px-6 py-3 text-gray-600">{{ $trainer->venmo ?? '—' }}</td>
-                    <td class="px-6 py-3 text-gray-600">
+                    <td class="px-4 py-3 font-medium text-gray-800">{{ $trainer->name }}</td>
+                    <td class="px-4 py-3 text-gray-600">{{ $trainer->email }}</td>
+                    <td class="px-4 py-3 text-gray-600">{{ $trainer->phone ?? '—' }}</td>
+                    <td class="px-4 py-3 text-gray-600">{{ $trainer->venmo ?? '—' }}</td>
+                    <td class="px-4 py-3 text-gray-600">
                         @if($trainer->pay_rate)
                             ${{ number_format($trainer->pay_rate, 2) }}/hr
                         @else
                             <span class="text-yellow-500 text-xs">Not set</span>
                         @endif
                     </td>
-                    <td class="px-6 py-3 text-gray-600">{{ $trainer->sessions_worked }}</td>
-                    <td class="px-6 py-3 text-gray-600">{{ $trainer->sessions_worked * 7 }}</td>
-                    <td class="px-6 py-3">
+                    <td class="px-4 py-3 text-gray-600">{{ $trainer->sessions_worked }}</td>
+                    <td class="px-4 py-3 text-gray-600">{{ $trainer->sessions_worked * 7 }}</td>
+                    <td class="px-4 py-3">
                         @if($trainer->w9_received_at)
                             {{-- Received: show badge + download if available + unmark --}}
                             <div class="flex items-center gap-2 flex-wrap">
@@ -167,8 +167,8 @@
                             </div>
                         @endif
                     </td>
-                    <td class="px-6 py-3 text-gray-500">{{ $trainer->created_at->format('M j, Y') }}</td>
-                    <td class="px-6 py-3">
+                    <td class="px-4 py-3 text-gray-500">{{ $trainer->created_at->format('M j, Y') }}</td>
+                    <td class="px-4 py-3">
                         <form method="POST" action="{{ route('admin.trainers.destroy', $trainer) }}"
                               onsubmit="return confirm('Remove {{ addslashes($trainer->name) }}? This will also delete all their sign-ups and assignments.')">
                             @csrf @method('DELETE')
@@ -178,7 +178,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="10" class="px-6 py-8 text-center text-gray-400">No trainers registered yet.</td>
+                    <td colspan="10" class="px-4 py-8 text-center text-gray-400">No trainers registered yet.</td>
                 </tr>
                 @endforelse
             </tbody>

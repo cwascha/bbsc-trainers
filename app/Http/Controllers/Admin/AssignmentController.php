@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Availability;
 use App\Models\TrainingDay;
+use App\Models\User;
 use App\Services\AssignmentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,7 +21,9 @@ class AssignmentController extends Controller
             ->with(['availabilities.user'])
             ->get();
 
-        return view('admin.sessions.index', compact('days'));
+        $trainers = User::where('role', 'trainer')->orderBy('name')->get(['id', 'name']);
+
+        return view('admin.sessions.index', compact('days', 'trainers'));
     }
 
     public function run(Request $request)
@@ -38,6 +41,21 @@ class AssignmentController extends Controller
 
         $this->assignmentService->assignUpcomingWeekend();
         return back()->with('success', 'Assignment run for the upcoming weekend.');
+    }
+
+    public function addTrainer(Request $request, TrainingDay $trainingDay): RedirectResponse
+    {
+        $request->validate(['user_id' => 'required|exists:users,id']);
+
+        $trainer = User::findOrFail($request->user_id);
+
+        // Create or update the availability record to assigned
+        Availability::updateOrCreate(
+            ['user_id' => $trainer->id, 'training_day_id' => $trainingDay->id],
+            ['status' => 'assigned', 'signed_up_at' => now()]
+        );
+
+        return back()->with('success', "{$trainer->name} has been assigned to {$trainingDay->formattedDate}.");
     }
 
     public function removeTrainer(Availability $availability): RedirectResponse

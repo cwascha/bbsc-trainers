@@ -77,6 +77,24 @@
         @if($assignedAvs->isEmpty() && $pendingAvs->isEmpty())
         <div class="px-6 py-4 text-sm text-gray-400">No sign-ups yet.</div>
         @endif
+
+        {{-- Admin: manually add a trainer --}}
+        @php $signedUpIds = $day->availabilities->whereNotIn('status', ['cancelled'])->pluck('user_id'); @endphp
+        @php $available = $trainers->whereNotIn('id', $signedUpIds); @endphp
+        @if($available->isNotEmpty())
+        <div class="px-6 py-3 border-t border-gray-100 bg-gray-50">
+            <form method="POST" action="{{ route('admin.sessions.add-trainer', $day) }}" class="flex items-center gap-2">
+                @csrf
+                <select name="user_id" required class="text-sm border-gray-300 rounded px-2 py-1 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">— Add trainer —</option>
+                    @foreach($available as $trainer)
+                        <option value="{{ $trainer->id }}">{{ $trainer->name }}</option>
+                    @endforeach
+                </select>
+                <button type="submit" class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">Add</button>
+            </form>
+        </div>
+        @endif
     </div>
     @endforeach
 </div>

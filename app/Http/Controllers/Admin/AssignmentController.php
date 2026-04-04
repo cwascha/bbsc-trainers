@@ -49,10 +49,11 @@ class AssignmentController extends Controller
 
         $trainer = User::findOrFail($request->user_id);
 
-        // Create or update the availability record to assigned
+        // Create or update the availability record to pending so it goes through
+        // the normal assignment process (Assign Now → SMS → confirmed)
         Availability::updateOrCreate(
             ['user_id' => $trainer->id, 'training_day_id' => $trainingDay->id],
-            ['status' => 'assigned', 'signed_up_at' => now()]
+            ['status' => 'pending', 'signed_up_at' => now()]
         );
 
         return back()->with('success', "{$trainer->name} has been assigned to {$trainingDay->formattedDate}.");

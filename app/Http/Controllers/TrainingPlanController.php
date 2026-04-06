@@ -24,7 +24,8 @@ class TrainingPlanController extends Controller
             abort(404, 'Training plan file not found.');
         }
 
-        return Storage::download($trainingPlan->file_path, $trainingPlan->title . '.pdf');
+        $ext = pathinfo($trainingPlan->file_path, PATHINFO_EXTENSION);
+        return Storage::download($trainingPlan->file_path, $trainingPlan->title . '.' . $ext);
     }
 
     // Used by signed SMS links — no login required, URL expires after 7 days
@@ -34,6 +35,7 @@ class TrainingPlanController extends Controller
             abort(404, 'Training plan file not found.');
         }
 
-        return Storage::download($trainingPlan->file_path, $trainingPlan->title . '.pdf');
+        $ext = pathinfo($trainingPlan->file_path, PATHINFO_EXTENSION);
+        return Storage::download($trainingPlan->file_path, $trainingPlan->title . '.' . $ext);
     }
 }

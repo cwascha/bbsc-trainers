@@ -25,8 +25,8 @@
                            class="w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">PDF File</label>
-                    <input type="file" name="file" accept=".pdf" required
+                    <label class="block text-sm font-medium text-gray-700 mb-1">File (PDF or Excel)</label>
+                    <input type="file" name="file" accept=".pdf,.xlsx,.xls" required
                            class="w-full text-sm text-gray-700 border border-gray-300 rounded-md cursor-pointer focus:outline-none">
                 </div>
             </div>

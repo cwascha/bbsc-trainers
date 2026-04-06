@@ -28,7 +28,7 @@ class TrainingPlanController extends Controller
         $request->validate([
             'weekend_number' => 'required|integer|min:1|max:8',
             'title'          => 'required|string|max:255',
-            'file'           => 'required|file|mimes:pdf|max:20480',
+            'file'           => 'required|file|mimes:pdf,xlsx,xls|max:20480',
         ]);
 
         // Replace existing plan for same weekend

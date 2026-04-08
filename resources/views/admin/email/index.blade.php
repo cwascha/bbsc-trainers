@@ -18,7 +18,13 @@
                     <label class="font-semibold text-gray-800">Recipients
                         <span class="ml-1 text-sm font-normal text-gray-400" id="selected-count"></span>
                     </label>
-                    <div class="flex gap-4 text-sm">
+                    <div class="flex items-center gap-4 text-sm">
+                        <select id="weekend-filter" class="border-gray-300 rounded text-sm focus:ring-gray-500 focus:border-gray-500">
+                            <option value="">Select by weekend...</option>
+                            @foreach($weekendTrainers->sortKeys() as $weekend => $ids)
+                                <option value="{{ $ids->join(',') }}">Weekend {{ $weekend }} ({{ $ids->count() }} assigned)</option>
+                            @endforeach
+                        </select>
                         <button type="button" id="select-all"
                                 class="text-blue-600 hover:underline">Select All</button>
                         <button type="button" id="deselect-all"
@@ -99,6 +105,14 @@
     document.getElementById('deselect-all')?.addEventListener('click', () => {
         checkboxes().forEach(cb => cb.checked = false);
         updateCount();
+    });
+    document.getElementById('weekend-filter')?.addEventListener('change', function () {
+        const ids = this.value ? this.value.split(',') : [];
+        checkboxes().forEach(cb => {
+            cb.checked = ids.includes(cb.value);
+        });
+        updateCount();
+        this.value = ''; // reset dropdown so it can be used again
     });
     checkboxes().forEach(cb => cb.addEventListener('change', updateCount));
 </script>

@@ -6,7 +6,7 @@
         body { font-family: Arial, sans-serif; background: #f3f4f6; margin: 0; padding: 0; }
         .wrapper { max-width: 560px; margin: 40px auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
         .header { background: #111827; padding: 24px 32px; text-align: center; }
-        .header img { height: 24px; width: auto; }
+        .header img { height: 12px; width: auto; }
         .body { padding: 32px; color: #374151; }
         .body h1 { font-size: 20px; font-weight: 600; margin: 0 0 12px; color: #111827; }
         .body p { font-size: 15px; line-height: 1.6; margin: 0 0 16px; }

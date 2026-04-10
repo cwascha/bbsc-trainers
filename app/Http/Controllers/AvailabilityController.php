@@ -23,7 +23,8 @@ class AvailabilityController extends Controller
             return back()->with('error', 'Cannot sign up for a past session.');
         }
 
-        Availability::firstOrCreate(
+        // Use updateOrCreate so re-signing up after cancellation resets the status to pending
+        Availability::updateOrCreate(
             [
                 'user_id'         => $request->user()->id,
                 'training_day_id' => $day->id,
@@ -31,6 +32,7 @@ class AvailabilityController extends Controller
             [
                 'signed_up_at' => now(),
                 'status'       => 'pending',
+                'cancelled_at' => null,
             ]
         );
 

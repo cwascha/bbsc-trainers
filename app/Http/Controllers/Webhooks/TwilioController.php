@@ -49,8 +49,31 @@ class TwilioController extends Controller
         $day = $availability->trainingDay;
 
         if (in_array($body, ['YES', 'Y', 'CONFIRM', 'YES!', '1'])) {
-            $availability->update(['status' => 'confirmed', 'confirmed_at' => now()]);
-            return $this->twimlResponse("Thanks, {$user->name}! Your session on {$day->formattedDate} is confirmed. See you at 8:30 AM!");
+            // Confirm all assigned sessions for the same weekend in one reply
+            $weekendAssigned = Availability::where('user_id', $user->id)
+                ->where('status', 'assigned')
+                ->whereHas('trainingDay', fn($q) => $q
+                    ->where('weekend_number', $day->weekend_number)
+                    ->where('date', '>=', now()->toDateString())
+                )
+                ->with('trainingDay')
+                ->get();
+
+            foreach ($weekendAssigned as $av) {
+                $av->update(['status' => 'confirmed', 'confirmed_at' => now()]);
+            }
+
+            // Also confirm the current availability if it wasn't already in the list (e.g. already confirmed)
+            if ($availability->status !== 'confirmed') {
+                $availability->update(['status' => 'confirmed', 'confirmed_at' => now()]);
+            }
+
+            $dates = $weekendAssigned->map(fn($av) => $av->trainingDay->formattedDate)->unique()->values();
+            $dateStr = $dates->count() > 1
+                ? $dates->slice(0, -1)->join(', ') . ' and ' . $dates->last()
+                : ($dates->first() ?? $day->formattedDate);
+
+            return $this->twimlResponse("Thanks, {$user->name}! Your session(s) on {$dateStr} are confirmed. See you there!");
         }
 
         if (in_array($body, ['NO', 'N', 'CANCEL', 'NO!', '2'])) {
@@ -59,7 +82,16 @@ class TwilioController extends Controller
             return $this->twimlResponse("Understood, {$user->name}. Your session on {$day->formattedDate} has been cancelled. We've notified the next trainer.");
         }
 
-        return $this->twimlResponse("Hi {$user->name}! Reply YES to confirm your session on {$day->formattedDate} or NO to cancel.");
+        $weekendBoth = Availability::where('user_id', $user->id)
+            ->where('status', 'assigned')
+            ->whereHas('trainingDay', fn($q) => $q->where('weekend_number', $day->weekend_number))
+            ->count() > 1;
+
+        $prompt = $weekendBoth
+            ? "Hi {$user->name}! You're assigned for both days of Weekend {$day->weekend_number}. Reply YES to confirm both days or NO to cancel {$day->formattedDate}."
+            : "Hi {$user->name}! Reply YES to confirm your session on {$day->formattedDate} or NO to cancel.";
+
+        return $this->twimlResponse($prompt);
     }
 
     private function twimlResponse(string $message): Response

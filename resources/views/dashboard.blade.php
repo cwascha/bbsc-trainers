@@ -62,7 +62,7 @@
                         <div class="px-6 py-4 flex items-center justify-between">
                             <div>
                                 <p class="font-medium text-gray-800">{{ $av->trainingDay->formattedDate }}</p>
-                                <p class="text-sm text-gray-500">8:30 AM – 3:30 PM · Weekend {{ $av->trainingDay->weekend_number }}</p>
+                                <p class="text-sm text-gray-500">{{ $av->trainingDay->session_time_range }} · Weekend {{ $av->trainingDay->weekend_number }}</p>
                             </div>
                             <div class="flex items-center space-x-3">
                                 @if($av->status === 'confirmed')
@@ -143,7 +143,7 @@
             {{-- Season Info --}}
             <div class="bg-blue-50 border border-blue-200 rounded-lg px-6 py-4">
                 <h3 class="font-semibold text-blue-800 mb-1">2026 Spring Season</h3>
-                <p class="text-sm text-blue-700">Sessions run every Saturday &amp; Sunday from 8:30 AM – 3:30 PM. No sessions on May 23–24 (Memorial Day Weekend).</p>
+                <p class="text-sm text-blue-700">Sessions run every Saturday &amp; Sunday. No sessions on May 23–24 (Memorial Day Weekend).</p>
             </div>
 
         </div>

@@ -44,6 +44,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/documents', [DocumentController::class, 'index'])->name('documents.index');
     Route::get('/documents/{document}/download', [DocumentController::class, 'download'])->name('documents.download');
+    Route::get('/documents/{document}/view', [DocumentController::class, 'view'])->name('documents.view');
 });
 
 // ─── Admin Routes ──────────────────────────────────────────────────────────

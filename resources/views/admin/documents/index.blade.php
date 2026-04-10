@@ -78,6 +78,7 @@
                             <td class="px-6 py-3 text-gray-500">{{ $doc->created_at->format('M j, Y') }}</td>
                             <td class="px-6 py-3">
                                 <div class="flex items-center gap-3">
+                                    <a href="{{ route('documents.view', $doc) }}" target="_blank" class="text-gray-600 hover:underline text-sm">View</a>
                                     <a href="{{ route('documents.download', $doc) }}" class="text-blue-600 hover:underline text-sm">Download</a>
                                     <form method="POST" action="{{ route('admin.documents.destroy', $doc) }}"
                                           onsubmit="return confirm('Delete \'{{ addslashes($doc->title) }}\'?')">

@@ -24,10 +24,16 @@
                                 <p class="text-xs text-gray-400 mt-0.5">Added {{ $doc->created_at->format('M j, Y') }}</p>
                             </div>
                         </div>
-                        <a href="{{ route('documents.download', $doc) }}"
-                           class="flex-shrink-0 px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition">
-                            ↓ Download
-                        </a>
+                        <div class="flex-shrink-0 flex items-center gap-2">
+                            <a href="{{ route('documents.view', $doc) }}" target="_blank"
+                               class="px-4 py-2 bg-gray-700 text-white text-sm rounded hover:bg-gray-800 transition">
+                                👁 View
+                            </a>
+                            <a href="{{ route('documents.download', $doc) }}"
+                               class="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition">
+                                ↓ Download
+                            </a>
+                        </div>
                     </div>
                     @endforeach
                 </div>

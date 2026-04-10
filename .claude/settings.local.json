@@ -30,7 +30,10 @@
       "Bash(composer require:*)",
       "Bash(/usr/local/bin/composer require:*)",
       "Bash(php -r \"echo PHP_VERSION;\")",
-      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\(''''require'''',{}\\), indent=2\\)\\)\")"
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\(''''require'''',{}\\), indent=2\\)\\)\")",
+      "Bash(pip3 install:*)",
+      "Bash(python3 -c \":*)",
+      "Bash(php artisan:*)"
     ]
   }
 }

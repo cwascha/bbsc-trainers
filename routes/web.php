@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HoursController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\TrainingPlanController;
 use App\Http\Controllers\W9Controller;
 use App\Http\Controllers\Webhooks\TwilioController;
@@ -40,6 +41,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/w9/template', [W9Controller::class, 'template'])->name('w9.template');
     Route::post('/w9', [W9Controller::class, 'upload'])->name('w9.upload');
     Route::delete('/w9', [W9Controller::class, 'destroy'])->name('w9.destroy');
+
+    Route::get('/documents', [DocumentController::class, 'index'])->name('documents.index');
+    Route::get('/documents/{document}/download', [DocumentController::class, 'download'])->name('documents.download');
 });
 
 // ─── Admin Routes ──────────────────────────────────────────────────────────
@@ -70,6 +74,10 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::get('/admins', [Admin\AdminUserController::class, 'index'])->name('admins.index');
     Route::post('/admins', [Admin\AdminUserController::class, 'store'])->name('admins.store');
     Route::delete('/admins/{user}', [Admin\AdminUserController::class, 'destroy'])->name('admins.destroy');
+
+    Route::get('/documents', [Admin\DocumentController::class, 'index'])->name('documents.index');
+    Route::post('/documents', [Admin\DocumentController::class, 'store'])->name('documents.store');
+    Route::delete('/documents/{document}', [Admin\DocumentController::class, 'destroy'])->name('documents.destroy');
 });
 
 // ─── Twilio Webhook (no auth, CSRF exempt) ────────────────────────────────

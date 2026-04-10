@@ -24,6 +24,9 @@
                     <x-nav-link :href="route('hours.index')" :active="request()->routeIs('hours.*')">
                         My Hours
                     </x-nav-link>
+                    <x-nav-link :href="route('documents.index')" :active="request()->routeIs('documents.*')">
+                        Documents
+                    </x-nav-link>
                     @if(Auth::user()->isAdmin())
                     <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center px-3 py-1 my-auto text-sm font-semibold rounded bg-orange-500 text-white hover:bg-orange-600 transition">
                         Admin Panel
@@ -86,6 +89,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('hours.index')" :active="request()->routeIs('hours.*')">
                 My Hours
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('documents.index')" :active="request()->routeIs('documents.*')">
+                Documents
             </x-responsive-nav-link>
             @if(Auth::user()->isAdmin())
             <x-responsive-nav-link :href="route('admin.dashboard')">

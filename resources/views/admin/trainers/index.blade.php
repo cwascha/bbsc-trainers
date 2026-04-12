@@ -233,13 +233,7 @@ function editModal() {
                     <td class="px-4 py-3">
                         <div class="flex items-center gap-3">
                             <button type="button"
-                                    @click="$dispatch('open-edit', {
-                                        url: '{{ route('admin.trainers.update', $trainer) }}',
-                                        name: {{ json_encode($trainer->name) }},
-                                        email: {{ json_encode($trainer->email) }},
-                                        phone: {{ json_encode($trainer->phone ?? '') }},
-                                        venmo: {{ json_encode($trainer->venmo ?? '') }}
-                                    })"
+                                    onclick="window.dispatchEvent(new CustomEvent('open-edit', { detail: { url: {{ json_encode(route('admin.trainers.update', $trainer)) }}, name: {{ json_encode($trainer->name) }}, email: {{ json_encode($trainer->email) }}, phone: {{ json_encode($trainer->phone ?? '') }}, venmo: {{ json_encode($trainer->venmo ?? '') }} } }))"
                                     class="text-xs text-blue-600 hover:text-blue-800 font-medium">Edit</button>
                             <form method="POST" action="{{ route('admin.trainers.destroy', $trainer) }}"
                                   onsubmit="return confirm('Remove {{ addslashes($trainer->name) }}? This will also delete all their sign-ups and assignments.')">

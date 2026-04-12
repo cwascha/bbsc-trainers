@@ -54,6 +54,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::post('/trainers', [Admin\TrainerController::class, 'store'])->name('trainers.store');
     Route::post('/trainers/import', [Admin\TrainerController::class, 'import'])->name('trainers.import');
     Route::delete('/trainers/{user}', [Admin\TrainerController::class, 'destroy'])->name('trainers.destroy');
+    Route::patch('/trainers/{user}', [Admin\TrainerController::class, 'update'])->name('trainers.update');
     Route::patch('/trainers/{user}/pay-rate', [Admin\TrainerController::class, 'updatePayRate'])->name('trainers.pay-rate');
     Route::get('/email', [Admin\EmailController::class, 'index'])->name('email.index');
     Route::post('/email/send', [Admin\EmailController::class, 'send'])->name('email.send');

@@ -1,6 +1,64 @@
 @extends('layouts.admin')
 @section('content')
 
+{{-- Edit Trainer Modal --}}
+<div x-data="editModal()" x-show="open" x-cloak
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+     @open-edit.window="openFor($event.detail.url, $event.detail.name, $event.detail.email, $event.detail.phone, $event.detail.venmo)"
+     @keydown.escape.window="open = false">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4" @click.stop>
+        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+            <h3 class="font-semibold text-gray-800">Edit Trainer</h3>
+            <button @click="open = false" class="text-gray-400 hover:text-gray-600 text-xl leading-none">&times;</button>
+        </div>
+        <form method="POST" :action="actionUrl" class="px-6 py-4 space-y-4">
+            @csrf @method('PATCH')
+            <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Name</label>
+                <input type="text" name="name" x-model="trainer.name" required
+                       class="block w-full rounded border-gray-300 text-sm focus:ring-gray-500 focus:border-gray-500">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Email</label>
+                <input type="email" name="email" x-model="trainer.email" required
+                       class="block w-full rounded border-gray-300 text-sm focus:ring-gray-500 focus:border-gray-500">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Phone</label>
+                <input type="tel" name="phone" x-model="trainer.phone"
+                       class="block w-full rounded border-gray-300 text-sm focus:ring-gray-500 focus:border-gray-500">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Venmo</label>
+                <input type="text" name="venmo" x-model="trainer.venmo"
+                       class="block w-full rounded border-gray-300 text-sm focus:ring-gray-500 focus:border-gray-500"
+                       placeholder="@username">
+            </div>
+            <div class="flex justify-end gap-3 pt-2">
+                <button type="button" @click="open = false"
+                        class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">Cancel</button>
+                <button type="submit"
+                        class="px-4 py-2 bg-gray-800 text-white text-sm rounded hover:bg-gray-700">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function editModal() {
+    return {
+        open: false,
+        actionUrl: '',
+        trainer: { name: '', email: '', phone: '', venmo: '' },
+        openFor(url, name, email, phone, venmo) {
+            this.actionUrl = url;
+            this.trainer = { name, email, phone: phone || '', venmo: venmo || '' };
+            this.open = true;
+        }
+    }
+}
+</script>
+
 <div class="space-y-6">
     <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold text-gray-800">Trainers</h1>
@@ -173,11 +231,22 @@
                     </td>
                     <td class="px-4 py-3 text-gray-500">{{ $trainer->created_at->format('M j, Y') }}</td>
                     <td class="px-4 py-3">
-                        <form method="POST" action="{{ route('admin.trainers.destroy', $trainer) }}"
-                              onsubmit="return confirm('Remove {{ addslashes($trainer->name) }}? This will also delete all their sign-ups and assignments.')">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="text-xs text-red-500 hover:text-red-700 font-medium">Remove</button>
-                        </form>
+                        <div class="flex items-center gap-3">
+                            <button type="button"
+                                    @click="$dispatch('open-edit', {
+                                        url: '{{ route('admin.trainers.update', $trainer) }}',
+                                        name: {{ json_encode($trainer->name) }},
+                                        email: {{ json_encode($trainer->email) }},
+                                        phone: {{ json_encode($trainer->phone ?? '') }},
+                                        venmo: {{ json_encode($trainer->venmo ?? '') }}
+                                    })"
+                                    class="text-xs text-blue-600 hover:text-blue-800 font-medium">Edit</button>
+                            <form method="POST" action="{{ route('admin.trainers.destroy', $trainer) }}"
+                                  onsubmit="return confirm('Remove {{ addslashes($trainer->name) }}? This will also delete all their sign-ups and assignments.')">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="text-xs text-red-500 hover:text-red-700 font-medium">Remove</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 @empty

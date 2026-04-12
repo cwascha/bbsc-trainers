@@ -140,6 +140,25 @@ class TrainerController extends Controller
         return back()->with('success', $msg);
     }
 
+    public function update(Request $request, User $user): RedirectResponse
+    {
+        $request->validate([
+            'name'  => 'required|string|max:100',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:30',
+            'venmo' => 'nullable|string|max:100',
+        ]);
+
+        $user->update([
+            'name'  => $request->name,
+            'email' => strtolower(trim($request->email)),
+            'phone' => $request->phone ?: null,
+            'venmo' => $request->venmo ?: null,
+        ]);
+
+        return back()->with('success', "{$user->name}'s information has been updated.");
+    }
+
     public function updatePayRate(Request $request, User $user): RedirectResponse
     {
         $request->validate(['pay_rate' => 'required|numeric|min:0|max:999']);

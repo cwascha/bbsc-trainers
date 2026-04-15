@@ -57,27 +57,33 @@
 
         @if($pendingAvs->isNotEmpty())
         <div class="px-6 py-3 border-b border-gray-100">
+            {{-- Assign form defined here — checkboxes reference it via the form="..." attribute --}}
             <form method="POST" action="{{ route('admin.sessions.assign-selected', $day) }}" id="assign-form-{{ $day->id }}">
                 @csrf
-                <div class="flex items-center justify-between mb-2">
-                    <p class="text-xs font-semibold text-gray-500 uppercase">Pending</p>
-                    <div class="flex items-center gap-3">
-                        <label class="flex items-center gap-1 text-xs text-gray-500 cursor-pointer">
-                            <input type="checkbox" class="select-all-{{ $day->id }}"
-                                   onchange="document.querySelectorAll('.pending-cb-{{ $day->id }}').forEach(cb => cb.checked = this.checked)">
-                            All
-                        </label>
-                        <button type="submit"
-                                onclick="if(!document.querySelector('.pending-cb-{{ $day->id }}:checked')){alert('Select at least one trainer.');return false;}"
-                                class="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 font-medium">
-                            Assign Selected
-                        </button>
-                    </div>
+            </form>
+
+            <div class="flex items-center justify-between mb-2">
+                <p class="text-xs font-semibold text-gray-500 uppercase">Pending</p>
+                <div class="flex items-center gap-3">
+                    <label class="flex items-center gap-1 text-xs text-gray-500 cursor-pointer">
+                        <input type="checkbox"
+                               onchange="document.querySelectorAll('.pending-cb-{{ $day->id }}').forEach(cb => cb.checked = this.checked)">
+                        All
+                    </label>
+                    <button type="submit" form="assign-form-{{ $day->id }}"
+                            onclick="if(!document.querySelector('.pending-cb-{{ $day->id }}:checked')){alert('Select at least one trainer.');return false;}"
+                            class="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 font-medium">
+                        Assign Selected
+                    </button>
                 </div>
-                <div class="flex flex-wrap gap-2">
-                    @foreach($pendingAvs->sortBy('signed_up_at') as $av)
-                    <label class="flex items-center gap-1.5 bg-yellow-50 border border-yellow-200 rounded px-2 py-1 text-xs text-yellow-800 cursor-pointer hover:bg-yellow-100">
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+                @foreach($pendingAvs->sortBy('signed_up_at') as $av)
+                <div class="flex items-center gap-1 bg-yellow-50 border border-yellow-200 rounded px-2 py-1 text-xs text-yellow-800">
+                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-yellow-900">
                         <input type="checkbox" name="availability_ids[]" value="{{ $av->id }}"
+                               form="assign-form-{{ $day->id }}"
                                class="pending-cb-{{ $day->id }} rounded border-yellow-400">
                         <span class="font-medium">{{ $av->user->name }}</span>
                         <span class="text-yellow-500">{{ $av->signed_up_at->format('M j g:ia') }}</span>
@@ -85,11 +91,11 @@
                     <form method="POST" action="{{ route('admin.availabilities.destroy', $av) }}"
                           onsubmit="return confirm('Remove {{ addslashes($av->user->name) }} from this session?')">
                         @csrf @method('DELETE')
-                        <button type="submit" class="text-gray-300 hover:text-red-500 text-xs leading-none" title="Remove">×</button>
+                        <button type="submit" class="ml-1 text-gray-300 hover:text-red-500 leading-none" title="Remove">×</button>
                     </form>
-                    @endforeach
                 </div>
-            </form>
+                @endforeach
+            </div>
         </div>
         @endif
 

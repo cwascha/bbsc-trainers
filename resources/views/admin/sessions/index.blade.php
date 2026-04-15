@@ -83,15 +83,22 @@
         @php $available = $trainers->whereNotIn('id', $signedUpIds); @endphp
         @if($available->isNotEmpty())
         <div class="px-6 py-3 border-t border-gray-100 bg-gray-50">
-            <form method="POST" action="{{ route('admin.sessions.add-trainer', $day) }}" class="flex items-center gap-2">
+            <form method="POST" action="{{ route('admin.sessions.add-trainer', $day) }}" class="flex items-center gap-2 flex-wrap">
                 @csrf
                 <select name="user_id" required class="text-sm border-gray-300 rounded px-2 py-1 focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">— Add trainer —</option>
+                    <option value="">— Select trainer —</option>
                     @foreach($available as $trainer)
                         <option value="{{ $trainer->id }}">{{ $trainer->name }}</option>
                     @endforeach
                 </select>
-                <button type="submit" class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">Add</button>
+                <button type="submit" name="direct" value="0"
+                        class="px-3 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600">
+                    Add to Pending
+                </button>
+                <button type="submit" name="direct" value="1"
+                        class="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700">
+                    Assign Directly
+                </button>
             </form>
         </div>
         @endif

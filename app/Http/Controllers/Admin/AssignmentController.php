@@ -7,12 +7,16 @@ use App\Models\Availability;
 use App\Models\TrainingDay;
 use App\Models\User;
 use App\Services\AssignmentService;
+use App\Services\SmsService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class AssignmentController extends Controller
 {
-    public function __construct(private readonly AssignmentService $assignmentService) {}
+    public function __construct(
+        private readonly AssignmentService $assignmentService,
+        private readonly SmsService $smsService,
+    ) {}
 
     public function index()
     {
@@ -48,15 +52,25 @@ class AssignmentController extends Controller
         $request->validate(['user_id' => 'required|exists:users,id']);
 
         $trainer = User::findOrFail($request->user_id);
+        $direct  = $request->input('direct') === '1';
 
-        // Create or update the availability record to pending so it goes through
-        // the normal assignment process (Assign Now → SMS → confirmed)
+        if ($direct) {
+            // Directly assign and send SMS notification
+            $availability = Availability::updateOrCreate(
+                ['user_id' => $trainer->id, 'training_day_id' => $trainingDay->id],
+                ['status' => 'assigned', 'signed_up_at' => now()]
+            );
+            $this->smsService->sendAssignmentNotification($trainer, $trainingDay);
+            return back()->with('success', "{$trainer->name} has been directly assigned to {$trainingDay->formattedDate} and notified by SMS.");
+        }
+
+        // Add to pending so they go through the normal assignment flow
         Availability::updateOrCreate(
             ['user_id' => $trainer->id, 'training_day_id' => $trainingDay->id],
             ['status' => 'pending', 'signed_up_at' => now()]
         );
 
-        return back()->with('success', "{$trainer->name} has been assigned to {$trainingDay->formattedDate}.");
+        return back()->with('success', "{$trainer->name} added to pending for {$trainingDay->formattedDate}.");
     }
 
     public function removeTrainer(Availability $availability): RedirectResponse

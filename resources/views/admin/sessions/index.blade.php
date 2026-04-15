@@ -104,7 +104,7 @@
         @endif
 
         {{-- Admin: manually add a trainer --}}
-        @php $signedUpIds = $day->availabilities->whereNotIn('status', ['cancelled'])->pluck('user_id'); @endphp
+        @php $signedUpIds = $day->availabilities->whereIn('status', ['pending', 'assigned', 'confirmed'])->pluck('user_id'); @endphp
         @php $available = $trainers->whereNotIn('id', $signedUpIds); @endphp
         @if($available->isNotEmpty())
         <div class="px-6 py-3 border-t border-gray-100 bg-gray-50">

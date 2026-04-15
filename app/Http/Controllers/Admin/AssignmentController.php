@@ -73,6 +73,31 @@ class AssignmentController extends Controller
         return back()->with('success', "{$trainer->name} added to pending for {$trainingDay->formattedDate}.");
     }
 
+    public function assignSelected(Request $request, TrainingDay $trainingDay): RedirectResponse
+    {
+        $request->validate([
+            'availability_ids'   => 'required|array|min:1',
+            'availability_ids.*' => 'exists:availabilities,id',
+        ]);
+
+        $count = 0;
+        foreach ($request->availability_ids as $avId) {
+            $availability = Availability::with('user')
+                ->where('id', $avId)
+                ->where('training_day_id', $trainingDay->id)
+                ->where('status', 'pending')
+                ->first();
+
+            if (! $availability) continue;
+
+            $availability->update(['status' => 'assigned']);
+            $this->smsService->sendAssignmentNotification($availability->user, $trainingDay);
+            $count++;
+        }
+
+        return back()->with('success', "Assigned {$count} trainer(s) to {$trainingDay->formattedDate} and sent SMS notifications.");
+    }
+
     public function removeTrainer(Availability $availability): RedirectResponse
     {
         $wasAssigned = in_array($availability->status, ['assigned', 'confirmed']);

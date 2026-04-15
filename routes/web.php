@@ -62,6 +62,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::post('/assignments/run', [Admin\AssignmentController::class, 'run'])->name('assignments.run');
     Route::delete('/availabilities/{availability}', [Admin\AssignmentController::class, 'removeTrainer'])->name('availabilities.destroy');
     Route::post('/sessions/{trainingDay}/add-trainer', [Admin\AssignmentController::class, 'addTrainer'])->name('sessions.add-trainer');
+    Route::post('/sessions/{trainingDay}/assign-selected', [Admin\AssignmentController::class, 'assignSelected'])->name('sessions.assign-selected');
     Route::get('/training-plans', [Admin\TrainingPlanController::class, 'index'])->name('training-plans.index');
     Route::post('/training-plans', [Admin\TrainingPlanController::class, 'store'])->name('training-plans.store');
     Route::delete('/training-plans/{trainingPlan}', [Admin\TrainingPlanController::class, 'destroy'])->name('training-plans.destroy');

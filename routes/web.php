@@ -68,6 +68,8 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::delete('/training-plans/{trainingPlan}', [Admin\TrainingPlanController::class, 'destroy'])->name('training-plans.destroy');
     Route::get('/notifications', [Admin\NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/send', [Admin\NotificationController::class, 'send'])->name('notifications.send');
+    Route::get('/sms', [Admin\SmsController::class, 'index'])->name('sms.index');
+    Route::post('/sms/send', [Admin\SmsController::class, 'send'])->name('sms.send');
     Route::get('/reports', [Admin\ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/export', [Admin\ReportController::class, 'export'])->name('reports.export');
 

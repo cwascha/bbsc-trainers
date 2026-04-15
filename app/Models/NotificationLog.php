@@ -10,6 +10,7 @@ class NotificationLog extends Model
     protected $fillable = [
         'user_id',
         'training_day_id',
+        'type',
         'phone',
         'message',
         'twilio_sid',

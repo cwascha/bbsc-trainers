@@ -76,6 +76,43 @@ class SmsService
         $this->send($user, $day, $message);
     }
 
+    public function sendCustom(User $user, string $message): void
+    {
+        if (! $user->phone) return;
+
+        $phone  = $this->formatPhone($user->phone);
+        $sid    = null;
+        $status = 'sent';
+        $client = $this->client();
+
+        if ($client) {
+            try {
+                $msg    = $client->messages->create($phone, [
+                    'from' => config('services.twilio.from'),
+                    'body' => $message,
+                ]);
+                $sid    = $msg->sid;
+                $status = $sid ? 'sent' : $msg->status;
+            } catch (\Exception $e) {
+                Log::error('Twilio SMS failed: ' . $e->getMessage());
+                $status = 'failed';
+            }
+        } else {
+            Log::info("SMS (Twilio not configured) to {$phone}: {$message}");
+        }
+
+        NotificationLog::create([
+            'user_id'         => $user->id,
+            'training_day_id' => null,
+            'type'            => 'custom',
+            'phone'           => $phone,
+            'message'         => $message,
+            'twilio_sid'      => $sid,
+            'status'          => $status,
+            'sent_at'         => now(),
+        ]);
+    }
+
     private function send(User $user, TrainingDay $day, string $message): void
     {
         $phone = $this->formatPhone($user->phone);
@@ -105,6 +142,7 @@ class SmsService
         NotificationLog::create([
             'user_id'         => $user->id,
             'training_day_id' => $day->id,
+            'type'            => 'assignment',
             'phone'           => $phone,
             'message'         => $message,
             'twilio_sid'      => $sid,

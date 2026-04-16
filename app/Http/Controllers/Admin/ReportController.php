@@ -48,7 +48,7 @@ class ReportController extends Controller
             $handle = fopen('php://output', 'w');
             fputcsv($handle, ['Name', 'Email', 'Phone', 'Venmo', 'Pay Rate', 'Sessions', 'Hours', 'Total Pay']);
             foreach ($trainers as $trainer) {
-                $hours    = $trainer->sessions_count * 7;
+                $hours    = $trainer->hours_worked;
                 $totalPay = $trainer->pay_rate ? round($hours * $trainer->pay_rate, 2) : '';
                 fputcsv($handle, [
                     $trainer->name,
@@ -69,15 +69,30 @@ class ReportController extends Controller
 
     private function getReport(string $startDate, string $endDate)
     {
-        return User::where('role', 'trainer')
+        $trainers = User::where('role', 'trainer')
             ->withCount(['availabilities as sessions_count' => fn($q) =>
                 $q->whereIn('status', ['assigned', 'confirmed'])
                   ->whereHas('trainingDay', fn($q2) =>
                       $q2->whereBetween('date', [$startDate, $endDate])
                   )
             ])
+            ->with(['availabilities' => fn($q) =>
+                $q->whereIn('status', ['assigned', 'confirmed'])
+                  ->whereHas('trainingDay', fn($q2) =>
+                      $q2->whereBetween('date', [$startDate, $endDate])
+                  )
+                  ->with('trainingDay')
+            ])
             ->orderBy('name')
             ->get();
+
+        // Calculate actual hours from each training day's session times
+        $trainers->each(function ($trainer) {
+            $trainer->hours_worked = $trainer->availabilities
+                ->sum(fn($a) => $a->trainingDay->sessionHours());
+        });
+
+        return $trainers;
     }
 
     private function currentPayPeriod(): array

@@ -187,7 +187,7 @@ function editModal() {
                         </form>
                     </td>
                     <td class="px-4 py-3 text-gray-600">{{ $trainer->sessions_worked }}</td>
-                    <td class="px-4 py-3 text-gray-600">{{ $trainer->sessions_worked * 7 }}</td>
+                    <td class="px-4 py-3 text-gray-600">{{ $trainer->hoursWorked() }}</td>
                     <td class="px-4 py-3">
                         @if($trainer->w9_received_at)
                             {{-- Received: show badge + download if available + unmark --}}

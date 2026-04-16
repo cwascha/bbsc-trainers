@@ -65,7 +65,7 @@
                 @endphp
                 @forelse($trainers->where('sessions_count', '>', 0) as $trainer)
                 @php
-                    $hours  = $trainer->sessions_count * 7;
+                    $hours  = $trainer->hours_worked;
                     $pay    = $trainer->pay_rate ? round($hours * $trainer->pay_rate, 2) : null;
                     $totalSessions += $trainer->sessions_count;
                     $totalHours    += $hours;

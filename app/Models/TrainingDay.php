@@ -68,8 +68,9 @@ class TrainingDay extends Model
     // Number of hours for this session, derived from start/end times
     public function sessionHours(): float
     {
-        return \Carbon\Carbon::parse($this->session_end)
-            ->diffInMinutes(\Carbon\Carbon::parse($this->session_start)) / 60;
+        $start = \Carbon\Carbon::parse($this->session_start);
+        $end   = \Carbon\Carbon::parse($this->session_end);
+        return abs($start->diffInMinutes($end)) / 60;
     }
 
     // Formatted time range, e.g. "11:30 AM - 2:30 PM"

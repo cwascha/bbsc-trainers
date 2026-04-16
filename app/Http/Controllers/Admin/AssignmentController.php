@@ -25,9 +25,14 @@ class AssignmentController extends Controller
             ->with(['availabilities.user'])
             ->get();
 
+        $pastDays = TrainingDay::where('date', '<', now()->toDateString())
+            ->orderByDesc('date')
+            ->with(['availabilities.user'])
+            ->get();
+
         $trainers = User::where('role', 'trainer')->orderBy('name')->get(['id', 'name']);
 
-        return view('admin.sessions.index', compact('days', 'trainers'));
+        return view('admin.sessions.index', compact('days', 'pastDays', 'trainers'));
     }
 
     public function run(Request $request)

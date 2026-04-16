@@ -12,6 +12,10 @@
         </form>
     </div>
 
+    @if($days->isEmpty())
+    <div class="bg-white rounded-lg shadow px-6 py-8 text-center text-gray-400">No upcoming sessions scheduled.</div>
+    @endif
+
     @foreach($days as $day)
     @php
         $assignedAvs = $day->availabilities->whereIn('status', ['assigned', 'confirmed']);
@@ -122,5 +126,81 @@
         @endif
     </div>
     @endforeach
+
+    {{-- Past Sessions --}}
+    @if($pastDays->isNotEmpty())
+    <div x-data="{ open: false }" class="space-y-4">
+        <button @click="open = !open"
+                class="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-800 transition-colors">
+            <svg x-bind:class="open ? 'rotate-90' : ''" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span x-text="open ? 'Hide Past Sessions' : 'Show Past Sessions ({{ $pastDays->count() }})'"></span>
+        </button>
+
+        <div x-show="open" x-cloak class="space-y-4">
+            @foreach($pastDays as $day)
+            @php
+                $worked     = $day->availabilities->whereIn('status', ['assigned', 'confirmed']);
+                $declined   = $day->availabilities->where('status', 'declined');
+                $cancelled  = $day->availabilities->where('status', 'cancelled');
+                $pending    = $day->availabilities->where('status', 'pending');
+            @endphp
+            <div class="bg-white rounded-lg shadow overflow-hidden opacity-80">
+                <div class="px-6 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+                    <div>
+                        <h3 class="font-semibold text-gray-700">{{ $day->formattedDate }}
+                            <span class="text-sm font-normal text-gray-400 ml-2">Weekend {{ $day->weekend_number }}</span>
+                        </h3>
+                        <p class="text-xs text-gray-400 mt-0.5">
+                            {{ $worked->count() }} worked
+                            @if($declined->count()) · {{ $declined->count() }} declined @endif
+                            @if($cancelled->count()) · {{ $cancelled->count() }} cancelled @endif
+                            @if($pending->count()) · {{ $pending->count() }} pending @endif
+                            · {{ $day->sessionHours() }}h/session
+                        </p>
+                    </div>
+                    <span class="text-xs text-gray-400 italic">Past</span>
+                </div>
+
+                @if($worked->isNotEmpty())
+                <div class="px-6 py-3 border-b border-gray-100">
+                    <p class="text-xs font-semibold text-gray-400 uppercase mb-2">Worked</p>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($worked->sortBy('user.name') as $av)
+                        <div class="flex items-center gap-1 bg-green-50 border border-green-200 rounded px-2 py-1 text-xs">
+                            <span class="font-medium text-green-800">{{ $av->user->name }}</span>
+                            @if($av->status === 'confirmed')
+                                <span class="text-green-500" title="Confirmed via SMS">✓</span>
+                            @endif
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
+                @if($declined->isNotEmpty() || $cancelled->isNotEmpty())
+                <div class="px-6 py-3">
+                    <p class="text-xs font-semibold text-gray-400 uppercase mb-2">Did Not Work</p>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($declined->merge($cancelled)->sortBy('user.name') as $av)
+                        <div class="flex items-center gap-1 bg-gray-50 border border-gray-200 rounded px-2 py-1 text-xs">
+                            <span class="text-gray-500">{{ $av->user->name }}</span>
+                            <span class="text-gray-300">({{ $av->status }})</span>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
+                @if($worked->isEmpty() && $declined->isEmpty() && $cancelled->isEmpty())
+                <div class="px-6 py-4 text-sm text-gray-300">No records for this session.</div>
+                @endif
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
 </div>
 @endsection

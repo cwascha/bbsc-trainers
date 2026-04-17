@@ -70,6 +70,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::post('/notifications/send', [Admin\NotificationController::class, 'send'])->name('notifications.send');
     Route::get('/sms', [Admin\SmsController::class, 'index'])->name('sms.index');
     Route::post('/sms/send', [Admin\SmsController::class, 'send'])->name('sms.send');
+    Route::post('/sms/day/{trainingDay}', [Admin\SmsController::class, 'sendToDay'])->name('sms.send-to-day');
     Route::get('/reports', [Admin\ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/export', [Admin\ReportController::class, 'export'])->name('reports.export');
 

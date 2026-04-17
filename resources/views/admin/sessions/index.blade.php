@@ -1,6 +1,85 @@
 @extends('layouts.admin')
 @section('content')
 
+{{-- SMS Day Modal --}}
+<div x-data="smsDayModal()" x-show="open" x-cloak
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+     @open-sms-day.window="openFor($event.detail)"
+     @keydown.escape.window="open = false">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4" @click.stop>
+        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+            <div>
+                <h3 class="font-semibold text-gray-800">Text Assigned Trainers</h3>
+                <p class="text-xs text-gray-400 mt-0.5" x-text="dateLabel"></p>
+            </div>
+            <button @click="open = false" class="text-gray-400 hover:text-gray-600 text-xl leading-none">&times;</button>
+        </div>
+        <div class="px-6 py-4 space-y-4">
+            {{-- Recipient preview --}}
+            <div>
+                <p class="text-xs font-semibold text-gray-500 uppercase mb-2">Recipients</p>
+                <div class="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto">
+                    <template x-for="r in recipients" :key="r.name">
+                        <span class="px-2 py-0.5 rounded text-xs"
+                              :class="r.phone ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-gray-100 text-gray-400 line-through'"
+                              x-text="r.name + (r.phone ? '' : ' (no phone)')"></span>
+                    </template>
+                    <template x-if="recipients.length === 0">
+                        <span class="text-sm text-gray-400 italic">No assigned trainers.</span>
+                    </template>
+                </div>
+            </div>
+            {{-- Message form --}}
+            <form method="POST" :action="actionUrl">
+                @csrf
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="text-xs font-semibold text-gray-500 uppercase">Message</label>
+                        <span class="text-xs text-gray-400"><span x-text="charCount"></span> / 160
+                            <span x-show="charCount > 160" class="text-yellow-600 ml-1">(multiple segments)</span>
+                        </span>
+                    </div>
+                    <textarea name="message" rows="4" required maxlength="1600"
+                              x-model="message"
+                              @input="charCount = message.length"
+                              class="block w-full rounded border-gray-300 text-sm focus:ring-gray-500 focus:border-gray-500"
+                              placeholder="Type your message…"></textarea>
+                </div>
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button" @click="open = false"
+                            class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">Cancel</button>
+                    <button type="submit"
+                            :disabled="recipients.filter(r => r.phone).length === 0"
+                            class="px-4 py-2 bg-gray-800 text-white text-sm rounded hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed">
+                        Send to <span x-text="recipients.filter(r => r.phone).length"></span> trainer(s)
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function smsDayModal() {
+    return {
+        open: false,
+        actionUrl: '',
+        dateLabel: '',
+        recipients: [],
+        message: '',
+        charCount: 0,
+        openFor({ url, dateLabel, recipients }) {
+            this.actionUrl  = url;
+            this.dateLabel  = dateLabel;
+            this.recipients = recipients;
+            this.message    = '';
+            this.charCount  = 0;
+            this.open       = true;
+        }
+    }
+}
+</script>
+
 <div class="space-y-6">
     <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold text-gray-800">Sessions & Assignments</h1>
@@ -29,13 +108,25 @@
                 </h3>
                 <p class="text-xs text-gray-500 mt-0.5">{{ $assignedAvs->count() }}/{{ $day->max_spots }} assigned · {{ $pendingAvs->count() }} pending</p>
             </div>
-            <form method="POST" action="{{ route('admin.assignments.run') }}">
-                @csrf
-                <input type="hidden" name="training_day_id" value="{{ $day->id }}">
-                <button class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
-                    Assign Now
+            <div class="flex items-center gap-2">
+                @if($assignedAvs->isNotEmpty())
+                @php
+                    $smsRecipients = $assignedAvs->map(fn($av) => ['name' => $av->user->name, 'phone' => $av->user->phone ?? ''])->values();
+                @endphp
+                <button type="button"
+                        onclick="window.dispatchEvent(new CustomEvent('open-sms-day', { detail: { url: {{ json_encode(route('admin.sms.send-to-day', $day)) }}, dateLabel: {{ json_encode($day->formattedDate) }}, recipients: {{ $smsRecipients->toJson() }} } }))"
+                        class="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700">
+                    Text Assigned
                 </button>
-            </form>
+                @endif
+                <form method="POST" action="{{ route('admin.assignments.run') }}">
+                    @csrf
+                    <input type="hidden" name="training_day_id" value="{{ $day->id }}">
+                    <button class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
+                        Assign Now
+                    </button>
+                </form>
+            </div>
         </div>
 
         @if($assignedAvs->isNotEmpty())

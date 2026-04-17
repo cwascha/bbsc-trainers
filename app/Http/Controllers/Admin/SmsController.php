@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\TrainingDay;
 use App\Models\User;
 use App\Services\SmsService;
 use Illuminate\Http\RedirectResponse;
@@ -51,6 +52,40 @@ class SmsController extends Controller
         $msg = "SMS sent to {$sent} trainer(s).";
         if ($noPhone)  $msg .= " {$noPhone} skipped (no phone on file).";
         if ($failed)   $msg .= " {$failed} failed — check logs.";
+
+        return back()->with('success', $msg);
+    }
+
+    public function sendToDay(Request $request, TrainingDay $trainingDay): RedirectResponse
+    {
+        $request->validate(['message' => 'required|string|max:1600']);
+
+        $trainers = $trainingDay->availabilities()
+            ->whereIn('status', ['assigned', 'confirmed'])
+            ->with('user')
+            ->get()
+            ->pluck('user');
+
+        $sent = $failed = $noPhone = 0;
+
+        foreach ($trainers as $trainer) {
+            if (! $trainer->phone) {
+                $noPhone++;
+                continue;
+            }
+            try {
+                $this->smsService->sendCustom($trainer, $request->message);
+                $sent++;
+                usleep(200000);
+            } catch (\Exception $e) {
+                Log::error("Failed to send SMS to {$trainer->phone}: " . $e->getMessage());
+                $failed++;
+            }
+        }
+
+        $msg = "SMS sent to {$sent} trainer(s) assigned to {$trainingDay->formattedDate}.";
+        if ($noPhone) $msg .= " {$noPhone} skipped (no phone on file).";
+        if ($failed)  $msg .= " {$failed} failed — check logs.";
 
         return back()->with('success', $msg);
     }

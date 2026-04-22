@@ -321,6 +321,26 @@ function smsDayModal() {
                 @if($worked->isEmpty() && $declined->isEmpty() && $cancelled->isEmpty())
                 <div class="px-6 py-4 text-sm text-gray-300">No records for this session.</div>
                 @endif
+
+                {{-- Add trainer to past session --}}
+                @php
+                    $workedIds    = $worked->pluck('user_id');
+                    $addableToPast = $trainers->whereNotIn('id', $workedIds);
+                @endphp
+                @if($addableToPast->isNotEmpty())
+                <div class="px-6 py-3 border-t border-gray-100 bg-gray-50">
+                    <form method="POST" action="{{ route('admin.sessions.add-trainer', $day) }}" class="flex items-center gap-2">
+                        @csrf
+                        <select name="user_id" required class="text-sm border-gray-300 rounded px-2 py-1 focus:ring-gray-500 focus:border-gray-500">
+                            <option value="">— Add trainer to Worked —</option>
+                            @foreach($addableToPast as $t)
+                                <option value="{{ $t->id }}">{{ $t->name }}</option>
+                            @endforeach
+                        </select>
+                        <button type="submit" class="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700">Add</button>
+                    </form>
+                </div>
+                @endif
             </div>
             @endforeach
         </div>

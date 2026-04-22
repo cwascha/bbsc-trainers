@@ -57,11 +57,21 @@ class AssignmentController extends Controller
         $request->validate(['user_id' => 'required|exists:users,id']);
 
         $trainer = User::findOrFail($request->user_id);
-        $direct  = $request->input('direct') === '1';
+
+        if ($trainingDay->isPast()) {
+            // Past session: mark confirmed directly — no SMS, appears in payroll immediately
+            Availability::updateOrCreate(
+                ['user_id' => $trainer->id, 'training_day_id' => $trainingDay->id],
+                ['status' => 'confirmed', 'signed_up_at' => now()]
+            );
+            return back()->with('success', "{$trainer->name} added to {$trainingDay->formattedDate} and included in payroll.");
+        }
+
+        $direct = $request->input('direct') === '1';
 
         if ($direct) {
             // Directly assign and send SMS notification
-            $availability = Availability::updateOrCreate(
+            Availability::updateOrCreate(
                 ['user_id' => $trainer->id, 'training_day_id' => $trainingDay->id],
                 ['status' => 'assigned', 'signed_up_at' => now()]
             );

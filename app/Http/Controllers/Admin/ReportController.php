@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\PayrollHoursOverride;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class ReportController extends Controller
@@ -26,6 +28,32 @@ class ReportController extends Controller
         return view('admin.reports.index', compact(
             'trainers', 'startDate', 'endDate', 'prevStart', 'prevEnd'
         ));
+    }
+
+    public function updateHours(Request $request, User $user): RedirectResponse
+    {
+        $request->validate([
+            'period_start' => 'required|date',
+            'hours'        => 'required|numeric|min:0|max:999',
+        ]);
+
+        PayrollHoursOverride::updateOrCreate(
+            ['user_id' => $user->id, 'period_start' => $request->period_start],
+            ['hours'   => $request->hours]
+        );
+
+        return back()->with('success', "Hours updated for {$user->name}.");
+    }
+
+    public function clearHours(Request $request, User $user): RedirectResponse
+    {
+        $request->validate(['period_start' => 'required|date']);
+
+        PayrollHoursOverride::where('user_id', $user->id)
+            ->where('period_start', $request->period_start)
+            ->delete();
+
+        return back()->with('success', "Hours reset to calculated value for {$user->name}.");
     }
 
     public function export(Request $request)
@@ -86,10 +114,18 @@ class ReportController extends Controller
             ->orderBy('name')
             ->get();
 
-        // Calculate actual hours from each training day's session times
-        $trainers->each(function ($trainer) {
-            $trainer->hours_worked = $trainer->availabilities
-                ->sum(fn($a) => $a->trainingDay->sessionHours());
+        // Load any manual hour overrides for this period
+        $overrides = PayrollHoursOverride::where('period_start', $startDate)
+            ->pluck('hours', 'user_id');
+
+        // Calculate hours; use manual override if one exists
+        $trainers->each(function ($trainer) use ($overrides) {
+            $calculated             = $trainer->availabilities->sum(fn($a) => $a->trainingDay->sessionHours());
+            $trainer->hours_worked  = isset($overrides[$trainer->id])
+                ? (float) $overrides[$trainer->id]
+                : $calculated;
+            $trainer->hours_override = isset($overrides[$trainer->id]);
+            $trainer->hours_calculated = $calculated;
         });
 
         return $trainers;

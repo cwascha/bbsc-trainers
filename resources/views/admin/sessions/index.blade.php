@@ -264,6 +264,11 @@ function smsDayModal() {
                             @if($av->status === 'confirmed')
                                 <span class="text-green-500" title="Confirmed via SMS">✓</span>
                             @endif
+                            <form method="POST" action="{{ route('admin.availabilities.destroy', $av) }}"
+                                  onsubmit="return confirm('Remove {{ addslashes($av->user->name) }} from {{ addslashes($day->formattedDate) }}? This will also remove their hours from payroll.')">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="ml-1 text-gray-300 hover:text-red-500 leading-none" title="Remove from session">×</button>
+                            </form>
                         </div>
                         @endforeach
                     </div>

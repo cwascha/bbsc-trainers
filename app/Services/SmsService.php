@@ -36,18 +36,9 @@ class SmsService
             return;
         }
 
-        $plan = TrainingPlan::where('weekend_number', $day->weekend_number)->first();
-        $planLink = $plan
-            ? URL::signedRoute('training-plans.view-signed', ['trainingPlan' => $plan->id], now()->addDays(7))
-            : null;
-
-        $date = $day->date->format('l, F j, Y');
+        $date    = $day->date->format('l, F j, Y');
         $message = "Hi {$user->name}! You've been assigned to work at BBSC on {$date} from {$day->session_time_range}. ";
-
-        if ($planLink) {
-            $message .= "Training plan: {$planLink} ";
-        }
-
+        $message .= $this->planLinksText($day);
         $message .= "Reply YES to confirm or NO to cancel.";
 
         $this->send($user, $day, $message);
@@ -59,21 +50,44 @@ class SmsService
             return;
         }
 
-        $plan = TrainingPlan::where('weekend_number', $day->weekend_number)->first();
-        $planLink = $plan
-            ? URL::signedRoute('training-plans.view-signed', ['trainingPlan' => $plan->id], now()->addDays(7))
-            : null;
-
-        $date = $day->date->format('l, F j, Y');
+        $date    = $day->date->format('l, F j, Y');
         $message = "Hi {$user->name}! A spot has opened up at BBSC on {$date} from {$day->session_time_range} and you've been assigned. ";
-
-        if ($planLink) {
-            $message .= "Training plan: {$planLink} ";
-        }
-
+        $message .= $this->planLinksText($day);
         $message .= "Reply YES to confirm or NO to cancel.";
 
         $this->send($user, $day, $message);
+    }
+
+    /**
+     * Build the plan link portion of an SMS for a given training day.
+     * Saturday gets both the main (K/1st) and Sparks plans if available.
+     * Sunday gets only the main plan.
+     */
+    private function planLinksText(TrainingDay $day): string
+    {
+        $isSaturday = $day->date->isSaturday();
+        $text       = '';
+
+        $mainPlan = TrainingPlan::where('weekend_number', $day->weekend_number)
+            ->where('program', 'main')
+            ->first();
+
+        if ($mainPlan) {
+            $url  = URL::signedRoute('training-plans.view-signed', ['trainingPlan' => $mainPlan->id], now()->addDays(7));
+            $text .= $isSaturday ? "K/1st plan: {$url} " : "Training plan: {$url} ";
+        }
+
+        if ($isSaturday) {
+            $sparksPlan = TrainingPlan::where('weekend_number', $day->weekend_number)
+                ->where('program', 'sparks')
+                ->first();
+            if ($sparksPlan) {
+                $url  = URL::signedRoute('training-plans.view-signed', ['trainingPlan' => $sparksPlan->id], now()->addDays(7));
+                $text .= "Sparks plan: {$url} ";
+            }
+        }
+
+        return $text;
     }
 
     public function sendCustom(User $user, string $message): void

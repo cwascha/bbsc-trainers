@@ -27,12 +27,15 @@ class TrainingPlanController extends Controller
     {
         $request->validate([
             'weekend_number' => 'required|integer|min:1|max:8',
+            'program'        => 'required|in:main,sparks',
             'title'          => 'required|string|max:255',
             'file'           => 'required|file|mimes:pdf,xlsx,xls|max:20480',
         ]);
 
-        // Replace existing plan for same weekend
-        $existing = TrainingPlan::where('weekend_number', $request->weekend_number)->first();
+        // Replace existing plan for same weekend + program combination
+        $existing = TrainingPlan::where('weekend_number', $request->weekend_number)
+            ->where('program', $request->program)
+            ->first();
         if ($existing) {
             try {
                 Storage::delete($existing->file_path);
@@ -50,6 +53,7 @@ class TrainingPlanController extends Controller
 
         TrainingPlan::create([
             'weekend_number' => $request->weekend_number,
+            'program'        => $request->program,
             'title'          => $request->title,
             'file_path'      => $path,
             'uploaded_by'    => $request->user()->id,

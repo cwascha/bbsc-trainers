@@ -111,8 +111,8 @@ class AssignmentController extends Controller
 
         $availability->delete();
 
-        // If they were assigned, try to fill the spot from pending sign-ups
-        if ($wasAssigned) {
+        // Only try to fill the spot from pending sign-ups for future sessions
+        if ($wasAssigned && ! $day->isPast()) {
             $this->assignmentService->assignDay($day);
         }
 

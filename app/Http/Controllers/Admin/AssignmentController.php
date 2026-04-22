@@ -109,13 +109,40 @@ class AssignmentController extends Controller
         $day         = $availability->trainingDay;
         $name        = $availability->user->name;
 
-        $availability->delete();
-
-        // Only try to fill the spot from pending sign-ups for future sessions
-        if ($wasAssigned && ! $day->isPast()) {
-            $this->assignmentService->assignDay($day);
+        if ($day->isPast()) {
+            // Past session: mark cancelled so they appear in "Did Not Work"
+            $availability->update(['status' => 'cancelled']);
+        } else {
+            // Future session: delete and try to fill the spot from pending
+            $availability->delete();
+            if ($wasAssigned) {
+                $this->assignmentService->assignDay($day);
+            }
         }
 
-        return back()->with('success', "{$name} has been removed from {$day->formattedDate}.");
+        return back()->with('success', "{$name} moved to Did Not Work for {$day->formattedDate}.");
+    }
+
+    public function bulkRemoveWorked(Request $request, TrainingDay $trainingDay): RedirectResponse
+    {
+        $request->validate([
+            'availability_ids'   => 'required|array|min:1',
+            'availability_ids.*' => 'exists:availabilities,id',
+        ]);
+
+        $count = 0;
+        foreach ($request->availability_ids as $avId) {
+            $availability = Availability::where('id', $avId)
+                ->where('training_day_id', $trainingDay->id)
+                ->whereIn('status', ['assigned', 'confirmed'])
+                ->first();
+
+            if (! $availability) continue;
+
+            $availability->update(['status' => 'cancelled']);
+            $count++;
+        }
+
+        return back()->with('success', "{$count} trainer(s) moved to Did Not Work for {$trainingDay->formattedDate}.");
     }
 }

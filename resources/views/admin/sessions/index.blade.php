@@ -256,18 +256,47 @@ function smsDayModal() {
 
                 @if($worked->isNotEmpty())
                 <div class="px-6 py-3 border-b border-gray-100">
-                    <p class="text-xs font-semibold text-gray-400 uppercase mb-2">Worked</p>
+                    {{-- Bulk remove form — checkboxes reference it via form="..." --}}
+                    <form method="POST"
+                          action="{{ route('admin.sessions.bulk-remove-worked', $day) }}"
+                          id="bulk-remove-form-{{ $day->id }}"
+                          onsubmit="return confirm('Move selected trainer(s) to Did Not Work?')">
+                        @csrf
+                    </form>
+
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-xs font-semibold text-gray-400 uppercase">Worked</p>
+                        <div class="flex items-center gap-3">
+                            <label class="flex items-center gap-1 text-xs text-gray-400 cursor-pointer">
+                                <input type="checkbox"
+                                       onchange="document.querySelectorAll('.worked-cb-{{ $day->id }}').forEach(cb => cb.checked = this.checked)">
+                                All
+                            </label>
+                            <button type="submit"
+                                    form="bulk-remove-form-{{ $day->id }}"
+                                    onclick="if(!document.querySelector('.worked-cb-{{ $day->id }}:checked')){alert('Select at least one trainer.');return false;}"
+                                    class="px-2 py-0.5 bg-red-50 text-red-600 border border-red-200 text-xs rounded hover:bg-red-100 font-medium">
+                                Remove Selected
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="flex flex-wrap gap-2">
                         @foreach($worked->sortBy('user.name') as $av)
                         <div class="flex items-center gap-1 bg-green-50 border border-green-200 rounded px-2 py-1 text-xs">
-                            <span class="font-medium text-green-800">{{ $av->user->name }}</span>
-                            @if($av->status === 'confirmed')
-                                <span class="text-green-500" title="Confirmed via SMS">✓</span>
-                            @endif
+                            <label class="flex items-center gap-1.5 cursor-pointer">
+                                <input type="checkbox" name="availability_ids[]" value="{{ $av->id }}"
+                                       form="bulk-remove-form-{{ $day->id }}"
+                                       class="worked-cb-{{ $day->id }} rounded border-green-400">
+                                <span class="font-medium text-green-800">{{ $av->user->name }}</span>
+                                @if($av->status === 'confirmed')
+                                    <span class="text-green-500" title="Confirmed via SMS">✓</span>
+                                @endif
+                            </label>
                             <form method="POST" action="{{ route('admin.availabilities.destroy', $av) }}"
-                                  onsubmit="return confirm('Remove {{ addslashes($av->user->name) }} from {{ addslashes($day->formattedDate) }}? This will also remove their hours from payroll.')">
+                                  onsubmit="return confirm('Move {{ addslashes($av->user->name) }} to Did Not Work?')">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="ml-1 text-gray-300 hover:text-red-500 leading-none" title="Remove from session">×</button>
+                                <button type="submit" class="ml-1 text-gray-300 hover:text-red-500 leading-none" title="Move to Did Not Work">×</button>
                             </form>
                         </div>
                         @endforeach

@@ -9,10 +9,20 @@ class TrainingPlan extends Model
 {
     protected $fillable = [
         'weekend_number',
+        'program',
         'title',
         'file_path',
         'uploaded_by',
     ];
+
+    // Human-readable program label
+    public function getProgramLabelAttribute(): string
+    {
+        return match($this->program) {
+            'sparks' => 'Sparks (Pre-K)',
+            default  => 'K / 1st Grade',
+        };
+    }
 
     public function uploader(): BelongsTo
     {

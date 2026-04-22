@@ -18,7 +18,14 @@
                         @foreach($plans as $plan)
                         <div class="px-6 py-4 flex items-center justify-between">
                             <div>
-                                <p class="font-medium text-gray-800">{{ $plan->title }}</p>
+                                <div class="flex items-center gap-2 mb-0.5">
+                                    <p class="font-medium text-gray-800">{{ $plan->title }}</p>
+                                    @if($plan->program === 'sparks')
+                                        <span class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs font-medium">Sparks (Pre-K)</span>
+                                    @else
+                                        <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-medium">K / 1st Grade</span>
+                                    @endif
+                                </div>
                                 <p class="text-sm text-gray-500">Weekend {{ $plan->weekend_number }} · {{ $plan->weekendDates }}</p>
                                 <p class="text-xs text-gray-400 mt-0.5">Uploaded {{ $plan->created_at->format('M j, Y') }}</p>
                             </div>
@@ -27,7 +34,7 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                 </svg>
-                                <span>Download PDF</span>
+                                <span>Download</span>
                             </a>
                         </div>
                         @endforeach

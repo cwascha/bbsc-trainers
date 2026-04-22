@@ -23,10 +23,15 @@ class ReportController extends Controller
 
         $trainers = $this->getReport($startDate, $endDate);
 
+        // Trainers not yet on this payroll (no sessions + no override)
+        $addableTrainers = $trainers->filter(fn($t) => $t->sessions_count === 0 && ! $t->hours_override)
+            ->sortBy('name')
+            ->values();
+
         [$prevStart, $prevEnd] = $this->previousPayPeriod($startDate);
 
         return view('admin.reports.index', compact(
-            'trainers', 'startDate', 'endDate', 'prevStart', 'prevEnd'
+            'trainers', 'addableTrainers', 'startDate', 'endDate', 'prevStart', 'prevEnd'
         ));
     }
 
@@ -54,6 +59,24 @@ class ReportController extends Controller
             ->delete();
 
         return back()->with('success', "Hours reset to calculated value for {$user->name}.");
+    }
+
+    public function addManual(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'user_id'      => 'required|exists:users,id',
+            'period_start' => 'required|date',
+            'hours'        => 'required|numeric|min:0|max:999',
+        ]);
+
+        $user = User::findOrFail($request->user_id);
+
+        PayrollHoursOverride::updateOrCreate(
+            ['user_id' => $user->id, 'period_start' => $request->period_start],
+            ['hours'   => $request->hours]
+        );
+
+        return back()->with('success', "{$user->name} added to payroll with {$request->hours} hours.");
     }
 
     public function export(Request $request)
@@ -120,12 +143,14 @@ class ReportController extends Controller
 
         // Calculate hours; use manual override if one exists
         $trainers->each(function ($trainer) use ($overrides) {
-            $calculated             = $trainer->availabilities->sum(fn($a) => $a->trainingDay->sessionHours());
-            $trainer->hours_worked  = isset($overrides[$trainer->id])
+            $calculated                = $trainer->availabilities->sum(fn($a) => $a->trainingDay->sessionHours());
+            $trainer->hours_worked     = isset($overrides[$trainer->id])
                 ? (float) $overrides[$trainer->id]
                 : $calculated;
-            $trainer->hours_override = isset($overrides[$trainer->id]);
+            $trainer->hours_override   = isset($overrides[$trainer->id]);
             $trainer->hours_calculated = $calculated;
+            // "manually added" = has an override but no actual sessions in this period
+            $trainer->manually_added   = isset($overrides[$trainer->id]) && $calculated == 0;
         });
 
         return $trainers;

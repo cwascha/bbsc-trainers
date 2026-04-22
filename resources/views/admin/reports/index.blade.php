@@ -1,6 +1,11 @@
 @extends('layouts.admin')
 @section('content')
 
+@php
+    // Trainers to show: have sessions OR were manually added to this period
+    $reportTrainers = $trainers->filter(fn($t) => $t->sessions_count > 0 || $t->hours_override);
+@endphp
+
 <div class="space-y-6">
     <h1 class="text-2xl font-bold text-gray-800">Payroll Report</h1>
 
@@ -58,12 +63,9 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
-                @php
-                    $totalSessions = 0;
-                    $totalHours    = 0;
-                    $totalPay      = 0;
-                @endphp
-                @forelse($trainers->where('sessions_count', '>', 0) as $trainer)
+                @php $totalSessions = 0; $totalHours = 0; $totalPay = 0; @endphp
+
+                @forelse($reportTrainers as $trainer)
                 @php
                     $hours  = $trainer->hours_worked;
                     $pay    = $trainer->pay_rate ? round($hours * $trainer->pay_rate, 2) : null;
@@ -71,10 +73,13 @@
                     $totalHours    += $hours;
                     $totalPay      += $pay ?? 0;
                 @endphp
-                <tr>
+                <tr class="{{ $trainer->manually_added ? 'bg-blue-50' : '' }}">
                     <td class="px-6 py-3 font-medium text-gray-800">
                         {{ $trainer->name }}
                         <div class="text-xs text-gray-400 font-normal">{{ $trainer->email }}</div>
+                        @if($trainer->manually_added)
+                            <span class="text-xs text-blue-500 font-normal">manually added</span>
+                        @endif
                     </td>
                     <td class="px-6 py-3 text-gray-600">{{ $trainer->venmo ?? '—' }}</td>
                     <td class="px-6 py-3 text-right text-gray-600">
@@ -84,7 +89,9 @@
                             <span class="text-yellow-500 text-xs font-medium">Not set</span>
                         @endif
                     </td>
-                    <td class="px-6 py-3 text-right text-gray-600">{{ $trainer->sessions_count }}</td>
+                    <td class="px-6 py-3 text-right text-gray-600">
+                        {{ $trainer->sessions_count > 0 ? $trainer->sessions_count : '—' }}
+                    </td>
                     <td class="px-6 py-3 text-right">
                         <form method="POST" action="{{ route('admin.reports.hours.update', $trainer) }}" class="inline-flex items-center justify-end gap-1">
                             @csrf @method('PATCH')
@@ -93,7 +100,16 @@
                                    class="w-16 text-sm border-gray-300 rounded px-1 py-0.5 text-right focus:ring-gray-500 focus:border-gray-500 {{ $trainer->hours_override ? 'border-amber-400 bg-amber-50' : '' }}">
                             <button type="submit" class="text-xs text-gray-400 hover:text-green-600" title="Save">✓</button>
                         </form>
-                        @if($trainer->hours_override)
+                        @if($trainer->manually_added)
+                            <div class="flex items-center justify-end gap-1 mt-0.5">
+                                <form method="POST" action="{{ route('admin.reports.hours.clear', $trainer) }}" class="inline"
+                                      onsubmit="return confirm('Remove {{ addslashes($trainer->name) }} from this payroll period?')">
+                                    @csrf @method('DELETE')
+                                    <input type="hidden" name="period_start" value="{{ $startDate }}">
+                                    <button type="submit" class="text-xs text-red-400 hover:text-red-600">✕ remove</button>
+                                </form>
+                            </div>
+                        @elseif($trainer->hours_override)
                             <div class="flex items-center justify-end gap-1 mt-0.5">
                                 <span class="text-xs text-amber-600" title="Manually adjusted (calculated: {{ $trainer->hours_calculated }}h)">✎ adjusted</span>
                                 <form method="POST" action="{{ route('admin.reports.hours.clear', $trainer) }}" class="inline">
@@ -118,7 +134,7 @@
                 </tr>
                 @endforelse
             </tbody>
-            @if($trainers->where('sessions_count', '>', 0)->isNotEmpty())
+            @if($reportTrainers->isNotEmpty())
             <tfoot class="bg-gray-50 font-semibold text-gray-800">
                 <tr>
                     <td colspan="3" class="px-6 py-3">Totals</td>
@@ -130,5 +146,35 @@
             @endif
         </table>
     </div>
+
+    {{-- Add Trainer Manually --}}
+    @if($addableTrainers->isNotEmpty())
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="font-semibold text-gray-800 mb-3">Add Trainer to This Payroll Period</h2>
+        <form method="POST" action="{{ route('admin.reports.manual.add') }}" class="flex flex-wrap items-end gap-3">
+            @csrf
+            <input type="hidden" name="period_start" value="{{ $startDate }}">
+            <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Trainer</label>
+                <select name="user_id" required class="border-gray-300 rounded-md shadow-sm text-sm focus:ring-gray-500 focus:border-gray-500">
+                    <option value="">Select trainer…</option>
+                    @foreach($addableTrainers as $t)
+                        <option value="{{ $t->id }}">{{ $t->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Hours Worked</label>
+                <input type="number" name="hours" step="0.25" min="0" max="999" required placeholder="e.g. 7.00"
+                       class="w-28 border-gray-300 rounded-md shadow-sm text-sm focus:ring-gray-500 focus:border-gray-500">
+            </div>
+            <button type="submit" class="px-4 py-2 bg-gray-800 text-white text-sm rounded hover:bg-gray-700">
+                Add to Payroll
+            </button>
+        </form>
+        <p class="mt-2 text-xs text-gray-400">Only trainers with no recorded sessions this period appear here. The entry can be removed from the payroll table above.</p>
+    </div>
+    @endif
+
 </div>
 @endsection

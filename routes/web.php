@@ -75,6 +75,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::get('/reports/export', [Admin\ReportController::class, 'export'])->name('reports.export');
     Route::patch('/reports/hours/{user}', [Admin\ReportController::class, 'updateHours'])->name('reports.hours.update');
     Route::delete('/reports/hours/{user}', [Admin\ReportController::class, 'clearHours'])->name('reports.hours.clear');
+    Route::post('/reports/manual', [Admin\ReportController::class, 'addManual'])->name('reports.manual.add');
 
     Route::get('/trainers/{user}/w9', [Admin\W9Controller::class, 'download'])->name('trainers.w9.download');
     Route::post('/trainers/{user}/w9-received', [Admin\W9Controller::class, 'markReceived'])->name('trainers.w9.received');

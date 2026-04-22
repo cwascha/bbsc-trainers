@@ -29,9 +29,10 @@ class ReportController extends Controller
             ->values();
 
         [$prevStart, $prevEnd] = $this->previousPayPeriod($startDate);
+        [$nextStart, $nextEnd] = $this->nextPayPeriod($startDate);
 
         return view('admin.reports.index', compact(
-            'trainers', 'addableTrainers', 'startDate', 'endDate', 'prevStart', 'prevEnd'
+            'trainers', 'addableTrainers', 'startDate', 'endDate', 'prevStart', 'prevEnd', 'nextStart', 'nextEnd'
         ));
     }
 
@@ -170,6 +171,13 @@ class ReportController extends Controller
     private function previousPayPeriod(string $currentStart): array
     {
         $start = Carbon::parse($currentStart)->subDays(14);
+        $end   = $start->copy()->addDays(13);
+        return [$start->toDateString(), $end->toDateString()];
+    }
+
+    private function nextPayPeriod(string $currentStart): array
+    {
+        $start = Carbon::parse($currentStart)->addDays(14);
         $end   = $start->copy()->addDays(13);
         return [$start->toDateString(), $end->toDateString()];
     }

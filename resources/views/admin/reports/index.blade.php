@@ -85,7 +85,25 @@
                         @endif
                     </td>
                     <td class="px-6 py-3 text-right text-gray-600">{{ $trainer->sessions_count }}</td>
-                    <td class="px-6 py-3 text-right text-gray-600">{{ $hours }}</td>
+                    <td class="px-6 py-3 text-right">
+                        <form method="POST" action="{{ route('admin.reports.hours.update', $trainer) }}" class="inline-flex items-center justify-end gap-1">
+                            @csrf @method('PATCH')
+                            <input type="hidden" name="period_start" value="{{ $startDate }}">
+                            <input type="number" name="hours" value="{{ $hours }}" step="0.25" min="0" max="999" required
+                                   class="w-16 text-sm border-gray-300 rounded px-1 py-0.5 text-right focus:ring-gray-500 focus:border-gray-500 {{ $trainer->hours_override ? 'border-amber-400 bg-amber-50' : '' }}">
+                            <button type="submit" class="text-xs text-gray-400 hover:text-green-600" title="Save">✓</button>
+                        </form>
+                        @if($trainer->hours_override)
+                            <div class="flex items-center justify-end gap-1 mt-0.5">
+                                <span class="text-xs text-amber-600" title="Manually adjusted (calculated: {{ $trainer->hours_calculated }}h)">✎ adjusted</span>
+                                <form method="POST" action="{{ route('admin.reports.hours.clear', $trainer) }}" class="inline">
+                                    @csrf @method('DELETE')
+                                    <input type="hidden" name="period_start" value="{{ $startDate }}">
+                                    <button type="submit" class="text-xs text-gray-400 hover:text-red-500" title="Reset to calculated ({{ $trainer->hours_calculated }}h)">reset</button>
+                                </form>
+                            </div>
+                        @endif
+                    </td>
                     <td class="px-6 py-3 text-right font-semibold text-gray-800">
                         @if($pay !== null)
                             ${{ number_format($pay, 2) }}

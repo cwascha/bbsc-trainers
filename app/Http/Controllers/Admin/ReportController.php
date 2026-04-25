@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\PayrollHoursOverride;
+use App\Models\PayrollPayment;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -80,6 +81,29 @@ class ReportController extends Controller
         return back()->with('success', "{$user->name} added to payroll with {$request->hours} hours.");
     }
 
+    public function markPaid(Request $request, User $user): RedirectResponse
+    {
+        $request->validate(['period_start' => 'required|date']);
+
+        PayrollPayment::updateOrCreate(
+            ['user_id' => $user->id, 'period_start' => $request->period_start],
+            ['paid_at' => now()]
+        );
+
+        return back()->with('success', "{$user->name} marked as paid.");
+    }
+
+    public function clearPaid(Request $request, User $user): RedirectResponse
+    {
+        $request->validate(['period_start' => 'required|date']);
+
+        PayrollPayment::where('user_id', $user->id)
+            ->where('period_start', $request->period_start)
+            ->delete();
+
+        return back()->with('success', "Payment status cleared for {$user->name}.");
+    }
+
     public function export(Request $request)
     {
         [$defaultStart, $defaultEnd] = $this->currentPayPeriod();
@@ -142,8 +166,13 @@ class ReportController extends Controller
         $overrides = PayrollHoursOverride::where('period_start', $startDate)
             ->pluck('hours', 'user_id');
 
+        // Load payment records for this period
+        $payments = PayrollPayment::where('period_start', $startDate)
+            ->get()
+            ->keyBy('user_id');
+
         // Calculate hours; use manual override if one exists
-        $trainers->each(function ($trainer) use ($overrides) {
+        $trainers->each(function ($trainer) use ($overrides, $payments) {
             $calculated                = $trainer->availabilities->sum(fn($a) => $a->trainingDay->sessionHours());
             $trainer->hours_worked     = isset($overrides[$trainer->id])
                 ? (float) $overrides[$trainer->id]
@@ -152,6 +181,9 @@ class ReportController extends Controller
             $trainer->hours_calculated = $calculated;
             // "manually added" = has an override but no actual sessions in this period
             $trainer->manually_added   = isset($overrides[$trainer->id]) && $calculated == 0;
+            $trainer->paid_at          = isset($payments[$trainer->id])
+                ? $payments[$trainer->id]->paid_at
+                : null;
         });
 
         return $trainers;

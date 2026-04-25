@@ -64,6 +64,7 @@
                     <th class="px-6 py-3 text-right">Sessions</th>
                     <th class="px-6 py-3 text-right">Hours</th>
                     <th class="px-6 py-3 text-right">Total Pay</th>
+                    <th class="px-6 py-3 text-center">Paid</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
@@ -131,10 +132,35 @@
                             <span class="text-gray-300">—</span>
                         @endif
                     </td>
+                    <td class="px-6 py-3 text-center">
+                        @if($trainer->paid_at)
+                            <div class="flex flex-col items-center gap-0.5">
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-medium">
+                                    ✓ Paid
+                                </span>
+                                <span class="text-xs text-gray-400">{{ $trainer->paid_at->format('M j') }}</span>
+                                <form method="POST" action="{{ route('admin.reports.payment.clear', $trainer) }}"
+                                      onsubmit="return confirm('Clear paid status for {{ addslashes($trainer->name) }}?')">
+                                    @csrf @method('DELETE')
+                                    <input type="hidden" name="period_start" value="{{ $startDate }}">
+                                    <button type="submit" class="text-xs text-gray-400 hover:text-red-500">undo</button>
+                                </form>
+                            </div>
+                        @else
+                            <form method="POST" action="{{ route('admin.reports.payment.mark', $trainer) }}">
+                                @csrf
+                                <input type="hidden" name="period_start" value="{{ $startDate }}">
+                                <button type="submit"
+                                        class="px-2 py-0.5 text-xs rounded border border-gray-300 text-gray-500 hover:bg-green-50 hover:border-green-400 hover:text-green-700 transition-colors">
+                                    Mark paid
+                                </button>
+                            </form>
+                        @endif
+                    </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="px-6 py-8 text-center text-gray-400">No sessions found for this pay period.</td>
+                    <td colspan="7" class="px-6 py-8 text-center text-gray-400">No sessions found for this pay period.</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -145,6 +171,7 @@
                     <td class="px-6 py-3 text-right">{{ $totalSessions }}</td>
                     <td class="px-6 py-3 text-right">{{ $totalHours }}</td>
                     <td class="px-6 py-3 text-right text-green-700">${{ number_format($totalPay, 2) }}</td>
+                    <td class="px-6 py-3"></td>
                 </tr>
             </tfoot>
             @endif

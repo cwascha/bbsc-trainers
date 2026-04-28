@@ -177,7 +177,7 @@ class ReportController extends Controller
         // Calculate hours; use manual override if one exists
         $trainers->each(function ($trainer) use ($overrides, $payments, $today) {
             $calculated                = $trainer->availabilities
-                ->filter(fn($a) => $a->trainingDay->date <= $today)
+                ->filter(fn($a) => $a->trainingDay->date->toDateString() <= $today)
                 ->sum(fn($a) => $a->trainingDay->sessionHours());
             $trainer->hours_worked     = isset($overrides[$trainer->id])
                 ? (float) $overrides[$trainer->id]

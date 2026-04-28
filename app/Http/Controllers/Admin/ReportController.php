@@ -145,11 +145,14 @@ class ReportController extends Controller
 
     private function getReport(string $startDate, string $endDate)
     {
+        $today = Carbon::today()->toDateString();
+
         $trainers = User::where('role', 'trainer')
             ->withCount(['availabilities as sessions_count' => fn($q) =>
                 $q->whereIn('status', ['assigned', 'confirmed'])
                   ->whereHas('trainingDay', fn($q2) =>
                       $q2->whereBetween('date', [$startDate, $endDate])
+                        ->where('date', '<=', $today)
                   )
             ])
             ->with(['availabilities' => fn($q) =>
@@ -172,8 +175,10 @@ class ReportController extends Controller
             ->keyBy('user_id');
 
         // Calculate hours; use manual override if one exists
-        $trainers->each(function ($trainer) use ($overrides, $payments) {
-            $calculated                = $trainer->availabilities->sum(fn($a) => $a->trainingDay->sessionHours());
+        $trainers->each(function ($trainer) use ($overrides, $payments, $today) {
+            $calculated                = $trainer->availabilities
+                ->filter(fn($a) => $a->trainingDay->date <= $today)
+                ->sum(fn($a) => $a->trainingDay->sessionHours());
             $trainer->hours_worked     = isset($overrides[$trainer->id])
                 ? (float) $overrides[$trainer->id]
                 : $calculated;

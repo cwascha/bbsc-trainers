@@ -159,6 +159,7 @@ class ReportController extends Controller
                 $q->whereIn('status', ['assigned', 'confirmed'])
                   ->whereHas('trainingDay', fn($q2) =>
                       $q2->whereBetween('date', [$startDate, $endDate])
+                        ->where('date', '<=', $today)
                   )
                   ->with('trainingDay')
             ])
@@ -176,8 +177,8 @@ class ReportController extends Controller
 
         // Calculate hours; use manual override if one exists
         $trainers->each(function ($trainer) use ($overrides, $payments, $today) {
+            // Future days already excluded by the eager-load query above
             $calculated                = $trainer->availabilities
-                ->filter(fn($a) => $a->trainingDay->date <= $today)
                 ->sum(fn($a) => $a->trainingDay->sessionHours());
             $trainer->hours_worked     = isset($overrides[$trainer->id])
                 ? (float) $overrides[$trainer->id]

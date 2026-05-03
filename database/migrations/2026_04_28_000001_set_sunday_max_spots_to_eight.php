@@ -1,18 +1,23 @@
 <?php
 
+use App\Models\TrainingDay;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
     public function up(): void
     {
-        // Reduce max spots for all Sundays (day-of-week 0 in SQLite strftime)
-        DB::statement("UPDATE training_days SET max_spots = 8 WHERE strftime('%w', date) = '0'");
+        // Use Eloquent so Carbon handles day-of-week — no SQL date functions needed,
+        // works on both SQLite (local) and MySQL (production).
+        TrainingDay::all()
+            ->filter(fn($d) => $d->date->dayOfWeek === 0) // 0 = Sunday in Carbon
+            ->each(fn($d) => $d->update(['max_spots' => 8]));
     }
 
     public function down(): void
     {
-        DB::statement("UPDATE training_days SET max_spots = 12 WHERE strftime('%w', date) = '0'");
+        TrainingDay::all()
+            ->filter(fn($d) => $d->date->dayOfWeek === 0)
+            ->each(fn($d) => $d->update(['max_spots' => 12]));
     }
 };

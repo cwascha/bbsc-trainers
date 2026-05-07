@@ -283,20 +283,31 @@ function smsDayModal() {
 
                     <div class="flex flex-wrap gap-2">
                         @foreach($worked->sortBy('user.name') as $av)
-                        <div class="flex items-center gap-1 bg-green-50 border border-green-200 rounded px-2 py-1 text-xs">
+                        @php $defaultHours = $av->trainingDay->sessionHours(); @endphp
+                        <div class="flex items-center gap-1 bg-green-50 border border-green-200 rounded px-2 py-1 text-xs {{ $av->hours_override !== null ? 'border-amber-300 bg-amber-50' : '' }}">
                             <label class="flex items-center gap-1.5 cursor-pointer">
                                 <input type="checkbox" name="availability_ids[]" value="{{ $av->id }}"
                                        form="bulk-remove-form-{{ $day->id }}"
                                        class="worked-cb-{{ $day->id }} rounded border-green-400">
-                                <span class="font-medium text-green-800">{{ $av->user->name }}</span>
+                                <span class="font-medium {{ $av->hours_override !== null ? 'text-amber-800' : 'text-green-800' }}">{{ $av->user->name }}</span>
                                 @if($av->status === 'confirmed')
-                                    <span class="text-green-500" title="Confirmed via SMS">✓</span>
+                                    <span class="{{ $av->hours_override !== null ? 'text-amber-500' : 'text-green-500' }}" title="Confirmed via SMS">✓</span>
                                 @endif
                             </label>
+                            {{-- Inline hours override --}}
+                            <form method="POST" action="{{ route('admin.availabilities.hours.update', $av) }}" class="flex items-center gap-0.5 ml-1">
+                                @csrf @method('PATCH')
+                                <input type="number" name="hours" value="{{ $av->hours_override ?? $defaultHours }}"
+                                       step="0.25" min="0" max="24"
+                                       title="{{ $av->hours_override !== null ? 'Overridden (default: '.$defaultHours.'h)' : 'Default hours — edit to override' }}"
+                                       class="w-12 text-xs border rounded px-1 py-0.5 text-right {{ $av->hours_override !== null ? 'border-amber-400 bg-amber-100 text-amber-800' : 'border-gray-300 bg-white text-gray-600' }} focus:ring-1 focus:ring-amber-400 focus:border-amber-400">
+                                <button type="submit" class="text-gray-300 hover:text-green-600 leading-none" title="Save hours">✓</button>
+                            </form>
+                            <span class="text-gray-300 mx-0.5">|</span>
                             <form method="POST" action="{{ route('admin.availabilities.destroy', $av) }}"
                                   onsubmit="return confirm('Move {{ addslashes($av->user->name) }} to Did Not Work?')">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="ml-1 text-gray-300 hover:text-red-500 leading-none" title="Move to Did Not Work">×</button>
+                                <button type="submit" class="text-gray-300 hover:text-red-500 leading-none" title="Move to Did Not Work">×</button>
                             </form>
                         </div>
                         @endforeach

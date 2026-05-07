@@ -177,9 +177,10 @@ class ReportController extends Controller
 
         // Calculate hours; use manual override if one exists
         $trainers->each(function ($trainer) use ($overrides, $payments, $today) {
-            // Future days already excluded by the eager-load query above
+            // Future days already excluded by the eager-load query above.
+            // hoursWorked() returns hours_override if set, otherwise the day default.
             $calculated                = $trainer->availabilities
-                ->sum(fn($a) => $a->trainingDay->sessionHours());
+                ->sum(fn($a) => $a->hoursWorked());
             $trainer->hours_worked     = isset($overrides[$trainer->id])
                 ? (float) $overrides[$trainer->id]
                 : $calculated;

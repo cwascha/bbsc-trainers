@@ -133,6 +133,25 @@ class AssignmentController extends Controller
         return back()->with('success', "{$name} moved to Did Not Work for {$day->formattedDate}.");
     }
 
+    public function updateSessionHours(Request $request, Availability $availability): RedirectResponse
+    {
+        $request->validate([
+            'hours' => 'nullable|numeric|min:0|max:24',
+        ]);
+
+        $hours = $request->input('hours');
+        $defaultHours = $availability->trainingDay->sessionHours();
+
+        // If the submitted value matches the session default (or is blank), clear the override
+        if ($hours === null || $hours === '' || (float) $hours === $defaultHours) {
+            $availability->update(['hours_override' => null]);
+            return back()->with('success', "Hours reset to default for {$availability->user->name}.");
+        }
+
+        $availability->update(['hours_override' => (float) $hours]);
+        return back()->with('success', "Hours updated to {$hours}h for {$availability->user->name}.");
+    }
+
     public function bulkRemoveWorked(Request $request, TrainingDay $trainingDay): RedirectResponse
     {
         $request->validate([

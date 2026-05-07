@@ -14,15 +14,23 @@ class Availability extends Model
         'status',
         'confirmed_at',
         'cancelled_at',
+        'hours_override',
     ];
 
     protected function casts(): array
     {
         return [
-            'signed_up_at' => 'datetime',
-            'confirmed_at' => 'datetime',
-            'cancelled_at' => 'datetime',
+            'signed_up_at'   => 'datetime',
+            'confirmed_at'   => 'datetime',
+            'cancelled_at'   => 'datetime',
+            'hours_override' => 'float',
         ];
+    }
+
+    /** Hours actually counted for this session (override takes precedence over the day's default). */
+    public function hoursWorked(): float
+    {
+        return $this->hours_override ?? $this->trainingDay->sessionHours();
     }
 
     public function user(): BelongsTo

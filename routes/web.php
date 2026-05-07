@@ -64,6 +64,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::post('/sessions/{trainingDay}/add-trainer', [Admin\AssignmentController::class, 'addTrainer'])->name('sessions.add-trainer');
     Route::post('/sessions/{trainingDay}/assign-selected', [Admin\AssignmentController::class, 'assignSelected'])->name('sessions.assign-selected');
     Route::post('/sessions/{trainingDay}/bulk-remove-worked', [Admin\AssignmentController::class, 'bulkRemoveWorked'])->name('sessions.bulk-remove-worked');
+    Route::patch('/availabilities/{availability}/hours', [Admin\AssignmentController::class, 'updateSessionHours'])->name('availabilities.hours.update');
     Route::get('/training-plans', [Admin\TrainingPlanController::class, 'index'])->name('training-plans.index');
     Route::post('/training-plans', [Admin\TrainingPlanController::class, 'store'])->name('training-plans.store');
     Route::delete('/training-plans/{trainingPlan}', [Admin\TrainingPlanController::class, 'destroy'])->name('training-plans.destroy');

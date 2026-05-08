@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\PayrollHoursOverride;
 use App\Models\PayrollPayment;
+use App\Models\RecurringService;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -175,8 +176,17 @@ class ReportController extends Controller
             ->get()
             ->keyBy('user_id');
 
+        // Load active recurring services, grouped by user
+        $services = RecurringService::where('active', true)
+            ->with('user')
+            ->get()
+            ->groupBy('user_id');
+
+        // Number of weeks in this pay period (typically 2)
+        $weeks = Carbon::parse($startDate)->diffInDays(Carbon::parse($endDate)) / 7;
+
         // Calculate hours; use manual override if one exists
-        $trainers->each(function ($trainer) use ($overrides, $payments, $today) {
+        $trainers->each(function ($trainer) use ($overrides, $payments, $services, $weeks) {
             // Future days already excluded by the eager-load query above.
             // hoursWorked() returns hours_override if set, otherwise the day default.
             $calculated                = $trainer->availabilities
@@ -191,7 +201,34 @@ class ReportController extends Controller
             $trainer->paid_at          = isset($payments[$trainer->id])
                 ? $payments[$trainer->id]->paid_at
                 : null;
+            // Recurring services total for this period
+            $trainer->recurring_services      = $services[$trainer->id] ?? collect();
+            $trainer->recurring_services_pay  = $trainer->recurring_services
+                ->sum(fn($s) => round($s->weekly_amount * $weeks, 2));
         });
+
+        // Also surface trainers who have recurring services but no sessions this period
+        $trainerIds = $trainers->pluck('id');
+        $serviceOnlyUsers = $services->keys()->diff($trainerIds);
+
+        if ($serviceOnlyUsers->isNotEmpty()) {
+            $extra = User::whereIn('id', $serviceOnlyUsers)->orderBy('name')->get();
+            $extra->each(function ($trainer) use ($overrides, $payments, $services, $weeks) {
+                $trainer->sessions_count          = 0;
+                $trainer->hours_worked            = 0;
+                $trainer->hours_override          = false;
+                $trainer->hours_calculated        = 0;
+                $trainer->manually_added          = false;
+                $trainer->availabilities          = collect();
+                $trainer->paid_at                 = isset($payments[$trainer->id])
+                    ? $payments[$trainer->id]->paid_at
+                    : null;
+                $trainer->recurring_services      = $services[$trainer->id];
+                $trainer->recurring_services_pay  = $trainer->recurring_services
+                    ->sum(fn($s) => round($s->weekly_amount * $weeks, 2));
+            });
+            $trainers = $trainers->concat($extra)->sortBy('name')->values();
+        }
 
         return $trainers;
     }

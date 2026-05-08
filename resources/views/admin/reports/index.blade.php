@@ -2,8 +2,10 @@
 @section('content')
 
 @php
-    // Trainers to show: have sessions OR were manually added to this period
-    $reportTrainers = $trainers->filter(fn($t) => $t->sessions_count > 0 || $t->hours_override);
+    // Trainers to show: have sessions, were manually added, or have active recurring services
+    $reportTrainers = $trainers->filter(fn($t) =>
+        $t->sessions_count > 0 || $t->hours_override || $t->recurring_services_pay > 0
+    );
 @endphp
 
 <div class="space-y-6">
@@ -63,6 +65,7 @@
                     <th class="px-6 py-3 text-right">Pay Rate</th>
                     <th class="px-6 py-3 text-right">Sessions</th>
                     <th class="px-6 py-3 text-right">Hours</th>
+                    <th class="px-6 py-3 text-right">Services</th>
                     <th class="px-6 py-3 text-right">Total Pay</th>
                     <th class="px-6 py-3 text-center">Paid</th>
                 </tr>
@@ -72,8 +75,12 @@
 
                 @forelse($reportTrainers as $trainer)
                 @php
-                    $hours  = $trainer->hours_worked;
-                    $pay    = $trainer->pay_rate ? round($hours * $trainer->pay_rate, 2) : null;
+                    $hours        = $trainer->hours_worked;
+                    $hourlyPay    = $trainer->pay_rate ? round($hours * $trainer->pay_rate, 2) : null;
+                    $servicesPay  = $trainer->recurring_services_pay ?? 0;
+                    $pay          = ($hourlyPay !== null || $servicesPay > 0)
+                                        ? round(($hourlyPay ?? 0) + $servicesPay, 2)
+                                        : null;
                     $totalSessions += $trainer->sessions_count;
                     $totalHours    += $hours;
                     $totalPay      += $pay ?? 0;
@@ -125,6 +132,16 @@
                             </div>
                         @endif
                     </td>
+                    <td class="px-6 py-3 text-right text-gray-600">
+                        @if($servicesPay > 0)
+                            <div class="font-medium">${{ number_format($servicesPay, 2) }}</div>
+                            @foreach($trainer->recurring_services as $svc)
+                                <div class="text-xs text-gray-400">{{ $svc->description }}</div>
+                            @endforeach
+                        @else
+                            <span class="text-gray-300">—</span>
+                        @endif
+                    </td>
                     <td class="px-6 py-3 text-right font-semibold text-gray-800">
                         @if($pay !== null)
                             ${{ number_format($pay, 2) }}
@@ -160,7 +177,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" class="px-6 py-8 text-center text-gray-400">No sessions found for this pay period.</td>
+                    <td colspan="8" class="px-6 py-8 text-center text-gray-400">No sessions found for this pay period.</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -170,6 +187,7 @@
                     <td colspan="3" class="px-6 py-3">Totals</td>
                     <td class="px-6 py-3 text-right">{{ $totalSessions }}</td>
                     <td class="px-6 py-3 text-right">{{ $totalHours }}</td>
+                    <td class="px-6 py-3"></td>
                     <td class="px-6 py-3 text-right text-green-700">${{ number_format($totalPay, 2) }}</td>
                     <td class="px-6 py-3"></td>
                 </tr>

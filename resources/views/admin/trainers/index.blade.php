@@ -251,5 +251,87 @@ function editModal() {
             </tbody>
         </table>
     </div>
+
+    {{-- Recurring Services --}}
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="font-semibold text-gray-800">Recurring Services</h2>
+            <p class="text-xs text-gray-400 mt-0.5">Weekly charges added to each payroll period (e.g. paint lining, equipment rental).</p>
+        </div>
+
+        {{-- Add form --}}
+        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+            <form method="POST" action="{{ route('admin.recurring-services.store') }}" class="flex flex-wrap items-end gap-3">
+                @csrf
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Employee</label>
+                    <select name="user_id" required class="border-gray-300 rounded-md shadow-sm text-sm focus:ring-gray-500 focus:border-gray-500">
+                        <option value="">Select trainer…</option>
+                        @foreach($trainers as $t)
+                            <option value="{{ $t->id }}">{{ $t->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Description</label>
+                    <input type="text" name="description" required placeholder="e.g. Paint Lining" maxlength="100"
+                           class="border-gray-300 rounded-md shadow-sm text-sm focus:ring-gray-500 focus:border-gray-500 w-48">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Weekly Amount ($)</label>
+                    <input type="number" name="weekly_amount" required step="0.01" min="0.01" placeholder="0.00"
+                           class="w-28 border-gray-300 rounded-md shadow-sm text-sm focus:ring-gray-500 focus:border-gray-500">
+                </div>
+                <button type="submit" class="px-4 py-2 bg-gray-800 text-white text-sm rounded hover:bg-gray-700">
+                    Add Service
+                </button>
+            </form>
+        </div>
+
+        {{-- Services list --}}
+        @if($recurringServices->isEmpty())
+            <div class="px-6 py-5 text-sm text-gray-400">No recurring services set up yet.</div>
+        @else
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
+                <tr>
+                    <th class="px-6 py-2 text-left">Employee</th>
+                    <th class="px-6 py-2 text-left">Description</th>
+                    <th class="px-6 py-2 text-right">Weekly Amount</th>
+                    <th class="px-6 py-2 text-right">Per Pay Period</th>
+                    <th class="px-6 py-2 text-center">Status</th>
+                    <th class="px-6 py-2"></th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                @foreach($recurringServices as $svc)
+                <tr class="{{ $svc->active ? '' : 'opacity-50' }}">
+                    <td class="px-6 py-3 font-medium text-gray-800">{{ $svc->user->name }}</td>
+                    <td class="px-6 py-3 text-gray-600">{{ $svc->description }}</td>
+                    <td class="px-6 py-3 text-right text-gray-600">${{ number_format($svc->weekly_amount, 2) }}/wk</td>
+                    <td class="px-6 py-3 text-right text-gray-600">${{ number_format($svc->weekly_amount * 2, 2) }}</td>
+                    <td class="px-6 py-3 text-center">
+                        <form method="POST" action="{{ route('admin.recurring-services.toggle', $svc) }}">
+                            @csrf @method('PATCH')
+                            <button type="submit"
+                                    class="px-2 py-0.5 text-xs rounded {{ $svc->active ? 'bg-green-100 text-green-700 hover:bg-yellow-100 hover:text-yellow-700' : 'bg-gray-100 text-gray-500 hover:bg-green-100 hover:text-green-700' }}">
+                                {{ $svc->active ? 'Active' : 'Paused' }}
+                            </button>
+                        </form>
+                    </td>
+                    <td class="px-6 py-3 text-right">
+                        <form method="POST" action="{{ route('admin.recurring-services.destroy', $svc) }}"
+                              onsubmit="return confirm('Remove {{ addslashes($svc->description) }} for {{ addslashes($svc->user->name) }}?')">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="text-xs text-red-400 hover:text-red-600">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+        @endif
+    </div>
+
 </div>
 @endsection

@@ -182,8 +182,9 @@ class ReportController extends Controller
             ->get()
             ->groupBy('user_id');
 
-        // Number of weeks in this pay period (typically 2)
-        $weeks = Carbon::parse($startDate)->diffInDays(Carbon::parse($endDate)) / 7;
+        // Number of weeks in this pay period (typically 2).
+        // +1 because diffInDays is exclusive of the end date (Apr 28→May 11 = 13 days, but 14 days inclusive).
+        $weeks = (Carbon::parse($startDate)->diffInDays(Carbon::parse($endDate)) + 1) / 7;
 
         // Calculate hours; use manual override if one exists
         $trainers->each(function ($trainer) use ($overrides, $payments, $services, $weeks) {

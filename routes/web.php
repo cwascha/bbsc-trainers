@@ -81,6 +81,10 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::post('/reports/payment/{user}', [Admin\ReportController::class, 'markPaid'])->name('reports.payment.mark');
     Route::delete('/reports/payment/{user}', [Admin\ReportController::class, 'clearPaid'])->name('reports.payment.clear');
 
+    Route::post('/recurring-services', [Admin\RecurringServiceController::class, 'store'])->name('recurring-services.store');
+    Route::patch('/recurring-services/{recurringService}/toggle', [Admin\RecurringServiceController::class, 'toggle'])->name('recurring-services.toggle');
+    Route::delete('/recurring-services/{recurringService}', [Admin\RecurringServiceController::class, 'destroy'])->name('recurring-services.destroy');
+
     Route::get('/trainers/{user}/w9', [Admin\W9Controller::class, 'download'])->name('trainers.w9.download');
     Route::post('/trainers/{user}/w9-received', [Admin\W9Controller::class, 'markReceived'])->name('trainers.w9.received');
 

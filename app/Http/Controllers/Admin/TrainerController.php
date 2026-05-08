@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\RecurringService;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,7 +22,9 @@ class TrainerController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('admin.trainers.index', compact('trainers'));
+        $recurringServices = RecurringService::with('user')->orderBy('user_id')->orderBy('description')->get();
+
+        return view('admin.trainers.index', compact('trainers', 'recurringServices'));
     }
 
     public function store(Request $request): RedirectResponse

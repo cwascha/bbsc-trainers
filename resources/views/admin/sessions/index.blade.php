@@ -104,6 +104,9 @@ function smsDayModal() {
         <div class="px-6 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
             <div>
                 <h3 class="font-semibold text-gray-800">{{ $day->formattedDate }}
+                    @if($day->program)
+                        <span class="ml-1 px-1.5 py-0.5 bg-blue-100 text-blue-700 text-sm rounded font-normal">{{ $day->program }}</span>
+                    @endif
                     <span class="text-sm font-normal text-gray-500 ml-2">Weekend {{ $day->weekend_number }}</span>
                 </h3>
                 <p class="text-xs text-gray-500 mt-0.5">{{ $assignedAvs->count() }}/{{ $day->max_spots }} assigned · {{ $pendingAvs->count() }} pending</p>
@@ -241,6 +244,9 @@ function smsDayModal() {
                 <div class="px-6 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
                     <div>
                         <h3 class="font-semibold text-gray-700">{{ $day->formattedDate }}
+                            @if($day->program)
+                                <span class="ml-1 px-1.5 py-0.5 bg-blue-100 text-blue-600 text-sm rounded font-normal">{{ $day->program }}</span>
+                            @endif
                             <span class="text-sm font-normal text-gray-400 ml-2">Weekend {{ $day->weekend_number }}</span>
                         </h3>
                         <p class="text-xs text-gray-400 mt-0.5">

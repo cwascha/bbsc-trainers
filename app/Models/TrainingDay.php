@@ -10,6 +10,7 @@ class TrainingDay extends Model
 {
     protected $fillable = [
         'date',
+        'program',
         'weekend_number',
         'max_spots',
         'session_start',
@@ -58,6 +59,14 @@ class TrainingDay extends Model
     public function getFormattedDateAttribute(): string
     {
         return $this->date->format('F j, Y');
+    }
+
+    /** Date + program label, e.g. "September 12, 2026 — Sparks" */
+    public function getSessionLabelAttribute(): string
+    {
+        return $this->program
+            ? "{$this->formattedDate} — {$this->program}"
+            : $this->formattedDate;
     }
 
     public function isPast(): bool

@@ -34,7 +34,12 @@
                     @endphp
                     <div class="px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div>
-                            <p class="font-medium text-gray-800">{{ $day->formattedDate }}</p>
+                            <p class="font-medium text-gray-800">
+                                {{ $day->formattedDate }}
+                                @if($day->program)
+                                    <span class="ml-1 px-1.5 py-0.5 bg-blue-100 text-blue-700 text-xs rounded font-normal">{{ $day->program }}</span>
+                                @endif
+                            </p>
                             <p class="text-sm text-gray-500">{{ $day->session_time_range }}</p>
                             <div class="mt-1 flex items-center space-x-3 text-xs text-gray-500">
                                 <span>{{ $assignedCount }}/{{ $day->max_spots }} assigned</span>

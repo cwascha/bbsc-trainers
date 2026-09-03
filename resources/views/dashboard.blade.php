@@ -61,7 +61,12 @@
                         @foreach($upcomingAssigned as $av)
                         <div class="px-6 py-4 flex items-center justify-between">
                             <div>
-                                <p class="font-medium text-gray-800">{{ $av->trainingDay->formattedDate }}</p>
+                                <p class="font-medium text-gray-800">
+                                    {{ $av->trainingDay->formattedDate }}
+                                    @if($av->trainingDay->program)
+                                        <span class="ml-1 px-1.5 py-0.5 bg-blue-100 text-blue-700 text-xs rounded font-normal">{{ $av->trainingDay->program }}</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-gray-500">{{ $av->trainingDay->session_time_range }} · Weekend {{ $av->trainingDay->weekend_number }}</p>
                             </div>
                             <div class="flex items-center space-x-3">

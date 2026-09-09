@@ -102,6 +102,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');
     Route::put('/teams/{team}', [TeamController::class, 'update'])->name('teams.update');
     Route::post('/teams/import', [TeamController::class, 'importAll'])->name('teams.import');
+    Route::post('/teams/{team}', [TeamController::class, 'update'])->name('teams.update.post'); // fallback for browsers that don't support PUT
 });
 
 // ─── Public teams subdomain ───────────────────────────────────────────────

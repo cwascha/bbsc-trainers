@@ -7,36 +7,33 @@ use App\Models\Player;
 use App\Models\Team;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class TeamController extends Controller
 {
-    const PROGRAMS = [
-        'sparks'       => 'Sparks',
-        'kindergarten' => 'Kindergarten',
-        '1st_grade'    => '1st Grade',
+    // Tab names in the spreadsheet to import as player groups
+    private const PLAYER_TABS = [
+        'Kindergarten Girls',
+        'Kindergarten Boys',
+        '1st Grade Girls',
+        '1st Grade Boys',
     ];
 
-    // Maps display names / aliases to the program slug
-    const PROGRAM_ALIASES = [
-        'sparks'       => 'sparks',
-        'kindergarten' => 'kindergarten',
-        'kinder'       => 'kindergarten',
-        'k'            => 'kindergarten',
-        '1st grade'    => '1st_grade',
-        '1st'          => '1st_grade',
-        'first grade'  => '1st_grade',
-        '1stgrade'     => '1st_grade',
+    // Program slugs for each group
+    private const PROGRAM_SLUGS = [
+        'Kindergarten Girls' => 'kindergarten_girls',
+        'Kindergarten Boys'  => 'kindergarten_boys',
+        '1st Grade Girls'    => '1st_grade_girls',
+        '1st Grade Boys'     => '1st_grade_boys',
     ];
 
     public function index()
     {
-        foreach (self::PROGRAMS as $program => $name) {
-            Team::firstOrCreate(['program' => $program], ['name' => $name]);
-        }
-
         $teams = Team::with('players')
-            ->orderByRaw("FIELD(program, 'sparks', 'kindergarten', '1st_grade')")
-            ->get();
+            ->orderByRaw("FIELD(program, 'kindergarten_girls','kindergarten_boys','1st_grade_girls','1st_grade_boys','sparks','kindergarten','1st_grade')")
+            ->orderBy('name')
+            ->get()
+            ->groupBy('group_name');
 
         return view('admin.teams.index', compact('teams'));
     }
@@ -44,9 +41,7 @@ class TeamController extends Controller
     public function update(Request $request, Team $team): RedirectResponse
     {
         $validated = $request->validate([
-            'name'          => 'required|string|max:255',
             'coach_name'    => 'nullable|string|max:255',
-            'coach_email'   => 'nullable|email|max:255',
             'format'        => 'nullable|string|max:255',
             'location'      => 'nullable|string|max:255',
             'session_times' => 'nullable|string|max:255',
@@ -60,77 +55,115 @@ class TeamController extends Controller
         return back()->with('success', "{$team->name} updated.");
     }
 
-    // Single CSV for all teams — requires a "Team" column
     public function importAll(Request $request): RedirectResponse
     {
-        $request->validate(['csv' => 'required|file|mimes:csv,txt|max:5120']);
+        $request->validate([
+            'roster' => 'required|file|mimes:xlsx,xls|max:10240',
+        ]);
 
-        $handle  = fopen($request->file('csv')->getRealPath(), 'r');
-        $headers = array_map('strtolower', array_map('trim', fgetcsv($handle)));
+        $path        = $request->file('roster')->getRealPath();
+        $spreadsheet = IOFactory::load($path);
 
-        $nameCol = $this->colIndex($headers, ['name', 'player name', 'player']);
-        $teamCol = $this->colIndex($headers, ['team', 'program', 'group']);
-        $roleCol = $this->colIndex($headers, ['role']);
+        // Wipe existing imported teams and players (keep manually-configured ones if needed)
+        Player::query()->delete();
+        Team::query()->delete();
 
-        if ($nameCol === null) {
-            fclose($handle);
-            return back()->with('error', 'CSV must have a "Name" column.');
-        }
-        if ($teamCol === null) {
-            fclose($handle);
-            return back()->with('error', 'CSV must have a "Team" or "Program" column for a combined roster import.');
-        }
+        $teamMap   = []; // [group][teamName] => Team model
+        $counts    = [];
 
-        // Wipe all players before re-import
-        Player::whereIn('team_id', Team::pluck('id'))->delete();
-        Team::query()->update(['coach_name' => null]);
-
-        $counts = [];
-
-        while (($row = fgetcsv($handle)) !== false) {
-            $name    = trim($row[$nameCol] ?? '');
-            $teamRaw = strtolower(trim($row[$teamCol] ?? ''));
-            if (! $name || ! $teamRaw) {
+        // ── Pass 1: parse player tabs ──────────────────────────────────────────
+        foreach (self::PLAYER_TABS as $tabName) {
+            $sheet = $spreadsheet->getSheetByName($tabName);
+            if (! $sheet) {
                 continue;
             }
 
-            $program = self::PROGRAM_ALIASES[$teamRaw] ?? null;
-            if (! $program) {
-                continue; // unknown team — skip
-            }
+            $program        = self::PROGRAM_SLUGS[$tabName];
+            $currentTeam    = null;
+            $inPlayerRows   = false;
+            $rows           = $sheet->toArray(null, true, true, false);
 
-            $team = Team::where('program', $program)->first();
-            if (! $team) {
-                continue;
-            }
+            foreach ($rows as $row) {
+                $col0 = trim((string) ($row[0] ?? ''));
 
-            $role = strtolower(trim($row[$roleCol] ?? ''));
-            if (str_contains($role, 'coach') && ! $team->coach_name) {
-                $team->update(['coach_name' => $name]);
-                continue;
-            }
+                if (empty($col0)) {
+                    continue;
+                }
 
-            Player::create(['team_id' => $team->id, 'name' => $name]);
-            $counts[$program] = ($counts[$program] ?? 0) + 1;
+                // Detect team header: contains "(N players)"
+                if (preg_match('/\((\d+)\s+players\)/i', $col0)) {
+                    $teamName    = trim(preg_replace('/\s*\(\d+\s+players\).*/i', '', $col0));
+                    $currentTeam = Team::create([
+                        'name'       => $teamName,
+                        'group_name' => $tabName,
+                        'program'    => $program,
+                    ]);
+                    $teamMap[$tabName][$teamName] = $currentTeam;
+                    $inPlayerRows                = false;
+                    continue;
+                }
+
+                // Detect column header row
+                if (strcasecmp($col0, 'First Name') === 0) {
+                    $inPlayerRows = true;
+                    continue;
+                }
+
+                if ($currentTeam && $inPlayerRows) {
+                    $firstName = trim((string) ($row[0] ?? ''));
+                    $lastName  = trim((string) ($row[1] ?? ''));
+
+                    if (! $firstName && ! $lastName) {
+                        continue;
+                    }
+
+                    Player::create([
+                        'team_id'    => $currentTeam->id,
+                        'first_name' => $firstName,
+                        'last_name'  => $lastName,
+                    ]);
+                    $counts[$tabName] = ($counts[$tabName] ?? 0) + 1;
+                }
+            }
         }
 
-        fclose($handle);
+        // ── Pass 2: parse Coaches tab to assign coaches to teams ────────────────
+        $coachSheet = $spreadsheet->getSheetByName('Coaches');
+        if ($coachSheet) {
+            $rows    = $coachSheet->toArray(null, true, true, false);
+            $inData  = false;
+
+            foreach ($rows as $row) {
+                $col0 = trim((string) ($row[0] ?? ''));
+
+                // Header row: Group, Team, First Name, Last Name, ...
+                if (strcasecmp($col0, 'Group') === 0) {
+                    $inData = true;
+                    continue;
+                }
+
+                if (! $inData || ! $col0) {
+                    continue;
+                }
+
+                $group     = trim((string) ($row[0] ?? ''));
+                $teamName  = trim((string) ($row[1] ?? ''));
+                $firstName = trim((string) ($row[2] ?? ''));
+                $lastName  = trim((string) ($row[3] ?? ''));
+
+                $team = $teamMap[$group][$teamName] ?? null;
+                if ($team && $firstName && ! $team->coach_name) {
+                    $team->update(['coach_name' => "{$firstName} {$lastName}"]);
+                }
+            }
+        }
 
         $summary = collect($counts)
-            ->map(fn($n, $p) => self::PROGRAMS[$p] . ": {$n}")
-            ->join(', ');
+            ->map(fn ($n, $g) => "{$g}: {$n} players")
+            ->join(' | ');
 
-        return back()->with('success', "Roster imported — {$summary}.");
-    }
+        $teamCount = Team::count();
 
-    private function colIndex(array $headers, array $candidates): ?int
-    {
-        foreach ($candidates as $candidate) {
-            $i = array_search($candidate, $headers, true);
-            if ($i !== false) {
-                return $i;
-            }
-        }
-        return null;
+        return back()->with('success', "Imported {$teamCount} teams. {$summary}");
     }
 }

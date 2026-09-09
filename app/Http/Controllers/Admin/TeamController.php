@@ -3,15 +3,26 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Player;
 use App\Models\Team;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
 
 class TeamController extends Controller
 {
+    private const PROGRAMS = [
+        'sparks'       => 'Sparks',
+        'kindergarten' => 'Kindergarten',
+        '1st_grade'    => '1st Grade',
+    ];
+
     public function index()
     {
+        // Ensure all three programs have team records
+        foreach (self::PROGRAMS as $program => $name) {
+            Team::firstOrCreate(['program' => $program], ['name' => $name]);
+        }
+
         $teams = Team::with('players')
             ->orderByRaw("FIELD(program, 'sparks', 'kindergarten', '1st_grade')")
             ->get();
@@ -38,14 +49,65 @@ class TeamController extends Controller
         return back()->with('success', "{$team->name} updated.");
     }
 
-    public function sync(): RedirectResponse
+    public function import(Request $request, Team $team): RedirectResponse
     {
-        try {
-            Artisan::call('rosters:sync');
-            $output = Artisan::output();
-            return back()->with('success', 'Roster sync complete. ' . trim($output));
-        } catch (\Exception $e) {
-            return back()->with('error', 'Sync failed: ' . $e->getMessage());
+        $request->validate([
+            'csv' => 'required|file|mimes:csv,txt|max:2048',
+        ]);
+
+        $path = $request->file('csv')->getRealPath();
+        $handle = fopen($path, 'r');
+
+        $headers = array_map('strtolower', array_map('trim', fgetcsv($handle)));
+
+        $nameCol   = $this->colIndex($headers, ['name', 'player name', 'player']);
+        $roleCol   = $this->colIndex($headers, ['role']);
+        $jerseyCol = $this->colIndex($headers, ['jersey', 'jersey #', 'jersey number', '#']);
+
+        if ($nameCol === null) {
+            fclose($handle);
+            return back()->with('error', 'CSV must have a "Name" column.');
         }
+
+        $team->players()->delete();
+        $imported = 0;
+        $coachSet = false;
+
+        while (($row = fgetcsv($handle)) !== false) {
+            $name = trim($row[$nameCol] ?? '');
+            if (! $name) {
+                continue;
+            }
+
+            $role = strtolower(trim($row[$roleCol] ?? ''));
+
+            if (str_contains($role, 'coach') && ! $coachSet) {
+                $team->update(['coach_name' => $name]);
+                $coachSet = true;
+                continue;
+            }
+
+            Player::create([
+                'team_id'       => $team->id,
+                'name'          => $name,
+                'jersey_number' => trim($row[$jerseyCol] ?? ''),
+            ]);
+            $imported++;
+        }
+
+        fclose($handle);
+
+        return back()->with('success', "{$team->name}: imported {$imported} players." . ($coachSet ? ' Coach updated.' : ''));
+    }
+
+    private function colIndex(array $headers, array $candidates): ?int
+    {
+        foreach ($candidates as $candidate) {
+            $i = array_search($candidate, $headers, true);
+            if ($i !== false) {
+                return $i;
+            }
+        }
+        return null;
     }
 }

@@ -101,7 +101,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     // Teams / Roster management
     Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');
     Route::put('/teams/{team}', [TeamController::class, 'update'])->name('teams.update');
-    Route::post('/teams/sync', [TeamController::class, 'sync'])->name('teams.sync');
+    Route::post('/teams/{team}/import', [TeamController::class, 'import'])->name('teams.import');
 });
 
 // ─── Public teams subdomain ───────────────────────────────────────────────

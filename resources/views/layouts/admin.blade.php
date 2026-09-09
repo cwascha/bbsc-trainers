@@ -24,19 +24,19 @@
                 </a>
                 <span class="font-bold text-lg hidden md:block">BBSC Admin</span>
             </div>
-            <div class="flex items-center space-x-1">
-                <a href="{{ route('admin.dashboard') }}" class="px-3 py-2 rounded text-sm {{ request()->routeIs('admin.dashboard') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">Overview</a>
-                <a href="{{ route('admin.sessions.index') }}" class="px-3 py-2 rounded text-sm {{ request()->routeIs('admin.sessions.*') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">Sessions</a>
-                <a href="{{ route('admin.training-plans.index') }}" class="px-3 py-2 rounded text-sm {{ request()->routeIs('admin.training-plans.*') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">Plans</a>
-                <a href="{{ route('admin.trainers.index') }}" class="px-3 py-2 rounded text-sm {{ request()->routeIs('admin.trainers.*') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">Trainers</a>
-                <a href="{{ route('admin.email.index') }}" class="px-3 py-2 rounded text-sm {{ request()->routeIs('admin.email.*') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">Email</a>
-                <a href="{{ route('admin.sms.index') }}" class="px-3 py-2 rounded text-sm {{ request()->routeIs('admin.sms.*') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">SMS</a>
-                <a href="{{ route('admin.notifications.index') }}" class="px-3 py-2 rounded text-sm {{ request()->routeIs('admin.notifications.*') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">SMS Logs</a>
-                <a href="{{ route('admin.reports.index') }}" class="px-3 py-2 rounded text-sm {{ request()->routeIs('admin.reports.*') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">Payroll</a>
-                <a href="{{ route('admin.teams.index') }}" class="px-3 py-2 rounded text-sm {{ request()->routeIs('admin.teams.*') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">Teams</a>
-                <a href="{{ route('admin.documents.index') }}" class="px-3 py-2 rounded text-sm {{ request()->routeIs('admin.documents.*') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">Docs</a>
-                <a href="{{ route('admin.admins.index') }}" class="px-3 py-2 rounded text-sm {{ request()->routeIs('admin.admins.*') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">Settings</a>
-                <a href="{{ route('dashboard') }}" class="px-3 py-2 rounded text-sm text-orange-300 hover:bg-gray-700">← Trainer View</a>
+            <div class="flex items-center space-x-1 overflow-x-auto">
+                <a href="{{ route('admin.dashboard') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm {{ request()->routeIs('admin.dashboard') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">Overview</a>
+                <a href="{{ route('admin.sessions.index') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm {{ request()->routeIs('admin.sessions.*') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">Sessions</a>
+                <a href="{{ route('admin.training-plans.index') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm {{ request()->routeIs('admin.training-plans.*') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">Plans</a>
+                <a href="{{ route('admin.trainers.index') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm {{ request()->routeIs('admin.trainers.*') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">Trainers</a>
+                <a href="{{ route('admin.email.index') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm {{ request()->routeIs('admin.email.*') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">Email</a>
+                <a href="{{ route('admin.sms.index') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm {{ request()->routeIs('admin.sms.*') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">SMS</a>
+                <a href="{{ route('admin.notifications.index') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm {{ request()->routeIs('admin.notifications.*') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">SMS Logs</a>
+                <a href="{{ route('admin.reports.index') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm {{ request()->routeIs('admin.reports.*') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">Payroll</a>
+                <a href="{{ route('admin.teams.index') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm {{ request()->routeIs('admin.teams.*') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">Teams</a>
+                <a href="{{ route('admin.documents.index') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm {{ request()->routeIs('admin.documents.*') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">Docs</a>
+                <a href="{{ route('admin.admins.index') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm {{ request()->routeIs('admin.admins.*') ? 'bg-gray-700' : 'hover:bg-gray-700' }}">Settings</a>
+                <a href="{{ route('dashboard') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm text-orange-300 hover:bg-gray-700">← Trainer View</a>
             </div>
         </div>
     </div>

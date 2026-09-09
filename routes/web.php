@@ -15,6 +15,12 @@ use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Webhooks\TwilioController;
 use Illuminate\Support\Facades\Route;
 
+// ─── Public teams subdomain — must be first so it wins before the catch-all redirect ───
+Route::domain(config('app.teams_domain'))->group(function () {
+    Route::get('/', [RosterController::class, 'index'])->name('teams.public.index');
+    Route::get('/{team}', [RosterController::class, 'show'])->name('teams.public.show');
+});
+
 Route::get('/', fn() => redirect()->route('dashboard'));
 
 // ─── Public Pages ──────────────────────────────────────────────────────────
@@ -103,12 +109,6 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::put('/teams/{team}', [TeamController::class, 'update'])->name('teams.update');
     Route::post('/teams/import', [TeamController::class, 'importAll'])->name('teams.import');
     Route::post('/teams/{team}', [TeamController::class, 'update'])->name('teams.update.post'); // fallback for browsers that don't support PUT
-});
-
-// ─── Public teams subdomain ───────────────────────────────────────────────
-Route::domain(config('app.teams_domain'))->group(function () {
-    Route::get('/', [RosterController::class, 'index'])->name('teams.public.index');
-    Route::get('/{team}', [RosterController::class, 'show'])->name('teams.public.show');
 });
 
 // ─── Twilio Webhook (no auth, CSRF exempt) ────────────────────────────────

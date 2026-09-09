@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'BBSC Teams')</title>
-    <link rel="icon" type="image/png" href="//{{ config('app.domain') }}/images/BBSClogo.png">
+    <link rel="icon" type="image/png" href="{{ asset('images/BBSClogo.png') }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -13,7 +13,7 @@
 
     <header class="bg-gray-900 text-white shadow">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-3">
-            <img src="//{{ config('app.domain') }}/images/BBSClogo.png"
+            <img src="{{ asset('images/BBSClogo.png') }}"
                  alt="BBSC" class="h-8 w-8 object-contain">
             <a href="{{ route('teams.public.index') }}" class="text-lg font-bold tracking-wide hover:text-gray-200">
                 BBSC Soccer — Teams

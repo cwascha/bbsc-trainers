@@ -62,9 +62,8 @@ class SyncRosters extends Command
                 }
 
                 Player::create([
-                    'team_id'       => $team->id,
-                    'name'          => $name,
-                    'jersey_number' => trim($row['jersey'] ?? $row['jersey #'] ?? $row['jersey number'] ?? ''),
+                    'team_id' => $team->id,
+                    'name'    => $name,
                 ]);
             }
 

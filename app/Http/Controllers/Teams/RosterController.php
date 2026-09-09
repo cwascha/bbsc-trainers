@@ -9,11 +9,13 @@ class RosterController extends Controller
 {
     public function index()
     {
-        $teams = Team::with('players')
-            ->orderByRaw("FIELD(program, 'sparks', 'kindergarten', '1st_grade')")
-            ->get();
+        $groups = Team::with('players')
+            ->orderByRaw("FIELD(program, 'kindergarten_girls','kindergarten_boys','1st_grade_girls','1st_grade_boys')")
+            ->orderBy('name')
+            ->get()
+            ->groupBy('group_name');
 
-        return view('teams.index', compact('teams'));
+        return view('teams.index', compact('groups'));
     }
 
     public function show(Team $team)

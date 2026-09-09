@@ -10,15 +10,26 @@ use Illuminate\Http\Request;
 
 class TeamController extends Controller
 {
-    private const PROGRAMS = [
+    const PROGRAMS = [
         'sparks'       => 'Sparks',
         'kindergarten' => 'Kindergarten',
         '1st_grade'    => '1st Grade',
     ];
 
+    // Maps display names / aliases to the program slug
+    const PROGRAM_ALIASES = [
+        'sparks'       => 'sparks',
+        'kindergarten' => 'kindergarten',
+        'kinder'       => 'kindergarten',
+        'k'            => 'kindergarten',
+        '1st grade'    => '1st_grade',
+        '1st'          => '1st_grade',
+        'first grade'  => '1st_grade',
+        '1stgrade'     => '1st_grade',
+    ];
+
     public function index()
     {
-        // Ensure all three programs have team records
         foreach (self::PROGRAMS as $program => $name) {
             Team::firstOrCreate(['program' => $program], ['name' => $name]);
         }
@@ -49,55 +60,67 @@ class TeamController extends Controller
         return back()->with('success', "{$team->name} updated.");
     }
 
-    public function import(Request $request, Team $team): RedirectResponse
+    // Single CSV for all teams — requires a "Team" column
+    public function importAll(Request $request): RedirectResponse
     {
-        $request->validate([
-            'csv' => 'required|file|mimes:csv,txt|max:2048',
-        ]);
+        $request->validate(['csv' => 'required|file|mimes:csv,txt|max:5120']);
 
-        $path = $request->file('csv')->getRealPath();
-        $handle = fopen($path, 'r');
-
+        $handle  = fopen($request->file('csv')->getRealPath(), 'r');
         $headers = array_map('strtolower', array_map('trim', fgetcsv($handle)));
 
-        $nameCol   = $this->colIndex($headers, ['name', 'player name', 'player']);
-        $roleCol   = $this->colIndex($headers, ['role']);
-        $jerseyCol = $this->colIndex($headers, ['jersey', 'jersey #', 'jersey number', '#']);
+        $nameCol = $this->colIndex($headers, ['name', 'player name', 'player']);
+        $teamCol = $this->colIndex($headers, ['team', 'program', 'group']);
+        $roleCol = $this->colIndex($headers, ['role']);
 
         if ($nameCol === null) {
             fclose($handle);
             return back()->with('error', 'CSV must have a "Name" column.');
         }
+        if ($teamCol === null) {
+            fclose($handle);
+            return back()->with('error', 'CSV must have a "Team" or "Program" column for a combined roster import.');
+        }
 
-        $team->players()->delete();
-        $imported = 0;
-        $coachSet = false;
+        // Wipe all players before re-import
+        Player::whereIn('team_id', Team::pluck('id'))->delete();
+        Team::query()->update(['coach_name' => null]);
+
+        $counts = [];
 
         while (($row = fgetcsv($handle)) !== false) {
-            $name = trim($row[$nameCol] ?? '');
-            if (! $name) {
+            $name    = trim($row[$nameCol] ?? '');
+            $teamRaw = strtolower(trim($row[$teamCol] ?? ''));
+            if (! $name || ! $teamRaw) {
+                continue;
+            }
+
+            $program = self::PROGRAM_ALIASES[$teamRaw] ?? null;
+            if (! $program) {
+                continue; // unknown team — skip
+            }
+
+            $team = Team::where('program', $program)->first();
+            if (! $team) {
                 continue;
             }
 
             $role = strtolower(trim($row[$roleCol] ?? ''));
-
-            if (str_contains($role, 'coach') && ! $coachSet) {
+            if (str_contains($role, 'coach') && ! $team->coach_name) {
                 $team->update(['coach_name' => $name]);
-                $coachSet = true;
                 continue;
             }
 
-            Player::create([
-                'team_id'       => $team->id,
-                'name'          => $name,
-                'jersey_number' => trim($row[$jerseyCol] ?? ''),
-            ]);
-            $imported++;
+            Player::create(['team_id' => $team->id, 'name' => $name]);
+            $counts[$program] = ($counts[$program] ?? 0) + 1;
         }
 
         fclose($handle);
 
-        return back()->with('success', "{$team->name}: imported {$imported} players." . ($coachSet ? ' Coach updated.' : ''));
+        $summary = collect($counts)
+            ->map(fn($n, $p) => self::PROGRAMS[$p] . ": {$n}")
+            ->join(', ');
+
+        return back()->with('success', "Roster imported — {$summary}.");
     }
 
     private function colIndex(array $headers, array $candidates): ?int

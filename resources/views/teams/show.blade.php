@@ -111,11 +111,8 @@
         @else
             <ul class="divide-y divide-gray-100">
                 @foreach($team->players as $player)
-                <li class="px-6 py-3 flex items-center justify-between">
+                <li class="px-6 py-3">
                     <span class="text-gray-800">{{ $player->name }}</span>
-                    @if($player->jersey_number)
-                        <span class="text-sm text-gray-400">#{{ $player->jersey_number }}</span>
-                    @endif
                 </li>
                 @endforeach
             </ul>

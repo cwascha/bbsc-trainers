@@ -106,7 +106,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
 });
 
 // ─── Public teams subdomain ───────────────────────────────────────────────
-Route::domain('teams.' . config('app.domain'))->group(function () {
+Route::domain(config('app.teams_domain'))->group(function () {
     Route::get('/', [RosterController::class, 'index'])->name('teams.public.index');
     Route::get('/{team}', [RosterController::class, 'show'])->name('teams.public.show');
 });

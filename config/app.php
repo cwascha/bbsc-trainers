@@ -57,6 +57,9 @@ return [
     // Root domain used for subdomain routing (set APP_DOMAIN=bbscsoccer.com in production)
     'domain' => env('APP_DOMAIN', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
 
+    // Full teams subdomain — hardcoded default so route cache always works
+    'teams_domain' => env('APP_TEAMS_DOMAIN', 'teams.bbscsoccer.com'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

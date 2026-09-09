@@ -10,6 +10,8 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\TrainingPlanController;
 use App\Http\Controllers\W9Controller;
+use App\Http\Controllers\Teams\RosterController;
+use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Webhooks\TwilioController;
 use Illuminate\Support\Facades\Route;
 
@@ -95,6 +97,17 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::get('/documents', [Admin\DocumentController::class, 'index'])->name('documents.index');
     Route::post('/documents', [Admin\DocumentController::class, 'store'])->name('documents.store');
     Route::delete('/documents/{document}', [Admin\DocumentController::class, 'destroy'])->name('documents.destroy');
+
+    // Teams / Roster management
+    Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');
+    Route::put('/teams/{team}', [TeamController::class, 'update'])->name('teams.update');
+    Route::post('/teams/sync', [TeamController::class, 'sync'])->name('teams.sync');
+});
+
+// ─── Public teams subdomain ───────────────────────────────────────────────
+Route::domain('teams.' . config('app.domain'))->group(function () {
+    Route::get('/', [RosterController::class, 'index'])->name('teams.public.index');
+    Route::get('/{team}', [RosterController::class, 'show'])->name('teams.public.show');
 });
 
 // ─── Twilio Webhook (no auth, CSRF exempt) ────────────────────────────────

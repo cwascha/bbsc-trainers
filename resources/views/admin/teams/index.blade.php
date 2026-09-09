@@ -1,7 +1,7 @@
-<x-admin-layout>
-    <x-slot name="header">Teams &amp; Rosters</x-slot>
+@extends('layouts.admin')
 
-    <div class="space-y-6">
+@section('content')
+<div class="space-y-6">
 
         @if(session('success'))
             <div class="bg-green-50 border border-green-200 text-green-800 rounded-lg px-4 py-3 text-sm">{{ session('success') }}</div>
@@ -98,4 +98,5 @@
         @endforelse
 
     </div>
-</x-admin-layout>
+
+@endsection

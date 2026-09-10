@@ -14,7 +14,7 @@
     <header class="bg-gray-900 text-white shadow">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center gap-3">
             <img src="{{ asset('images/BBSClogo.png') }}"
-                 alt="BBSC" class="h-8 w-8 object-contain">
+                 alt="BBSC" width="32" height="32" class="h-8 w-8 object-contain" style="max-width:32px;max-height:32px;">
             <a href="{{ route('teams.public.index') }}" class="text-lg font-bold tracking-wide hover:text-gray-200">
                 BBSC Soccer — Teams
             </a>

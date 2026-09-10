@@ -75,6 +75,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::patch('/availabilities/{availability}/hours', [Admin\AssignmentController::class, 'updateSessionHours'])->name('availabilities.hours.update');
     Route::get('/training-plans', [Admin\TrainingPlanController::class, 'index'])->name('training-plans.index');
     Route::post('/training-plans', [Admin\TrainingPlanController::class, 'store'])->name('training-plans.store');
+    Route::post('/training-plans/copy-to-fall', [Admin\TrainingPlanController::class, 'copyToFall'])->name('training-plans.copy-to-fall');
     Route::delete('/training-plans/{trainingPlan}', [Admin\TrainingPlanController::class, 'destroy'])->name('training-plans.destroy');
     Route::get('/notifications', [Admin\NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/send', [Admin\NotificationController::class, 'send'])->name('notifications.send');

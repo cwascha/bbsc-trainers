@@ -26,7 +26,7 @@ class TrainingPlanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'weekend_number' => 'required|integer|min:1|max:8',
+            'weekend_number' => 'required|integer|min:1|max:16',
             'program'        => 'required|in:main,sparks',
             'title'          => 'required|string|max:255',
             'file'           => 'required|file|mimes:pdf,xlsx,xls|max:20480',
@@ -60,6 +60,53 @@ class TrainingPlanController extends Controller
         ]);
 
         return back()->with('success', 'Training plan uploaded successfully.');
+    }
+
+    public function copyToFall(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        $springPlans = TrainingPlan::whereBetween('weekend_number', [1, 8])->get();
+
+        if ($springPlans->isEmpty()) {
+            return back()->with('error', 'No Spring plans (weekends 1–8) found to copy.');
+        }
+
+        $copied  = 0;
+        $skipped = 0;
+
+        foreach ($springPlans as $plan) {
+            $fallWeekend = $plan->weekend_number + 8;
+
+            // Skip if a Fall plan already exists for this weekend + program
+            if (TrainingPlan::where('weekend_number', $fallWeekend)->where('program', $plan->program)->exists()) {
+                $skipped++;
+                continue;
+            }
+
+            // Copy the file to a new path
+            $newPath = 'training-plans/' . basename($plan->file_path) . '_fall_copy_' . $fallWeekend;
+            if (!Storage::exists($plan->file_path)) {
+                $skipped++;
+                continue;
+            }
+            Storage::copy($plan->file_path, $newPath);
+
+            TrainingPlan::create([
+                'weekend_number' => $fallWeekend,
+                'program'        => $plan->program,
+                'title'          => $plan->title,
+                'file_path'      => $newPath,
+                'uploaded_by'    => $request->user()->id,
+            ]);
+
+            $copied++;
+        }
+
+        $msg = "Copied {$copied} plan(s) to Fall weekends 9–16.";
+        if ($skipped) {
+            $msg .= " Skipped {$skipped} (already existed or file missing).";
+        }
+
+        return back()->with('success', $msg);
     }
 
     public function destroy(TrainingPlan $trainingPlan)

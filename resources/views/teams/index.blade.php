@@ -9,21 +9,6 @@
     <p class="mt-1 text-gray-500">Rosters and program details for the BBSC Fall 2026 season.</p>
 </div>
 
-{{-- Player search --}}
-<div class="mb-8 relative" id="search-container">
-    <div class="relative">
-        <input type="text" id="player-search" placeholder="Search for your child by name…"
-               autocomplete="off"
-               class="w-full border border-gray-300 rounded-xl px-4 py-3 pl-10 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
-        <svg class="absolute left-3 top-3.5 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
-        </svg>
-    </div>
-    <div id="search-results"
-         class="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg hidden max-h-80 overflow-y-auto">
-    </div>
-</div>
-
 @php
     // Build player index for JS
     $playerIndex = [];
@@ -130,6 +115,16 @@ document.addEventListener('click', e => {
                             <span>Listed start time is for the <strong>practice</strong> portion, followed by the game</span>
                         </li>
                     </ul>
+
+                    <div class="mt-4 pt-4 border-t border-blue-100">
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">What to bring</p>
+                        <ul class="text-sm text-gray-700 space-y-1">
+                            <li class="flex items-center gap-2"><span class="text-blue-400">•</span> Soccer ball</li>
+                            <li class="flex items-center gap-2"><span class="text-blue-400">•</span> Shin guards</li>
+                            <li class="flex items-center gap-2"><span class="text-blue-400">•</span> Water bottle</li>
+                            <li class="flex items-center gap-2"><span class="text-gray-400">•</span> Cleats <span class="text-gray-400 text-xs">(recommended, not required)</span></li>
+                        </ul>
+                    </div>
                     <div class="mt-3 flex gap-3 text-xs">
                         <span class="flex items-center gap-1.5 bg-red-100 text-red-700 font-medium px-2.5 py-1 rounded-full">
                             <span class="inline-block w-2.5 h-2.5 bg-red-600 rounded-full"></span>
@@ -164,9 +159,35 @@ document.addEventListener('click', e => {
             </a>
         </div>
 
+        {{-- Head Trainer --}}
+        <div class="px-6 py-5 bg-green-50 border-t border-green-100 flex items-start gap-3">
+            <svg class="w-5 h-5 text-green-600 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+            <p class="text-sm text-green-800">
+                Our head trainer is <strong>Nico</strong> — you can find him on the field every week.
+            </p>
+        </div>
+
     </div>
 </div>
 {{-- ── End Information Section ──────────────────────────────────────────── --}}
+
+{{-- Player search --}}
+<div class="mb-8 relative" id="search-container">
+    <div class="relative">
+        <input type="text" id="player-search" placeholder="Search for your child by name…"
+               autocomplete="off"
+               class="w-full border border-gray-300 rounded-xl px-4 py-3 pl-10 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+        <svg class="absolute left-3 top-3.5 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+        </svg>
+    </div>
+    <div id="search-results"
+         class="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg hidden max-h-80 overflow-y-auto">
+    </div>
+</div>
 
 @if($groups->isEmpty())
     <div class="bg-white rounded-xl shadow p-10 text-center text-gray-400">

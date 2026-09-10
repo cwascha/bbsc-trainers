@@ -159,6 +159,15 @@ document.addEventListener('click', e => {
             </a>
         </div>
 
+        {{-- Jerseys --}}
+        <div class="px-6 py-5 border-t border-gray-100">
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Jerseys</h3>
+            <p class="text-sm text-gray-700">
+                Jerseys are available for purchase at
+                <strong>Bloomfield Sports</strong>, located at Maple and Lahser.
+            </p>
+        </div>
+
         {{-- Head Trainer --}}
         <div class="px-6 py-5 bg-green-50 border-t border-green-100 flex items-start gap-3">
             <svg class="w-5 h-5 text-green-600 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

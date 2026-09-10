@@ -81,7 +81,7 @@ class TeamController extends Controller
             $program        = self::PROGRAM_SLUGS[$tabName];
             $currentTeam    = null;
             $inPlayerRows   = false;
-            $afterBlankRow  = true; // treat start-of-sheet as after a blank
+            $afterBlankRow  = false; // start false so the sheet title row is never a team header
             $rows           = $sheet->toArray(null, true, true, false);
 
             foreach ($rows as $row) {

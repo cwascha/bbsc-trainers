@@ -64,7 +64,7 @@ input.addEventListener('input', () => {
         results.innerHTML = '<p class="px-4 py-3 text-sm text-gray-400">No players found.</p>';
     } else {
         results.innerHTML = matches.map(p => `
-            <a href="${p.url}" class="flex items-center justify-between px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-0">
+            <a href="${p.url}?player=${encodeURIComponent(p.name)}" class="flex items-center justify-between px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-0">
                 <span class="font-medium text-gray-900 text-sm">${highlight(p.name, q)}</span>
                 <span class="text-xs text-gray-500 ml-4 shrink-0">${p.team} · ${p.group}</span>
             </a>`).join('');

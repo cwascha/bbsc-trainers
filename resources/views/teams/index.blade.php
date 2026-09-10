@@ -175,17 +175,23 @@ document.addEventListener('click', e => {
 {{-- ── End Information Section ──────────────────────────────────────────── --}}
 
 {{-- Player search --}}
-<div class="mb-8 relative" id="search-container">
-    <div class="relative">
-        <input type="text" id="player-search" placeholder="Search for your child by name…"
+<div class="mb-8 bg-blue-600 rounded-xl shadow-md px-6 py-5">
+    <p class="text-white font-semibold text-base mb-3">
+        <svg class="inline w-4 h-4 mr-1.5 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+        </svg>
+        Find your child's team
+    </p>
+    <div class="relative" id="search-container">
+        <input type="text" id="player-search" placeholder="Type your child's name…"
                autocomplete="off"
-               class="w-full border border-gray-300 rounded-xl px-4 py-3 pl-10 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+               class="w-full rounded-xl px-4 py-3 pl-10 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-white border-0">
         <svg class="absolute left-3 top-3.5 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
         </svg>
-    </div>
-    <div id="search-results"
-         class="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg hidden max-h-80 overflow-y-auto">
+        <div id="search-results"
+             class="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg hidden max-h-80 overflow-y-auto">
+        </div>
     </div>
 </div>
 

@@ -74,7 +74,16 @@ class TrainingPlanController extends Controller
         $skipped = 0;
 
         foreach ($springPlans as $plan) {
-            $fallWeekend = $plan->weekend_number + 8;
+            // Sparks started at Spring weekend 3, so offset is +6 to land on Fall weekend 9.
+            // K/1st started at Spring weekend 1, so offset is +8.
+            $offset      = $plan->program === 'sparks' ? 6 : 8;
+            $fallWeekend = $plan->weekend_number + $offset;
+
+            // Sparks only runs 6 Fall weekends (9–14); skip if out of range
+            if ($plan->program === 'sparks' && $fallWeekend > 14) {
+                $skipped++;
+                continue;
+            }
 
             // Skip if a Fall plan already exists for this weekend + program
             if (TrainingPlan::where('weekend_number', $fallWeekend)->where('program', $plan->program)->exists()) {

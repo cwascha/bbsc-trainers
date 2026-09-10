@@ -96,11 +96,22 @@
         @if($team->players->isEmpty())
             <div class="px-6 py-8 text-center text-gray-400">Roster not yet published.</div>
         @else
+            @php $highlight = request('player'); @endphp
             <ul class="divide-y divide-gray-100">
                 @foreach($team->players as $player)
-                <li class="px-6 py-3 text-gray-800">{{ $player->full_name }}</li>
+                @php $isHighlighted = $highlight && strcasecmp($player->full_name, $highlight) === 0; @endphp
+                <li id="{{ $isHighlighted ? 'highlighted-player' : '' }}"
+                    class="px-6 py-3 {{ $isHighlighted ? 'bg-yellow-100 font-semibold text-gray-900 ring-1 ring-yellow-300 rounded-lg' : 'text-gray-800' }}">
+                    {{ $player->full_name }}
+                </li>
                 @endforeach
             </ul>
+            @if($highlight)
+            <script>
+                const el = document.getElementById('highlighted-player');
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            </script>
+            @endif
         @endif
     </div>
 

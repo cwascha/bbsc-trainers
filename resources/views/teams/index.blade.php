@@ -127,7 +127,7 @@ document.addEventListener('click', e => {
                         </li>
                         <li class="flex items-start gap-2">
                             <span class="text-blue-400 mt-0.5">•</span>
-                            <span>Listed start time is for the <strong>practice</strong> portion</span>
+                            <span>Listed start time is for the <strong>practice</strong> portion, followed by the game</span>
                         </li>
                     </ul>
                     <div class="mt-3 flex gap-3 text-xs">

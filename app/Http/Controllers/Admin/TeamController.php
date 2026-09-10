@@ -81,17 +81,25 @@ class TeamController extends Controller
             $program        = self::PROGRAM_SLUGS[$tabName];
             $currentTeam    = null;
             $inPlayerRows   = false;
+            $afterBlankRow  = true; // treat start-of-sheet as after a blank
             $rows           = $sheet->toArray(null, true, true, false);
 
             foreach ($rows as $row) {
                 $col0 = trim((string) ($row[0] ?? ''));
+                $col1 = trim((string) ($row[1] ?? ''));
 
                 if (empty($col0)) {
+                    $afterBlankRow = true;
                     continue;
                 }
 
-                // Detect team header: contains "(N players)"
-                if (preg_match('/\((\d+)\s+players\)/i', $col0)) {
+                // Detect team header two ways:
+                // 1. Contains "(N players)" anywhere in the cell
+                // 2. Appears after a blank row with no last-name column (team names have no col1)
+                $hasPlayerCount  = (bool) preg_match('/\((\d+)\s+players\)/i', $col0);
+                $looksLikeHeader = $afterBlankRow && $col1 === '' && strcasecmp($col0, 'First Name') !== 0;
+
+                if ($hasPlayerCount || $looksLikeHeader) {
                     $teamName    = trim(preg_replace('/\s*\(\d+\s+players\).*/i', '', $col0));
                     $currentTeam = Team::create([
                         'name'       => $teamName,
@@ -100,8 +108,11 @@ class TeamController extends Controller
                     ]);
                     $teamMap[$tabName][$teamName] = $currentTeam;
                     $inPlayerRows                = false;
+                    $afterBlankRow               = false;
                     continue;
                 }
+
+                $afterBlankRow = false;
 
                 // Detect column header row
                 if (strcasecmp($col0, 'First Name') === 0) {
@@ -110,8 +121,8 @@ class TeamController extends Controller
                 }
 
                 if ($currentTeam && $inPlayerRows) {
-                    $firstName = trim((string) ($row[0] ?? ''));
-                    $lastName  = trim((string) ($row[1] ?? ''));
+                    $firstName = $col0;
+                    $lastName  = $col1;
 
                     if (! $firstName && ! $lastName) {
                         continue;

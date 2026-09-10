@@ -2,7 +2,16 @@
 @section('content')
 
 <div class="space-y-6">
-    <h1 class="text-2xl font-bold text-gray-800">Training Plans</h1>
+    <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-bold text-gray-800">Training Plans</h1>
+        <form method="POST" action="{{ route('admin.training-plans.copy-to-fall') }}"
+              onsubmit="return confirm('Copy all Spring plans (weekends 1–8) to Fall (weekends 9–16)? Existing Fall plans will be skipped.')">
+            @csrf
+            <button type="submit" class="px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 font-medium">
+                Copy Spring → Fall
+            </button>
+        </form>
+    </div>
 
     {{-- Upload Form --}}
     <div class="bg-white rounded-lg shadow p-6">

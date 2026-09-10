@@ -79,6 +79,106 @@ document.addEventListener('click', e => {
 });
 </script>
 
+{{-- ── Information Section ─────────────────────────────────────────────── --}}
+<div class="mb-10 bg-white rounded-xl shadow overflow-hidden">
+
+    {{-- Section header --}}
+    <div class="bg-gray-800 px-6 py-4">
+        <h2 class="text-xl font-bold text-white">Information</h2>
+    </div>
+
+    <div class="divide-y divide-gray-100">
+
+        {{-- Field Location --}}
+        <div class="px-6 py-6">
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Field Location</h3>
+            <p class="text-gray-900 font-medium mb-4">Birmingham Covington School</p>
+            <div class="rounded-xl overflow-hidden border border-gray-200" style="height:200px;">
+                <iframe
+                    title="Birmingham Covington School Map"
+                    width="100%" height="100%"
+                    style="border:0;"
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    src="https://maps.google.com/maps?q=Birmingham+Covington+School,+Birmingham,+MI&t=&z=15&ie=UTF8&iwloc=&output=embed">
+                </iframe>
+            </div>
+        </div>
+
+        {{-- Session Formats --}}
+        <div class="px-6 py-6">
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Session Formats</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                {{-- Sparks --}}
+                <div class="bg-purple-50 border border-purple-200 rounded-xl p-5">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="inline-block bg-purple-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">Sparks (Pre-K)</span>
+                        <span class="text-sm text-gray-500">~1 hour</span>
+                    </div>
+                    <p class="text-sm text-gray-700">
+                        All sessions are trainer-led with drills and fun games. No game at the end — just structured play with our coaching staff.
+                    </p>
+                </div>
+
+                {{-- K / 1st Grade --}}
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-5">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="inline-block bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">K &amp; 1st Grade</span>
+                        <span class="text-sm text-gray-500">1 hour total</span>
+                    </div>
+                    <ul class="text-sm text-gray-700 space-y-1.5">
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-400 mt-0.5">•</span>
+                            <span><strong>30 min</strong> trainer-led practice</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-400 mt-0.5">•</span>
+                            <span><strong>30 min</strong> game (4v4, or 5v5 if both coaches agree)</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-400 mt-0.5">•</span>
+                            <span>Listed start time is for the <strong>practice</strong> portion</span>
+                        </li>
+                    </ul>
+                    <div class="mt-3 flex gap-3 text-xs">
+                        <span class="flex items-center gap-1.5 bg-red-100 text-red-700 font-medium px-2.5 py-1 rounded-full">
+                            <span class="inline-block w-2.5 h-2.5 bg-red-600 rounded-full"></span>
+                            Home = Red jersey
+                        </span>
+                        <span class="flex items-center gap-1.5 bg-gray-100 text-gray-600 font-medium px-2.5 py-1 rounded-full">
+                            <span class="inline-block w-2.5 h-2.5 bg-gray-400 rounded-full"></span>
+                            Away = Grey jersey
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Links --}}
+        <div class="px-6 py-5 flex flex-wrap gap-4">
+            <a href="https://www.bbscsoccer.com/rules" target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-medium px-4 py-2.5 rounded-lg transition-colors">
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                League Rules
+            </a>
+            <a href="https://www.bbscsoccer.com/fall-26-schedules" target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                Fall 2026 Schedules
+            </a>
+        </div>
+
+    </div>
+</div>
+{{-- ── End Information Section ──────────────────────────────────────────── --}}
+
 @if($groups->isEmpty())
     <div class="bg-white rounded-xl shadow p-10 text-center text-gray-400">
         <p class="text-lg">Rosters haven't been published yet — check back soon!</p>

@@ -28,39 +28,41 @@
 <script>
 const PLAYERS = @json($playerIndex);
 
-const input   = document.getElementById('player-search');
-const results = document.getElementById('search-results');
+document.addEventListener('DOMContentLoaded', () => {
+    const input   = document.getElementById('player-search');
+    const results = document.getElementById('search-results');
 
-input.addEventListener('input', () => {
-    const q = input.value.trim().toLowerCase();
-    if (q.length < 2) { results.classList.add('hidden'); results.innerHTML = ''; return; }
+    input.addEventListener('input', () => {
+        const q = input.value.trim().toLowerCase();
+        if (q.length < 2) { results.classList.add('hidden'); results.innerHTML = ''; return; }
 
-    const matches = PLAYERS.filter(p => p.name.toLowerCase().includes(q)).slice(0, 20);
+        const matches = PLAYERS.filter(p => p.name.toLowerCase().includes(q)).slice(0, 20);
 
-    function highlight(text, query) {
-        const idx = text.toLowerCase().indexOf(query);
-        if (idx === -1) return text;
-        return text.slice(0, idx)
-            + '<mark class="bg-yellow-200 text-gray-900 rounded px-0.5">' + text.slice(idx, idx + query.length) + '</mark>'
-            + text.slice(idx + query.length);
-    }
+        function highlight(text, query) {
+            const idx = text.toLowerCase().indexOf(query);
+            if (idx === -1) return text;
+            return text.slice(0, idx)
+                + '<mark class="bg-yellow-200 text-gray-900 rounded px-0.5">' + text.slice(idx, idx + query.length) + '</mark>'
+                + text.slice(idx + query.length);
+        }
 
-    if (!matches.length) {
-        results.innerHTML = '<p class="px-4 py-3 text-sm text-gray-400">No players found.</p>';
-    } else {
-        results.innerHTML = matches.map(p => `
-            <a href="${p.url}?player=${encodeURIComponent(p.name)}" class="flex items-center justify-between px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-0">
-                <span class="font-medium text-gray-900 text-sm">${highlight(p.name, q)}</span>
-                <span class="text-xs text-gray-500 ml-4 shrink-0">${p.team} · ${p.group}</span>
-            </a>`).join('');
-    }
-    results.classList.remove('hidden');
-});
+        if (!matches.length) {
+            results.innerHTML = '<p class="px-4 py-3 text-sm text-gray-400">No players found.</p>';
+        } else {
+            results.innerHTML = matches.map(p => `
+                <a href="${p.url}?player=${encodeURIComponent(p.name)}" class="flex items-center justify-between px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-0">
+                    <span class="font-medium text-gray-900 text-sm">${highlight(p.name, q)}</span>
+                    <span class="text-xs text-gray-500 ml-4 shrink-0">${p.team} · ${p.group}</span>
+                </a>`).join('');
+        }
+        results.classList.remove('hidden');
+    });
 
-document.addEventListener('click', e => {
-    if (!document.getElementById('search-container').contains(e.target)) {
-        results.classList.add('hidden');
-    }
+    document.addEventListener('click', e => {
+        if (!document.getElementById('search-container').contains(e.target)) {
+            results.classList.add('hidden');
+        }
+    });
 });
 </script>
 

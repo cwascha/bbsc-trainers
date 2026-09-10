@@ -108,18 +108,7 @@ document.addEventListener('click', e => {
         {{-- Session Formats --}}
         <div class="px-6 py-6">
             <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Session Formats</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-                {{-- Sparks --}}
-                <div class="bg-purple-50 border border-purple-200 rounded-xl p-5">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="inline-block bg-purple-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">Sparks (Pre-K)</span>
-                        <span class="text-sm text-gray-500">~1 hour</span>
-                    </div>
-                    <p class="text-sm text-gray-700">
-                        All sessions are trainer-led with drills and fun games. No game at the end — just structured play with our coaching staff.
-                    </p>
-                </div>
+            <div>
 
                 {{-- K / 1st Grade --}}
                 <div class="bg-blue-50 border border-blue-200 rounded-xl p-5">

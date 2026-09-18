@@ -39,6 +39,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/availability', [AvailabilityController::class, 'store'])->name('availability.store');
     Route::delete('/availability/{availability}', [AvailabilityController::class, 'destroy'])->name('availability.destroy');
     Route::get('/hours', [HoursController::class, 'index'])->name('hours.index');
+    Route::post('/hours/planning', [HoursController::class, 'updatePlanningHours'])->name('hours.planning.update');
     Route::get('/training-plans', [TrainingPlanController::class, 'index'])->name('training-plans.index');
     Route::get('/training-plans/{trainingPlan}/download', [TrainingPlanController::class, 'download'])->name('training-plans.download');
 

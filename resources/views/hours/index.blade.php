@@ -6,6 +6,34 @@
     <div class="py-8">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
+            @if(auth()->user()->is_lead_trainer)
+            {{-- Planning hours entry for lead trainer --}}
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-5">
+                <h3 class="font-semibold text-amber-800 mb-1">Planning Hours</h3>
+                <p class="text-sm text-amber-700 mb-4">
+                    Enter your planning hours for the current pay period
+                    ({{ \Carbon\Carbon::parse($currentPeriodStart)->format('M j') }}
+                    – {{ \Carbon\Carbon::parse($currentPeriodStart)->addDays(13)->format('M j, Y') }}).
+                    Session hours are counted automatically.
+                </p>
+                @if(session('success'))
+                    <div class="mb-3 text-sm text-green-700 font-medium">{{ session('success') }}</div>
+                @endif
+                <form method="POST" action="{{ route('hours.planning.update') }}" class="flex items-center gap-3">
+                    @csrf
+                    <input type="hidden" name="period_start" value="{{ $currentPeriodStart }}">
+                    <label class="text-sm font-medium text-amber-800">Planning hours this period:</label>
+                    <input type="number" name="planning_hours" value="{{ $currentPlanningHours }}"
+                           step="0.25" min="0" max="999" required
+                           class="w-20 border-amber-300 rounded-md shadow-sm text-sm focus:ring-amber-400 focus:border-amber-400">
+                    <button type="submit"
+                            class="px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-md hover:bg-amber-700">
+                        Save
+                    </button>
+                </form>
+            </div>
+            @endif
+
             <div class="grid grid-cols-2 gap-4">
                 <div class="bg-white rounded-lg shadow p-6 text-center">
                     <p class="text-sm text-gray-500">Total Sessions Worked</p>

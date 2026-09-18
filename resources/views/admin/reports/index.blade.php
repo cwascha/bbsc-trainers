@@ -110,19 +110,14 @@
                     </td>
                     <td class="px-6 py-3 text-right">
                         @if($trainer->is_lead_trainer)
-                            {{-- Lead trainer: show auto session hours + planning hours input --}}
+                            {{-- Lead trainer: auto session hours + planning hours entered by the trainer --}}
                             <div class="text-right text-gray-700">
                                 <div class="text-sm font-medium">{{ $hours }}h total</div>
                                 <div class="text-xs text-gray-400">{{ $trainer->hours_calculated }}h sessions</div>
+                                @if($trainer->planning_hours > 0)
+                                    <div class="text-xs text-amber-600">+ {{ $trainer->planning_hours }}h planning</div>
+                                @endif
                             </div>
-                            <form method="POST" action="{{ route('admin.reports.planning-hours.update', $trainer) }}" class="inline-flex items-center justify-end gap-1 mt-1">
-                                @csrf @method('PATCH')
-                                <input type="hidden" name="period_start" value="{{ $startDate }}">
-                                <span class="text-xs text-gray-400 whitespace-nowrap">+ planning:</span>
-                                <input type="number" name="planning_hours" value="{{ $trainer->planning_hours }}" step="0.25" min="0" max="999"
-                                       class="w-14 text-sm border-amber-300 bg-amber-50 rounded px-1 py-0.5 text-right focus:ring-amber-400 focus:border-amber-400">
-                                <button type="submit" class="text-xs text-gray-400 hover:text-green-600" title="Save">✓</button>
-                            </form>
                         @else
                             <form method="POST" action="{{ route('admin.reports.hours.update', $trainer) }}" class="inline-flex items-center justify-end gap-1">
                                 @csrf @method('PATCH')

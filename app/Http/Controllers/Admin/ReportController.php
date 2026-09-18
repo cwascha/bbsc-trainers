@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Concerns\ResolvesPayPeriod;
 use App\Http\Controllers\Controller;
 use App\Models\PayrollHoursOverride;
 use App\Models\PayrollPayment;
@@ -13,8 +14,7 @@ use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
-    // Fixed anchor date for biweekly pay period calculation
-    private static string $ANCHOR = '2026-01-01';
+    use ResolvesPayPeriod;
 
     public function index(Request $request)
     {
@@ -276,17 +276,6 @@ class ReportController extends Controller
         }
 
         return $trainers;
-    }
-
-    private function currentPayPeriod(): array
-    {
-        $anchor  = Carbon::parse(self::$ANCHOR);
-        $today   = Carbon::today();
-        $days    = $anchor->diffInDays($today, false);
-        $period  = (int) floor(max($days, 0) / 14);
-        $start   = $anchor->copy()->addDays($period * 14);
-        $end     = $start->copy()->addDays(13);
-        return [$start->toDateString(), $end->toDateString()];
     }
 
     private function previousPayPeriod(string $currentStart): array

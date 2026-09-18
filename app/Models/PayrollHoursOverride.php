@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PayrollHoursOverride extends Model
 {
-    protected $fillable = ['user_id', 'period_start', 'hours'];
+    protected $fillable = ['user_id', 'period_start', 'hours', 'planning_hours'];
 
     protected function casts(): array
     {

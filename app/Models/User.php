@@ -20,6 +20,7 @@ class User extends Authenticatable
         'phone',
         'venmo',
         'pay_rate',
+        'is_lead_trainer',
         'role',
         'password',
         'w9_path',
@@ -35,10 +36,11 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
-            'w9_uploaded_at'    => 'datetime',
-            'w9_received_at'    => 'datetime',
+            'email_verified_at'  => 'datetime',
+            'password'           => 'hashed',
+            'w9_uploaded_at'     => 'datetime',
+            'w9_received_at'     => 'datetime',
+            'is_lead_trainer'    => 'boolean',
         ];
     }
 

@@ -176,15 +176,25 @@ function editModal() {
                     <td class="px-4 py-3 text-gray-600">{{ $trainer->phone ?? '—' }}</td>
                     <td class="px-4 py-3 text-gray-600">{{ $trainer->venmo ?? '—' }}</td>
                     <td class="px-4 py-3">
-                        <form method="POST" action="{{ route('admin.trainers.pay-rate', $trainer) }}" class="flex items-center gap-1">
-                            @csrf @method('PATCH')
-                            <span class="text-gray-400 text-sm">$</span>
-                            <input type="number" name="pay_rate" value="{{ $trainer->pay_rate ?? '' }}"
-                                   step="0.01" min="0" max="999" required
-                                   class="w-16 text-sm border-gray-300 rounded px-1 py-0.5 focus:ring-gray-500 focus:border-gray-500"
-                                   placeholder="0.00">
-                            <button type="submit" class="text-xs text-gray-500 hover:text-green-600" title="Save">✓</button>
-                        </form>
+                        <div class="flex items-center gap-2">
+                            <form method="POST" action="{{ route('admin.trainers.pay-rate', $trainer) }}" class="flex items-center gap-1">
+                                @csrf @method('PATCH')
+                                <span class="text-gray-400 text-sm">$</span>
+                                <input type="number" name="pay_rate" value="{{ $trainer->pay_rate ?? '' }}"
+                                       step="0.01" min="0" max="999" required
+                                       class="w-16 text-sm border-gray-300 rounded px-1 py-0.5 focus:ring-gray-500 focus:border-gray-500"
+                                       placeholder="0.00">
+                                <button type="submit" class="text-xs text-gray-500 hover:text-green-600" title="Save">✓</button>
+                            </form>
+                            <form method="POST" action="{{ route('admin.trainers.toggle-lead', $trainer) }}">
+                                @csrf
+                                <button type="submit"
+                                        title="{{ $trainer->is_lead_trainer ? 'Remove lead trainer status' : 'Mark as lead trainer' }}"
+                                        class="text-xs px-1.5 py-0.5 rounded border {{ $trainer->is_lead_trainer ? 'bg-amber-100 border-amber-300 text-amber-700 hover:bg-amber-200' : 'border-gray-200 text-gray-400 hover:border-amber-300 hover:text-amber-600' }}">
+                                    ⭐
+                                </button>
+                            </form>
+                        </div>
                     </td>
                     <td class="px-4 py-3 text-gray-600">{{ $trainer->sessions_worked }}</td>
                     <td class="px-4 py-3 text-gray-600">{{ $trainer->hoursWorked() }}</td>

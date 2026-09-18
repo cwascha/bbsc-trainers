@@ -171,6 +171,14 @@ class TrainerController extends Controller
         return back()->with('success', "{$user->name}'s pay rate updated to \${$request->pay_rate}/hr.");
     }
 
+    public function toggleLeadTrainer(User $user): RedirectResponse
+    {
+        $user->update(['is_lead_trainer' => ! $user->is_lead_trainer]);
+
+        $status = $user->is_lead_trainer ? 'marked as lead trainer' : 'removed from lead trainer';
+        return back()->with('success', "{$user->name} {$status}.");
+    }
+
     public function destroy(User $user): RedirectResponse
     {
         if ($user->role !== 'trainer') {

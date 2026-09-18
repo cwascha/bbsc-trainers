@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Concerns\ResolvesPayPeriod;
 use App\Http\Controllers\Controller;
 use App\Models\PayrollHoursOverride;
 use App\Models\PayrollPayment;
@@ -13,8 +14,7 @@ use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
-    // Fixed anchor date for biweekly pay period calculation
-    private static string $ANCHOR = '2026-01-01';
+    use ResolvesPayPeriod;
 
     public function index(Request $request)
     {
@@ -41,16 +41,35 @@ class ReportController extends Controller
     public function updateHours(Request $request, User $user): RedirectResponse
     {
         $request->validate([
-            'period_start' => 'required|date',
-            'hours'        => 'required|numeric|min:0|max:999',
+            'period_start'   => 'required|date',
+            'hours'          => 'required|numeric|min:0|max:999',
+            'planning_hours' => 'sometimes|numeric|min:0|max:999',
         ]);
 
         PayrollHoursOverride::updateOrCreate(
             ['user_id' => $user->id, 'period_start' => $request->period_start],
-            ['hours'   => $request->hours]
+            array_filter([
+                'hours'          => $request->hours,
+                'planning_hours' => $request->input('planning_hours', 0),
+            ], fn($v) => $v !== null)
         );
 
         return back()->with('success', "Hours updated for {$user->name}.");
+    }
+
+    public function updatePlanningHours(Request $request, User $user): RedirectResponse
+    {
+        $request->validate([
+            'period_start'   => 'required|date',
+            'planning_hours' => 'required|numeric|min:0|max:999',
+        ]);
+
+        PayrollHoursOverride::updateOrCreate(
+            ['user_id' => $user->id, 'period_start' => $request->period_start],
+            ['planning_hours' => $request->planning_hours]
+        );
+
+        return back()->with('success', "Planning hours updated for {$user->name}.");
     }
 
     public function clearHours(Request $request, User $user): RedirectResponse
@@ -123,10 +142,13 @@ class ReportController extends Controller
 
         $callback = function () use ($trainers) {
             $handle = fopen('php://output', 'w');
-            fputcsv($handle, ['Name', 'Email', 'Phone', 'Venmo', 'Pay Rate', 'Sessions', 'Hours', 'Total Pay']);
+            fputcsv($handle, ['Name', 'Email', 'Phone', 'Venmo', 'Pay Rate', 'Sessions', 'Hours', 'Sparks Bonus', 'Services', 'Total Pay']);
             foreach ($trainers as $trainer) {
-                $hours    = $trainer->hours_worked;
-                $totalPay = $trainer->pay_rate ? round($hours * $trainer->pay_rate, 2) : '';
+                $hours      = $trainer->hours_worked;
+                $sparksBonus = $trainer->sparks_bonus ?? 0;
+                $servicesPay = $trainer->recurring_services_pay ?? 0;
+                $basePay    = $trainer->pay_rate ? round($hours * $trainer->pay_rate, 2) : 0;
+                $totalPay   = $trainer->pay_rate ? round($basePay + $sparksBonus + $servicesPay, 2) : '';
                 fputcsv($handle, [
                     $trainer->name,
                     $trainer->email,
@@ -135,6 +157,8 @@ class ReportController extends Controller
                     $trainer->pay_rate ? number_format($trainer->pay_rate, 2) : '',
                     $trainer->sessions_count,
                     $hours,
+                    $sparksBonus > 0 ? '$' . number_format($sparksBonus, 2) : '',
+                    $servicesPay > 0 ? '$' . number_format($servicesPay, 2) : '',
                     $totalPay !== '' ? '$' . number_format($totalPay, 2) : '',
                 ]);
             }
@@ -143,6 +167,9 @@ class ReportController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
+
+    // Extra pay per hour for Sparks sessions
+    private const SPARKS_PREMIUM = 5.00;
 
     private function getReport(string $startDate, string $endDate)
     {
@@ -168,81 +195,87 @@ class ReportController extends Controller
             ->get();
 
         // Load any manual hour overrides for this period
-        $overrides = PayrollHoursOverride::where('period_start', $startDate)
-            ->pluck('hours', 'user_id');
+        $overrideRecords = PayrollHoursOverride::where('period_start', $startDate)->get()->keyBy('user_id');
 
         // Load payment records for this period
-        $payments = PayrollPayment::where('period_start', $startDate)
-            ->get()
-            ->keyBy('user_id');
+        $payments = PayrollPayment::where('period_start', $startDate)->get()->keyBy('user_id');
 
         // Load active recurring services, grouped by user
-        $services = RecurringService::where('active', true)
-            ->with('user')
-            ->get()
-            ->groupBy('user_id');
+        $services = RecurringService::where('active', true)->with('user')->get()->groupBy('user_id');
 
-        // Number of weeks in this pay period (typically 2).
-        // +1 because diffInDays is exclusive of the end date (Apr 28→May 11 = 13 days, but 14 days inclusive).
+        // All past training days in this period (for lead trainer auto-calculation)
+        $allDaysInPeriod = \App\Models\TrainingDay::whereBetween('date', [$startDate, $endDate])
+            ->where('date', '<=', $today)
+            ->get();
+
         $weeks = (Carbon::parse($startDate)->diffInDays(Carbon::parse($endDate)) + 1) / 7;
 
-        // Calculate hours; use manual override if one exists
-        $trainers->each(function ($trainer) use ($overrides, $payments, $services, $weeks) {
-            // Future days already excluded by the eager-load query above.
-            // hoursWorked() returns hours_override if set, otherwise the day default.
-            $calculated                = $trainer->availabilities
-                ->sum(fn($a) => $a->hoursWorked());
-            $trainer->hours_worked     = isset($overrides[$trainer->id])
-                ? (float) $overrides[$trainer->id]
-                : $calculated;
-            $trainer->hours_override   = isset($overrides[$trainer->id]);
-            $trainer->hours_calculated = $calculated;
-            // "manually added" = has an override but no actual sessions in this period
-            $trainer->manually_added   = isset($overrides[$trainer->id]) && $calculated == 0;
-            $trainer->paid_at          = isset($payments[$trainer->id])
-                ? $payments[$trainer->id]->paid_at
-                : null;
-            // Recurring services total for this period
+        $trainers->each(function ($trainer) use ($overrideRecords, $payments, $services, $weeks, $allDaysInPeriod) {
+            $override = $overrideRecords[$trainer->id] ?? null;
+
+            if ($trainer->is_lead_trainer) {
+                // Lead trainers are credited for ALL sessions in the period automatically
+                $sparksHours    = $allDaysInPeriod->where('program', 'Sparks')->sum(fn($d) => $d->sessionHours());
+                $nonSparksHours = $allDaysInPeriod->where('program', '!=', 'Sparks')->sum(fn($d) => $d->sessionHours());
+                $planningHours  = $override ? (float) $override->planning_hours : 0.0;
+                $trainer->sparks_hours     = round($sparksHours, 2);
+                $trainer->non_sparks_hours = round($nonSparksHours, 2);
+                $trainer->planning_hours   = round($planningHours, 2);
+                $trainer->hours_worked     = round($sparksHours + $nonSparksHours + $planningHours, 2);
+                $trainer->hours_calculated = round($sparksHours + $nonSparksHours, 2);
+                $trainer->hours_override   = false;
+                $trainer->manually_added   = false;
+                $trainer->sparks_bonus     = $trainer->pay_rate ? round($sparksHours * self::SPARKS_PREMIUM, 2) : 0;
+            } else {
+                // Regular trainers: split availabilities into Sparks and non-Sparks
+                $sparksHours    = $trainer->availabilities
+                    ->filter(fn($a) => $a->trainingDay->program === 'Sparks')
+                    ->sum(fn($a) => $a->hoursWorked());
+                $nonSparksHours = $trainer->availabilities
+                    ->filter(fn($a) => $a->trainingDay->program !== 'Sparks')
+                    ->sum(fn($a) => $a->hoursWorked());
+                $calculated = $sparksHours + $nonSparksHours;
+
+                $trainer->sparks_hours     = round($sparksHours, 2);
+                $trainer->non_sparks_hours = round($nonSparksHours, 2);
+                $trainer->planning_hours   = 0;
+                $trainer->hours_worked     = $override ? (float) $override->hours : round($calculated, 2);
+                $trainer->hours_calculated = round($calculated, 2);
+                $trainer->hours_override   = $override !== null;
+                $trainer->manually_added   = $override !== null && $calculated == 0;
+                $trainer->sparks_bonus     = $trainer->pay_rate ? round($sparksHours * self::SPARKS_PREMIUM, 2) : 0;
+            }
+
+            $trainer->paid_at                 = isset($payments[$trainer->id]) ? $payments[$trainer->id]->paid_at : null;
             $trainer->recurring_services      = $services[$trainer->id] ?? collect();
-            $trainer->recurring_services_pay  = $trainer->recurring_services
-                ->sum(fn($s) => round($s->weekly_amount * $weeks, 2));
+            $trainer->recurring_services_pay  = $trainer->recurring_services->sum(fn($s) => round($s->weekly_amount * $weeks, 2));
         });
 
         // Also surface trainers who have recurring services but no sessions this period
-        $trainerIds = $trainers->pluck('id');
+        $trainerIds       = $trainers->pluck('id');
         $serviceOnlyUsers = $services->keys()->diff($trainerIds);
 
         if ($serviceOnlyUsers->isNotEmpty()) {
             $extra = User::whereIn('id', $serviceOnlyUsers)->orderBy('name')->get();
-            $extra->each(function ($trainer) use ($overrides, $payments, $services, $weeks) {
-                $trainer->sessions_count          = 0;
-                $trainer->hours_worked            = 0;
-                $trainer->hours_override          = false;
-                $trainer->hours_calculated        = 0;
-                $trainer->manually_added          = false;
-                $trainer->availabilities          = collect();
-                $trainer->paid_at                 = isset($payments[$trainer->id])
-                    ? $payments[$trainer->id]->paid_at
-                    : null;
-                $trainer->recurring_services      = $services[$trainer->id];
-                $trainer->recurring_services_pay  = $trainer->recurring_services
-                    ->sum(fn($s) => round($s->weekly_amount * $weeks, 2));
+            $extra->each(function ($trainer) use ($overrideRecords, $payments, $services, $weeks) {
+                $trainer->sessions_count      = 0;
+                $trainer->sparks_hours        = 0;
+                $trainer->non_sparks_hours    = 0;
+                $trainer->planning_hours      = 0;
+                $trainer->hours_worked        = 0;
+                $trainer->hours_override      = false;
+                $trainer->hours_calculated    = 0;
+                $trainer->manually_added      = false;
+                $trainer->sparks_bonus        = 0;
+                $trainer->availabilities      = collect();
+                $trainer->paid_at             = isset($payments[$trainer->id]) ? $payments[$trainer->id]->paid_at : null;
+                $trainer->recurring_services  = $services[$trainer->id];
+                $trainer->recurring_services_pay = $trainer->recurring_services->sum(fn($s) => round($s->weekly_amount * $weeks, 2));
             });
             $trainers = $trainers->concat($extra)->sortBy('name')->values();
         }
 
         return $trainers;
-    }
-
-    private function currentPayPeriod(): array
-    {
-        $anchor  = Carbon::parse(self::$ANCHOR);
-        $today   = Carbon::today();
-        $days    = $anchor->diffInDays($today, false);
-        $period  = (int) floor(max($days, 0) / 14);
-        $start   = $anchor->copy()->addDays($period * 14);
-        $end     = $start->copy()->addDays(13);
-        return [$start->toDateString(), $end->toDateString()];
     }
 
     private function previousPayPeriod(string $currentStart): array

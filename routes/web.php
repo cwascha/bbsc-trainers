@@ -39,6 +39,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/availability', [AvailabilityController::class, 'store'])->name('availability.store');
     Route::delete('/availability/{availability}', [AvailabilityController::class, 'destroy'])->name('availability.destroy');
     Route::get('/hours', [HoursController::class, 'index'])->name('hours.index');
+    Route::post('/hours/planning', [HoursController::class, 'updatePlanningHours'])->name('hours.planning.update');
     Route::get('/training-plans', [TrainingPlanController::class, 'index'])->name('training-plans.index');
     Route::get('/training-plans/{trainingPlan}/download', [TrainingPlanController::class, 'download'])->name('training-plans.download');
 
@@ -64,6 +65,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::delete('/trainers/{user}', [Admin\TrainerController::class, 'destroy'])->name('trainers.destroy');
     Route::patch('/trainers/{user}', [Admin\TrainerController::class, 'update'])->name('trainers.update');
     Route::patch('/trainers/{user}/pay-rate', [Admin\TrainerController::class, 'updatePayRate'])->name('trainers.pay-rate');
+    Route::post('/trainers/{user}/toggle-lead', [Admin\TrainerController::class, 'toggleLeadTrainer'])->name('trainers.toggle-lead');
     Route::get('/email', [Admin\EmailController::class, 'index'])->name('email.index');
     Route::post('/email/send', [Admin\EmailController::class, 'send'])->name('email.send');
     Route::get('/sessions', [Admin\AssignmentController::class, 'index'])->name('sessions.index');
@@ -85,6 +87,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::get('/reports', [Admin\ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/export', [Admin\ReportController::class, 'export'])->name('reports.export');
     Route::patch('/reports/hours/{user}', [Admin\ReportController::class, 'updateHours'])->name('reports.hours.update');
+    Route::patch('/reports/planning-hours/{user}', [Admin\ReportController::class, 'updatePlanningHours'])->name('reports.planning-hours.update');
     Route::delete('/reports/hours/{user}', [Admin\ReportController::class, 'clearHours'])->name('reports.hours.clear');
     Route::post('/reports/manual', [Admin\ReportController::class, 'addManual'])->name('reports.manual.add');
     Route::post('/reports/payment/{user}', [Admin\ReportController::class, 'markPaid'])->name('reports.payment.mark');

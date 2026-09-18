@@ -65,6 +65,7 @@
                     <th class="px-6 py-3 text-right">Pay Rate</th>
                     <th class="px-6 py-3 text-right">Sessions</th>
                     <th class="px-6 py-3 text-right">Hours</th>
+                    <th class="px-6 py-3 text-right">Sparks Bonus</th>
                     <th class="px-6 py-3 text-right">Services</th>
                     <th class="px-6 py-3 text-right">Total Pay</th>
                     <th class="px-6 py-3 text-center">Paid</th>
@@ -76,20 +77,23 @@
                 @forelse($reportTrainers as $trainer)
                 @php
                     $hours        = $trainer->hours_worked;
+                    $sparksBonus  = $trainer->sparks_bonus ?? 0;
                     $hourlyPay    = $trainer->pay_rate ? round($hours * $trainer->pay_rate, 2) : null;
                     $servicesPay  = $trainer->recurring_services_pay ?? 0;
-                    $pay          = ($hourlyPay !== null || $servicesPay > 0)
-                                        ? round(($hourlyPay ?? 0) + $servicesPay, 2)
+                    $pay          = ($hourlyPay !== null || $servicesPay > 0 || $sparksBonus > 0)
+                                        ? round(($hourlyPay ?? 0) + $sparksBonus + $servicesPay, 2)
                                         : null;
                     $totalSessions += $trainer->sessions_count;
                     $totalHours    += $hours;
                     $totalPay      += $pay ?? 0;
                 @endphp
-                <tr class="{{ $trainer->manually_added ? 'bg-blue-50' : '' }}">
+                <tr class="{{ $trainer->manually_added ? 'bg-blue-50' : ($trainer->is_lead_trainer ? 'bg-amber-50' : '') }}">
                     <td class="px-6 py-3 font-medium text-gray-800">
                         {{ $trainer->name }}
                         <div class="text-xs text-gray-400 font-normal">{{ $trainer->email }}</div>
-                        @if($trainer->manually_added)
+                        @if($trainer->is_lead_trainer)
+                            <span class="text-xs text-amber-600 font-normal">⭐ lead trainer</span>
+                        @elseif($trainer->manually_added)
                             <span class="text-xs text-blue-500 font-normal">manually added</span>
                         @endif
                     </td>
@@ -105,31 +109,50 @@
                         {{ $trainer->sessions_count > 0 ? $trainer->sessions_count : '—' }}
                     </td>
                     <td class="px-6 py-3 text-right">
-                        <form method="POST" action="{{ route('admin.reports.hours.update', $trainer) }}" class="inline-flex items-center justify-end gap-1">
-                            @csrf @method('PATCH')
-                            <input type="hidden" name="period_start" value="{{ $startDate }}">
-                            <input type="number" name="hours" value="{{ $hours }}" step="0.25" min="0" max="999" required
-                                   class="w-16 text-sm border-gray-300 rounded px-1 py-0.5 text-right focus:ring-gray-500 focus:border-gray-500 {{ $trainer->hours_override ? 'border-amber-400 bg-amber-50' : '' }}">
-                            <button type="submit" class="text-xs text-gray-400 hover:text-green-600" title="Save">✓</button>
-                        </form>
-                        @if($trainer->manually_added)
-                            <div class="flex items-center justify-end gap-1 mt-0.5">
-                                <form method="POST" action="{{ route('admin.reports.hours.clear', $trainer) }}" class="inline"
-                                      onsubmit="return confirm('Remove {{ addslashes($trainer->name) }} from this payroll period?')">
-                                    @csrf @method('DELETE')
-                                    <input type="hidden" name="period_start" value="{{ $startDate }}">
-                                    <button type="submit" class="text-xs text-red-400 hover:text-red-600">✕ remove</button>
-                                </form>
+                        @if($trainer->is_lead_trainer)
+                            {{-- Lead trainer: auto session hours + planning hours entered by the trainer --}}
+                            <div class="text-right text-gray-700">
+                                <div class="text-sm font-medium">{{ $hours }}h total</div>
+                                <div class="text-xs text-gray-400">{{ $trainer->hours_calculated }}h sessions</div>
+                                @if($trainer->planning_hours > 0)
+                                    <div class="text-xs text-amber-600">+ {{ $trainer->planning_hours }}h planning</div>
+                                @endif
                             </div>
-                        @elseif($trainer->hours_override)
-                            <div class="flex items-center justify-end gap-1 mt-0.5">
-                                <span class="text-xs text-amber-600" title="Manually adjusted (calculated: {{ $trainer->hours_calculated }}h)">✎ adjusted</span>
-                                <form method="POST" action="{{ route('admin.reports.hours.clear', $trainer) }}" class="inline">
-                                    @csrf @method('DELETE')
-                                    <input type="hidden" name="period_start" value="{{ $startDate }}">
-                                    <button type="submit" class="text-xs text-gray-400 hover:text-red-500" title="Reset to calculated ({{ $trainer->hours_calculated }}h)">reset</button>
-                                </form>
-                            </div>
+                        @else
+                            <form method="POST" action="{{ route('admin.reports.hours.update', $trainer) }}" class="inline-flex items-center justify-end gap-1">
+                                @csrf @method('PATCH')
+                                <input type="hidden" name="period_start" value="{{ $startDate }}">
+                                <input type="number" name="hours" value="{{ $hours }}" step="0.25" min="0" max="999" required
+                                       class="w-16 text-sm border-gray-300 rounded px-1 py-0.5 text-right focus:ring-gray-500 focus:border-gray-500 {{ $trainer->hours_override ? 'border-amber-400 bg-amber-50' : '' }}">
+                                <button type="submit" class="text-xs text-gray-400 hover:text-green-600" title="Save">✓</button>
+                            </form>
+                            @if($trainer->manually_added)
+                                <div class="flex items-center justify-end gap-1 mt-0.5">
+                                    <form method="POST" action="{{ route('admin.reports.hours.clear', $trainer) }}" class="inline"
+                                          onsubmit="return confirm('Remove {{ addslashes($trainer->name) }} from this payroll period?')">
+                                        @csrf @method('DELETE')
+                                        <input type="hidden" name="period_start" value="{{ $startDate }}">
+                                        <button type="submit" class="text-xs text-red-400 hover:text-red-600">✕ remove</button>
+                                    </form>
+                                </div>
+                            @elseif($trainer->hours_override)
+                                <div class="flex items-center justify-end gap-1 mt-0.5">
+                                    <span class="text-xs text-amber-600" title="Manually adjusted (calculated: {{ $trainer->hours_calculated }}h)">✎ adjusted</span>
+                                    <form method="POST" action="{{ route('admin.reports.hours.clear', $trainer) }}" class="inline">
+                                        @csrf @method('DELETE')
+                                        <input type="hidden" name="period_start" value="{{ $startDate }}">
+                                        <button type="submit" class="text-xs text-gray-400 hover:text-red-500" title="Reset to calculated ({{ $trainer->hours_calculated }}h)">reset</button>
+                                    </form>
+                                </div>
+                            @endif
+                        @endif
+                    </td>
+                    <td class="px-6 py-3 text-right text-gray-600">
+                        @if($sparksBonus > 0)
+                            <span class="font-medium text-green-700">+${{ number_format($sparksBonus, 2) }}</span>
+                            <div class="text-xs text-gray-400">{{ $trainer->sparks_hours }}h × $5</div>
+                        @else
+                            <span class="text-gray-300">—</span>
                         @endif
                     </td>
                     <td class="px-6 py-3 text-right text-gray-600">

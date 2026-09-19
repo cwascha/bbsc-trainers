@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Services\AssignmentService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 
 class TwilioController extends Controller
 {
@@ -29,18 +30,46 @@ class TwilioController extends Controller
                 return substr(preg_replace('/\D/', '', $u->phone ?? ''), -10) === $phone10;
             });
 
+        Log::info('Twilio SMS received', [
+            'from'     => $from,
+            'phone10'  => $phone10,
+            'body'     => $body,
+            'user_id'  => $user?->id,
+            'user'     => $user?->name,
+            'now_date' => now()->toDateString(),
+            'cutoff'   => now()->subDays(7)->toDateString(),
+        ]);
+
         if (! $user) {
             return $this->twimlResponse('We could not find your account. Please contact your administrator.');
         }
 
-        // Find the nearest upcoming assigned availability
+        // Find the nearest assigned availability — look back 7 days so trainers who reply
+        // late can still confirm a session that just passed.
         $availability = Availability::where('user_id', $user->id)
             ->whereIn('status', ['assigned', 'confirmed'])
-            ->whereHas('trainingDay', fn($q) => $q->where('date', '>=', now()->toDateString()))
+            ->whereHas('trainingDay', fn($q) => $q->where('date', '>=', now()->subDays(7)->toDateString()))
             ->with('trainingDay')
             ->get()
             ->sortBy('trainingDay.date')
             ->first();
+
+        Log::info('Twilio availability lookup', [
+            'user_id'           => $user->id,
+            'availability_id'   => $availability?->id,
+            'availability_status' => $availability?->status,
+            'training_day_date' => $availability?->trainingDay?->date,
+            'all_assigned'      => Availability::where('user_id', $user->id)
+                ->whereIn('status', ['assigned', 'confirmed', 'pending', 'declined', 'cancelled'])
+                ->with('trainingDay')
+                ->get()
+                ->map(fn($a) => [
+                    'id'     => $a->id,
+                    'status' => $a->status,
+                    'date'   => $a->trainingDay?->date,
+                ])
+                ->toArray(),
+        ]);
 
         if (! $availability) {
             return $this->twimlResponse('You have no upcoming scheduled sessions.');
@@ -54,7 +83,7 @@ class TwilioController extends Controller
                 ->where('status', 'assigned')
                 ->whereHas('trainingDay', fn($q) => $q
                     ->where('weekend_number', $day->weekend_number)
-                    ->where('date', '>=', now()->toDateString())
+                    ->where('date', '>=', now()->subDays(7)->toDateString())
                 )
                 ->with('trainingDay')
                 ->get();

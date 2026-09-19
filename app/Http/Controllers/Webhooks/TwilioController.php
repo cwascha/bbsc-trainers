@@ -33,10 +33,11 @@ class TwilioController extends Controller
             return $this->twimlResponse('We could not find your account. Please contact your administrator.');
         }
 
-        // Find the nearest upcoming assigned availability
+        // Find the nearest assigned availability — look back 7 days so trainers who reply
+        // late can still confirm a session that just passed.
         $availability = Availability::where('user_id', $user->id)
             ->whereIn('status', ['assigned', 'confirmed'])
-            ->whereHas('trainingDay', fn($q) => $q->where('date', '>=', now()->toDateString()))
+            ->whereHas('trainingDay', fn($q) => $q->where('date', '>=', now()->subDays(7)->toDateString()))
             ->with('trainingDay')
             ->get()
             ->sortBy('trainingDay.date')
@@ -54,7 +55,7 @@ class TwilioController extends Controller
                 ->where('status', 'assigned')
                 ->whereHas('trainingDay', fn($q) => $q
                     ->where('weekend_number', $day->weekend_number)
-                    ->where('date', '>=', now()->toDateString())
+                    ->where('date', '>=', now()->subDays(7)->toDateString())
                 )
                 ->with('trainingDay')
                 ->get();

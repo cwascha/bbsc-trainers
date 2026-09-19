@@ -113,6 +113,13 @@ class AssignmentController extends Controller
         return back()->with('success', "Assigned {$count} trainer(s) to {$trainingDay->formattedDate} and sent SMS notifications.");
     }
 
+    public function confirmTrainer(Availability $availability): RedirectResponse
+    {
+        $name = $availability->user->name;
+        $availability->update(['status' => 'confirmed', 'confirmed_at' => now()]);
+        return back()->with('success', "{$name} marked as confirmed.");
+    }
+
     public function removeTrainer(Availability $availability): RedirectResponse
     {
         $wasAssigned = in_array($availability->status, ['assigned', 'confirmed']);

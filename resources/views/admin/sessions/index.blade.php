@@ -141,6 +141,11 @@ function smsDayModal() {
                     <span class="font-medium text-green-800">{{ $av->user->name }}</span>
                     @if($av->status === 'confirmed')
                         <span class="text-green-600">✓</span>
+                    @else
+                        <form method="POST" action="{{ route('admin.availabilities.confirm', $av) }}" class="inline">
+                            @csrf
+                            <button type="submit" class="text-yellow-500 hover:text-green-600 leading-none" title="Mark confirmed">✓</button>
+                        </form>
                     @endif
                     <form method="POST" action="{{ route('admin.availabilities.destroy', $av) }}"
                           onsubmit="return confirm('Remove {{ addslashes($av->user->name) }} from this session?')">

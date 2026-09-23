@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "bbsc-db": {
+      "command": "node",
+      "args": ["/Users/cwascha/Desktop/BBSCTrainers/mcp/bbsc-db/dist/index.js"],
+      "env": {
+        "BBSC_DB_HOST":     "${BBSC_DB_HOST}",
+        "BBSC_DB_PORT":     "${BBSC_DB_PORT}",
+        "BBSC_DB_NAME":     "${BBSC_DB_NAME}",
+        "BBSC_DB_USER":     "${BBSC_DB_USER}",
+        "BBSC_DB_PASSWORD": "${BBSC_DB_PASSWORD}"
+      }
+    }
+  }
+}

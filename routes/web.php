@@ -12,6 +12,7 @@ use App\Http\Controllers\TrainingPlanController;
 use App\Http\Controllers\W9Controller;
 use App\Http\Controllers\Teams\RosterController;
 use App\Http\Controllers\Admin\TeamController;
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Webhooks\TwilioController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,6 +32,14 @@ Route::view('/terms', 'terms')->name('terms');
 Route::get('/training-plans/{trainingPlan}/view', [TrainingPlanController::class, 'viewSigned'])
     ->middleware('signed')
     ->name('training-plans.view-signed');
+
+// ─── Signed Attendance Page (SMS link, no login required) ─────────────────
+Route::get('/attendance/{weekend}', [AttendanceController::class, 'show'])
+    ->middleware('signed')
+    ->name('attendance.show');
+Route::patch('/attendance/{weekend}/toggle/{availability}', [AttendanceController::class, 'toggle'])
+    ->middleware('signed')
+    ->name('attendance.toggle');
 
 // ─── Trainer Routes ────────────────────────────────────────────────────────
 Route::middleware(['auth', 'verified'])->group(function () {

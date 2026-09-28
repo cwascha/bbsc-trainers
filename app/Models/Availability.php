@@ -14,6 +14,7 @@ class Availability extends Model
         'status',
         'confirmed_at',
         'cancelled_at',
+        'no_showed_at',
         'hours_override',
     ];
 
@@ -23,6 +24,7 @@ class Availability extends Model
             'signed_up_at'   => 'datetime',
             'confirmed_at'   => 'datetime',
             'cancelled_at'   => 'datetime',
+            'no_showed_at'   => 'datetime',
             'hours_override' => 'float',
         ];
     }

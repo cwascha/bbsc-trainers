@@ -16,3 +16,12 @@ Artisan::command('inspire', function () {
 //   ->name('assign-upcoming-weekend')
 //   ->withoutOverlapping()
 //   ->description('Assign trainers to the upcoming weekend and send SMS notifications');
+
+// Send the weekend trainer roster to admins every Friday at 6pm ET.
+Schedule::command('roster:notify')
+    ->fridays()
+    ->at('18:00')
+    ->timezone('America/New_York')
+    ->name('send-weekend-roster')
+    ->withoutOverlapping()
+    ->description('Send upcoming weekend trainer roster via SMS to configured recipients');

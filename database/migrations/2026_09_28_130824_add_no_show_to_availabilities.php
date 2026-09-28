@@ -9,7 +9,7 @@ return new class extends Migration
     {
         if (DB::getDriverName() === 'mysql') {
             DB::statement("ALTER TABLE availabilities MODIFY COLUMN status ENUM('pending','assigned','confirmed','declined','cancelled','no_show') DEFAULT 'pending'");
-            DB::statement("ALTER TABLE availabilities ADD COLUMN IF NOT EXISTS no_showed_at TIMESTAMP NULL AFTER cancelled_at");
+            DB::statement("ALTER TABLE availabilities ADD COLUMN no_showed_at TIMESTAMP NULL AFTER cancelled_at");
         }
     }
 

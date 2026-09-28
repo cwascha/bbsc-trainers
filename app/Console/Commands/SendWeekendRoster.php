@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\TrainingDay;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\URL;
 use Twilio\Rest\Client;
 
 class SendWeekendRoster extends Command
@@ -97,6 +98,11 @@ class SendWeekendRoster extends Command
             $lines[] = "{$dayName} {$day->program} ({$timeRange}):";
             $lines[] = $trainers ?: 'None assigned';
         }
+
+        // Attendance link expires Monday night (3 days from Friday)
+        $attendanceUrl = URL::signedRoute('attendance.show', ['weekend' => $weekendNum], now()->addDays(3));
+        $lines[] = '';
+        $lines[] = "Mark attendance: {$attendanceUrl}";
 
         return implode("\n", $lines);
     }

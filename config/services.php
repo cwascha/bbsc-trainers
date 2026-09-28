@@ -34,6 +34,10 @@ return [
         'from'  => env('TWILIO_FROM'),
     ],
 
+    'roster' => [
+        'notify_phones' => env('ROSTER_NOTIFY_PHONES', ''),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),

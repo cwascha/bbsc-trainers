@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendBulkSms;
 use App\Models\TrainingDay;
 use App\Models\User;
 use App\Services\SmsService;
@@ -28,64 +29,28 @@ class SmsController extends Controller
             'message'    => 'required|string|max:1600',
         ]);
 
-        $trainers = User::whereIn('id', $request->recipients)->get();
+        $count = count($request->recipients);
+        SendBulkSms::dispatch($request->recipients, $request->message);
 
-        $sent   = 0;
-        $failed = 0;
-        $noPhone = 0;
-
-        foreach ($trainers as $trainer) {
-            if (! $trainer->phone) {
-                $noPhone++;
-                continue;
-            }
-            try {
-                $this->smsService->sendCustom($trainer, $request->message);
-                $sent++;
-                usleep(200000); // stay under Twilio rate limits
-            } catch (\Exception $e) {
-                Log::error("Failed to send SMS to {$trainer->phone}: " . $e->getMessage());
-                $failed++;
-            }
-        }
-
-        $msg = "SMS sent to {$sent} trainer(s).";
-        if ($noPhone)  $msg .= " {$noPhone} skipped (no phone on file).";
-        if ($failed)   $msg .= " {$failed} failed — check logs.";
-
-        return back()->with('success', $msg);
+        return back()->with('success', "Queued SMS to {$count} trainer(s). Messages will arrive within a few minutes.");
     }
 
     public function sendToDay(Request $request, TrainingDay $trainingDay): RedirectResponse
     {
         $request->validate(['message' => 'required|string|max:1600']);
 
-        $trainers = $trainingDay->availabilities()
+        $ids = $trainingDay->availabilities()
             ->whereIn('status', ['assigned', 'confirmed'])
             ->with('user')
             ->get()
-            ->pluck('user');
+            ->pluck('user.id')
+            ->filter()
+            ->values()
+            ->all();
 
-        $sent = $failed = $noPhone = 0;
+        SendBulkSms::dispatch($ids, $request->message);
 
-        foreach ($trainers as $trainer) {
-            if (! $trainer->phone) {
-                $noPhone++;
-                continue;
-            }
-            try {
-                $this->smsService->sendCustom($trainer, $request->message);
-                $sent++;
-                usleep(200000);
-            } catch (\Exception $e) {
-                Log::error("Failed to send SMS to {$trainer->phone}: " . $e->getMessage());
-                $failed++;
-            }
-        }
-
-        $msg = "SMS sent to {$sent} trainer(s) assigned to {$trainingDay->formattedDate}.";
-        if ($noPhone) $msg .= " {$noPhone} skipped (no phone on file).";
-        if ($failed)  $msg .= " {$failed} failed — check logs.";
+        $msg = "Queued SMS to " . count($ids) . " trainer(s) assigned to {$trainingDay->formattedDate}. Messages will arrive within a few minutes.";
 
         return back()->with('success', $msg);
     }

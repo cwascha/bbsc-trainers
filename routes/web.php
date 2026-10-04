@@ -12,6 +12,7 @@ use App\Http\Controllers\TrainingPlanController;
 use App\Http\Controllers\W9Controller;
 use App\Http\Controllers\Teams\RosterController;
 use App\Http\Controllers\Admin\ClubController;
+use App\Http\Controllers\Admin\SeasonController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Webhooks\TwilioController;
@@ -116,6 +117,16 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
 
     Route::get('/club', [ClubController::class, 'edit'])->name('club.edit');
     Route::patch('/club', [ClubController::class, 'update'])->name('club.update');
+
+    Route::get('/seasons', [SeasonController::class, 'index'])->name('seasons.index');
+    Route::post('/seasons', [SeasonController::class, 'store'])->name('seasons.store');
+    Route::get('/seasons/{season}', [SeasonController::class, 'show'])->name('seasons.show');
+    Route::patch('/seasons/{season}', [SeasonController::class, 'update'])->name('seasons.update');
+    Route::delete('/seasons/{season}', [SeasonController::class, 'destroy'])->name('seasons.destroy');
+    Route::post('/seasons/{season}/generate', [SeasonController::class, 'generateDays'])->name('seasons.generate');
+    Route::post('/seasons/{season}/days', [SeasonController::class, 'storeDay'])->name('seasons.days.store');
+    Route::patch('/seasons/{season}/days/{day}', [SeasonController::class, 'updateDay'])->name('seasons.days.update');
+    Route::delete('/seasons/{season}/days/{day}', [SeasonController::class, 'destroyDay'])->name('seasons.days.destroy');
 
     Route::get('/admins', [Admin\AdminUserController::class, 'index'])->name('admins.index');
     Route::post('/admins', [Admin\AdminUserController::class, 'store'])->name('admins.store');

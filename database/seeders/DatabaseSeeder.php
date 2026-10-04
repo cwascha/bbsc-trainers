@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
             ['slug' => 'bbsc'],
             [
                 'name'                => 'BBSC',
-                'primary_color'       => '#1e3a5f',
+                'primary_color'       => '#111827',
                 'accent_color'        => '#3b82f6',
                 'subscription_status' => 'active',
             ]

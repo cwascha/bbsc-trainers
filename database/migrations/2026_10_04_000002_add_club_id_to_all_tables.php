@@ -28,7 +28,7 @@ return new class extends Migration
             'id'                  => 1,
             'name'                => 'BBSC',
             'slug'                => 'bbsc',
-            'primary_color'       => '#1e3a5f',
+            'primary_color'       => '#111827',
             'accent_color'        => '#3b82f6',
             'subscription_status' => 'active',
             'created_at'          => now(),

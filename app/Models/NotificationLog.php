@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToClub;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class NotificationLog extends Model
 {
+    use BelongsToClub;
     protected $fillable = [
         'user_id',
         'training_day_id',

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Club;
 use App\Models\TrainingDay;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\URL;
@@ -14,6 +15,15 @@ class SendWeekendRoster extends Command
 
     public function handle(): int
     {
+        // Bind BBSC as the current club so BelongsToClub scopes work in the scheduler
+        // TODO: when multi-club is live, loop over active clubs and send per-club
+        if (! currentClub()) {
+            $club = Club::where('slug', 'bbsc')->first() ?? Club::first();
+            if ($club) {
+                app()->instance('currentClub', $club);
+            }
+        }
+
         $phones = collect(explode(',', config('services.roster.notify_phones', '')))
             ->map(fn($p) => preg_replace('/\D/', '', trim($p)))
             ->filter(fn($p) => strlen($p) >= 10)

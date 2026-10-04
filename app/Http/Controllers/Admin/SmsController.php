@@ -30,7 +30,7 @@ class SmsController extends Controller
         ]);
 
         $count = count($request->recipients);
-        SendBulkSms::dispatch($request->recipients, $request->message);
+        SendBulkSms::dispatch($request->recipients, $request->message, currentClub()->id);
 
         return back()->with('success', "Queued SMS to {$count} trainer(s). Messages will arrive within a few minutes.");
     }
@@ -48,7 +48,7 @@ class SmsController extends Controller
             ->values()
             ->all();
 
-        SendBulkSms::dispatch($ids, $request->message);
+        SendBulkSms::dispatch($ids, $request->message, currentClub()->id);
 
         $msg = "Queued SMS to " . count($ids) . " trainer(s) assigned to {$trainingDay->formattedDate}. Messages will arrive within a few minutes.";
 

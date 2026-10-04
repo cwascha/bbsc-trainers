@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToClub;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Availability extends Model
 {
+    use BelongsToClub;
     protected $fillable = [
+        'club_id',
         'user_id',
         'training_day_id',
         'signed_up_at',

@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToClub;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Document extends Model
 {
+    use BelongsToClub;
     protected $fillable = ['title', 'description', 'file_path', 'original_filename', 'uploaded_by'];
 
     public function uploader(): BelongsTo

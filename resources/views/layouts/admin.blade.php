@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Admin — {{ $currentClub->name ?? config('app.name') }}</title>
-    @php $logoUrl = $currentClub?->logo_path ? asset('storage/' . $currentClub->logo_path) : asset('images/BBSClogo.png'); @endphp
+    @php $logoUrl = $currentClub?->logo_path ?: asset('images/BBSClogo.png'); @endphp
     <link rel="icon" type="image/png" href="{{ $logoUrl }}">
     <link rel="apple-touch-icon" href="{{ $logoUrl }}">
     <style>

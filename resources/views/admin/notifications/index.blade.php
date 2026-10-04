@@ -44,10 +44,10 @@
             <tbody class="divide-y divide-gray-100">
                 @forelse($logs as $log)
                 <tr>
-                    <td class="px-6 py-3 text-gray-500">{{ $log->sent_at->format('M j, Y g:ia') }}</td>
-                    <td class="px-6 py-3 font-medium">{{ $log->user->name }}</td>
+                    <td class="px-6 py-3 text-gray-500">{{ $log->sent_at?->format('M j, Y g:ia') ?? '—' }}</td>
+                    <td class="px-6 py-3 font-medium">{{ $log->user?->name ?? 'Unknown' }}</td>
                     <td class="px-6 py-3 text-gray-600">{{ $log->phone }}</td>
-                    <td class="px-6 py-3 text-gray-600">{{ $log->trainingDay->formattedDate }}</td>
+                    <td class="px-6 py-3 text-gray-600">{{ $log->trainingDay?->formattedDate ?? '—' }}</td>
                     <td class="px-6 py-3">
                         <span class="px-2 py-0.5 rounded text-xs {{ $log->status === 'sent' || $log->status === 'queued' ? 'bg-green-100 text-green-700' : ($log->status === 'failed' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600') }}">
                             {{ $log->status }}

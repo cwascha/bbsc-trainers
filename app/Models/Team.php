@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToClub;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Team extends Model
 {
+    use BelongsToClub;
     protected $fillable = [
         'name', 'group_name', 'program', 'coach_name',
         'format', 'location', 'session_times', 'rules_url', 'schedule_url', 'notes',

@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Club;
 use App\Models\User;
 use App\Services\SmsService;
 use Illuminate\Bus\Queueable;
@@ -21,10 +22,16 @@ class SendBulkSms implements ShouldQueue
     public function __construct(
         private readonly array $trainerIds,
         private readonly string $message,
+        private readonly int $clubId = 1,
     ) {}
 
     public function handle(SmsService $smsService): void
     {
+        // Bind the club so BelongsToClub global scope works in the queue worker
+        if ($club = Club::find($this->clubId)) {
+            app()->instance('currentClub', $club);
+        }
+
         $trainers = User::whereIn('id', $this->trainerIds)->get();
 
         foreach ($trainers as $trainer) {

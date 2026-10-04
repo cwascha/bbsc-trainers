@@ -22,6 +22,9 @@ Route::domain(config('app.teams_domain'))->group(function () {
     Route::get('/{team}', [RosterController::class, 'show'])->name('teams.public.show');
 });
 
+// ─── All main routes resolve the current club from the subdomain ──────────
+Route::middleware('club')->group(function () {
+
 Route::get('/', fn() => redirect()->route('dashboard'));
 
 // ─── Public Pages ──────────────────────────────────────────────────────────
@@ -125,9 +128,11 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::post('/teams/{team}', [TeamController::class, 'update'])->name('teams.update.post'); // fallback for browsers that don't support PUT
 });
 
-// ─── Twilio Webhook (no auth, CSRF exempt) ────────────────────────────────
+require __DIR__.'/auth.php';
+
+}); // end club middleware group
+
+// ─── Twilio Webhook (no auth, no CSRF, no club context needed) ───────────
 Route::post('/webhooks/twilio/sms', [TwilioController::class, 'handle'])
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
     ->name('webhooks.twilio.sms');
-
-require __DIR__.'/auth.php';

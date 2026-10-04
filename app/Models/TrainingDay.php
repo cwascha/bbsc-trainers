@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToClub;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class TrainingDay extends Model
 {
+    use BelongsToClub;
     protected $fillable = [
+        'club_id',
         'date',
         'program',
         'weekend_number',

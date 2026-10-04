@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\BelongsToClub;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -12,6 +13,7 @@ class TrainingDay extends Model
     use BelongsToClub;
     protected $fillable = [
         'club_id',
+        'season_id',
         'date',
         'program',
         'weekend_number',
@@ -25,6 +27,11 @@ class TrainingDay extends Model
         return [
             'date' => 'date',
         ];
+    }
+
+    public function season(): BelongsTo
+    {
+        return $this->belongsTo(Season::class);
     }
 
     public function availabilities(): HasMany

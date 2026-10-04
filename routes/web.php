@@ -11,6 +11,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\TrainingPlanController;
 use App\Http\Controllers\W9Controller;
 use App\Http\Controllers\Teams\RosterController;
+use App\Http\Controllers\Admin\ClubController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Webhooks\TwilioController;
@@ -112,6 +113,9 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
 
     Route::get('/trainers/{user}/w9', [Admin\W9Controller::class, 'download'])->name('trainers.w9.download');
     Route::post('/trainers/{user}/w9-received', [Admin\W9Controller::class, 'markReceived'])->name('trainers.w9.received');
+
+    Route::get('/club', [ClubController::class, 'edit'])->name('club.edit');
+    Route::patch('/club', [ClubController::class, 'update'])->name('club.update');
 
     Route::get('/admins', [Admin\AdminUserController::class, 'index'])->name('admins.index');
     Route::post('/admins', [Admin\AdminUserController::class, 'store'])->name('admins.store');

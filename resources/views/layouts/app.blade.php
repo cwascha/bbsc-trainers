@@ -5,9 +5,16 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
-        <link rel="icon" type="image/png" href="/images/BBSClogo.png">
-        <link rel="apple-touch-icon" href="/images/BBSClogo.png">
+        <title>{{ $currentClub->name ?? config('app.name') }}</title>
+        @php $logoUrl = $currentClub?->logo_path ? Storage::disk('public')->url($currentClub->logo_path) : asset('images/BBSClogo.png'); @endphp
+        <link rel="icon" type="image/png" href="{{ $logoUrl }}">
+        <link rel="apple-touch-icon" href="{{ $logoUrl }}">
+        <style>
+          :root {
+            --club-primary: {{ $currentClub->primary_color ?? '#1e3a5f' }};
+            --club-accent:  {{ $currentClub->accent_color  ?? '#3b82f6' }};
+          }
+        </style>
         <link rel="manifest" href="/manifest.json">
 
         <!-- Fonts -->

@@ -23,7 +23,7 @@
                 <label class="block text-sm font-semibold text-gray-700 mb-2">Logo</label>
                 @if($club->logo_path)
                     <div class="mb-3 flex items-center gap-4">
-                        <img src="{{ Storage::disk('public')->url($club->logo_path) }}"
+                        <img src="{{ $club->logo_path }}"
                              alt="Current logo" class="h-16 w-auto rounded border border-gray-200 bg-gray-50 p-1">
                         <span class="text-sm text-gray-400">Current logo</span>
                     </div>

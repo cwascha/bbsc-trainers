@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class ClubController extends Controller
 {
@@ -26,10 +25,8 @@ class ClubController extends Controller
         ]);
 
         if ($request->hasFile('logo')) {
-            if ($club->logo_path) {
-                Storage::disk('public')->delete($club->logo_path);
-            }
-            $club->logo_path = $request->file('logo')->store("logos/{$club->id}", 'public');
+            $file = $request->file('logo');
+            $club->logo_path = 'data:' . $file->getMimeType() . ';base64,' . base64_encode(file_get_contents($file->getRealPath()));
         }
 
         $club->fill([

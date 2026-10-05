@@ -45,6 +45,7 @@
                 <a href="{{ route('admin.admins.index') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm {{ request()->routeIs('admin.admins.*') ? 'bg-black/20' : 'hover:bg-black/20' }}">Settings</a>
                 <a href="{{ route('admin.seasons.index') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm {{ request()->routeIs('admin.seasons.*') ? 'bg-black/20' : 'hover:bg-black/20' }}">Seasons</a>
                 <a href="{{ route('admin.club.edit') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm {{ request()->routeIs('admin.club.*') ? 'bg-black/20' : 'hover:bg-black/20' }}">Branding</a>
+                <a href="{{ route('help') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm {{ request()->routeIs('help') ? 'bg-black/20' : 'hover:bg-black/20' }}">Help</a>
                 <a href="{{ route('dashboard') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm text-yellow-300 hover:bg-black/20">← Trainer View</a>
             </div>
         </div>

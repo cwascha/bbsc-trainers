@@ -100,20 +100,6 @@
             </div>
 
             <div class="pt-2 border-t flex justify-end">
-            {{-- Roster SMS recipients --}}
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Roster SMS Recipients</label>
-                <input type="text" name="roster_notify_phones"
-                       value="{{ old('roster_notify_phones', $club->roster_notify_phones) }}"
-                       placeholder="7342768619, 2488021988"
-                       class="w-full rounded-lg border-gray-300 shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500">
-                <p class="mt-1 text-xs text-gray-400">
-                    Comma-separated phone numbers (digits only) that receive the Friday roster SMS.
-                    Leave blank to disable automatic roster texts.
-                </p>
-                @error('roster_notify_phones')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
-            </div>
-
                 <button type="submit" class="px-6 py-2 bg-gray-800 text-white text-sm font-semibold rounded-lg hover:bg-gray-700 transition">
                     Save Branding
                 </button>

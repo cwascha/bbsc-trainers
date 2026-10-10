@@ -16,8 +16,9 @@ class AdminUserController extends Controller
     public function index()
     {
         $admins = User::where('role', 'admin')->orderBy('name')->get();
+        $club   = currentClub();
 
-        return view('admin.admins.index', compact('admins'));
+        return view('admin.admins.index', compact('admins', 'club'));
     }
 
     public function store(Request $request): RedirectResponse

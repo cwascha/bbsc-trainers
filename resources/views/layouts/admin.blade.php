@@ -42,7 +42,7 @@
                 <a href="{{ route('admin.reports.index') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm {{ request()->routeIs('admin.reports.*') ? 'bg-black/20' : 'hover:bg-black/20' }}">Payroll</a>
                 <a href="{{ route('admin.teams.index') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm {{ request()->routeIs('admin.teams.*') ? 'bg-black/20' : 'hover:bg-black/20' }}">Teams</a>
                 <a href="{{ route('admin.documents.index') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm {{ request()->routeIs('admin.documents.*') ? 'bg-black/20' : 'hover:bg-black/20' }}">Docs</a>
-                <a href="{{ route('admin.admins.index') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm {{ request()->routeIs('admin.admins.*') ? 'bg-black/20' : 'hover:bg-black/20' }}">Settings</a>
+                <a href="{{ route('admin.admins.index') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm {{ request()->routeIs('admin.admins.*') ? 'bg-black/20' : 'hover:bg-black/20' }}">Club Settings</a>
                 <a href="{{ route('admin.seasons.index') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm {{ request()->routeIs('admin.seasons.*') ? 'bg-black/20' : 'hover:bg-black/20' }}">Seasons</a>
                 <a href="{{ route('admin.club.edit') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm {{ request()->routeIs('admin.club.*') ? 'bg-black/20' : 'hover:bg-black/20' }}">Branding</a>
                 <a href="{{ route('help') }}" class="whitespace-nowrap px-3 py-2 rounded text-sm {{ request()->routeIs('help') ? 'bg-black/20' : 'hover:bg-black/20' }}">Help</a>

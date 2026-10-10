@@ -16,6 +16,15 @@
             <input type="hidden" name="accent_color" value="{{ $club->accent_color }}">
 
             <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Contact Email</label>
+                <input type="email" name="contact_email"
+                       value="{{ old('contact_email', $club->contact_email) }}"
+                       placeholder="admin@yourclub.com"
+                       class="block w-full rounded border-gray-300 text-sm focus:ring-gray-500 focus:border-gray-500">
+                <p class="mt-1 text-xs text-gray-400">Used as the sender address on trainer emails. Leave blank to use the platform default.</p>
+            </div>
+
+            <div>
                 <label class="block text-xs font-medium text-gray-600 mb-1">Roster SMS Recipients</label>
                 <input type="text" name="roster_notify_phones"
                        value="{{ old('roster_notify_phones', $club->roster_notify_phones) }}"

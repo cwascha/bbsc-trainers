@@ -3,6 +3,20 @@
 
 <div class="max-w-2xl space-y-6">
 
+    @if(session('welcome'))
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-5">
+        <h2 class="text-base font-semibold text-blue-800 mb-1">Welcome to TrainerSync! 🎉</h2>
+        <p class="text-sm text-blue-700">
+            Start by uploading your club logo and setting your colors below. This gives your team a branded experience.
+            Once saved, you'll be taken to your dashboard.
+        </p>
+        <form method="POST" action="{{ route('admin.club.welcome-dismiss') }}" class="mt-3 inline">
+            @csrf
+            <button class="text-xs text-blue-500 underline">Skip for now</button>
+        </form>
+    </div>
+    @endif
+
     <h1 class="text-2xl font-bold text-gray-800">Club Branding</h1>
 
     <div class="bg-white rounded-lg shadow p-6">

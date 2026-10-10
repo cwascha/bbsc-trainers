@@ -11,6 +11,12 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        $club = currentClub();
+        if ($club && is_null($club->logo_path) && ! session('welcome_dismissed')) {
+            return redirect()->route('admin.club.edit')
+                ->with('welcome', true);
+        }
+
         $totalTrainers = User::where('role', 'trainer')->count();
         $w9Received    = User::where('role', 'trainer')->whereNotNull('w9_received_at')->count();
         $w9Missing     = User::where('role', 'trainer')->whereNull('w9_path')->whereNull('w9_received_at')->count();

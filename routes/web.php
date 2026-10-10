@@ -123,6 +123,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
 
     Route::get('/club', [ClubController::class, 'edit'])->name('club.edit');
     Route::patch('/club', [ClubController::class, 'update'])->name('club.update');
+    Route::post('/club/welcome-dismiss', [ClubController::class, 'dismissWelcome'])->name('club.welcome-dismiss');
 
     Route::get('/seasons', [SeasonController::class, 'index'])->name('seasons.index');
     Route::post('/seasons', [SeasonController::class, 'store'])->name('seasons.store');

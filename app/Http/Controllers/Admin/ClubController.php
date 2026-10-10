@@ -35,6 +35,16 @@ class ClubController extends Controller
             'accent_color'  => $request->accent_color,
         ])->save();
 
+        if (session('welcome')) {
+            return redirect()->route('admin.dashboard')->with('success', 'Club branding saved! Welcome to TrainerSync.');
+        }
+
         return back()->with('success', 'Branding updated successfully.');
+    }
+
+    public function dismissWelcome(): RedirectResponse
+    {
+        session(['welcome_dismissed' => true]);
+        return redirect()->route('admin.dashboard');
     }
 }

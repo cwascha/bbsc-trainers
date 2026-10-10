@@ -1,8 +1,34 @@
 @extends('layouts.admin')
 @section('content')
 
-<div class="space-y-6">
-    <h1 class="text-2xl font-bold text-gray-800">Admin Users</h1>
+<div class="space-y-8">
+    <h1 class="text-2xl font-bold text-gray-800">Club Settings</h1>
+
+    {{-- Notifications --}}
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="font-semibold text-gray-800 mb-1">Notifications</h2>
+        <p class="text-sm text-gray-500 mb-4">Phone numbers that receive the automated Friday roster SMS.</p>
+        <form method="POST" action="{{ route('admin.club.update') }}" class="space-y-3">
+            @csrf @method('PATCH')
+            {{-- Pass through required branding fields unchanged --}}
+            <input type="hidden" name="name" value="{{ $club->name }}">
+            <input type="hidden" name="primary_color" value="{{ $club->primary_color }}">
+            <input type="hidden" name="accent_color" value="{{ $club->accent_color }}">
+            <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Roster SMS Recipients</label>
+                <input type="text" name="roster_notify_phones"
+                       value="{{ old('roster_notify_phones', $club->roster_notify_phones) }}"
+                       placeholder="7342768619, 2488021988"
+                       class="block w-full rounded border-gray-300 text-sm focus:ring-gray-500 focus:border-gray-500">
+                <p class="mt-1 text-xs text-gray-400">Comma-separated phone numbers (digits only). Leave blank to disable.</p>
+            </div>
+            <button type="submit" class="px-4 py-2 bg-gray-800 text-white text-sm font-semibold rounded-lg hover:bg-gray-700 transition">
+                Save
+            </button>
+        </form>
+    </div>
+
+    <h2 class="text-lg font-bold text-gray-800">Admin Users</h2>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 

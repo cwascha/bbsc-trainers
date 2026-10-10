@@ -5,23 +5,30 @@ namespace App\Console\Commands;
 use App\Models\Club;
 use App\Models\TrainingDay;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Twilio\Rest\Client;
 
 class SendWeekendRoster extends Command
 {
-    protected $signature   = 'roster:notify {--dry-run : Print message without sending}';
+    protected $signature   = 'roster:notify {--dry-run : Print message without sending} {--club= : Club slug to send for (defaults to CLUB_SLUG env or first club)}';
     protected $description = 'Send the upcoming weekend trainer roster via SMS to configured recipients';
 
     public function handle(): int
     {
-        // Bind BBSC as the current club so BelongsToClub scopes work in the scheduler
-        // TODO: when multi-club is live, loop over active clubs and send per-club
+        // Resolve club — option > env > first club
         if (! currentClub()) {
-            $club = Club::where('slug', 'bbsc')->first() ?? Club::first();
-            if ($club) {
-                app()->instance('currentClub', $club);
+            $slug = $this->option('club') ?? config('app.club_slug');
+            $club = $slug
+                ? Club::where('slug', $slug)->first()
+                : Club::first();
+
+            if (! $club) {
+                $this->error('No club found. Pass --club=<slug> or set CLUB_SLUG in .env.');
+                Log::error('roster:notify — no club found');
+                return 1;
             }
+            app()->instance('currentClub', $club);
         }
 
         $phones = collect(explode(',', config('services.roster.notify_phones', '')))
@@ -31,6 +38,7 @@ class SendWeekendRoster extends Command
 
         if ($phones->isEmpty()) {
             $this->error('No recipient phones configured. Set ROSTER_NOTIFY_PHONES in .env.');
+            Log::error('roster:notify — ROSTER_NOTIFY_PHONES is empty or not set');
             return 1;
         }
 
@@ -48,7 +56,8 @@ class SendWeekendRoster extends Command
             ->get();
 
         if ($days->isEmpty()) {
-            $this->info('No training days found for the upcoming weekend.');
+            $this->info('No training days found for the upcoming weekend (' . $saturday->toDateString() . ').');
+            Log::info('roster:notify — no training days found for ' . $saturday->toDateString());
             return 0;
         }
 
@@ -72,17 +81,25 @@ class SendWeekendRoster extends Command
 
         $twilio = new Client($sid, $token);
 
+        $sent   = 0;
+        $failed = 0;
+
         foreach ($phones as $phone) {
             $e164 = '+1' . substr($phone, -10);
             try {
                 $twilio->messages->create($e164, ['from' => $from, 'body' => $message]);
                 $this->info("Sent to {$e164}");
+                $sent++;
             } catch (\Exception $e) {
                 $this->error("Failed to send to {$e164}: " . $e->getMessage());
+                Log::error("roster:notify — Twilio error for {$e164}: " . $e->getMessage());
+                $failed++;
             }
         }
 
-        return 0;
+        Log::info("roster:notify — done. Sent: {$sent}, Failed: {$failed}. Weekend: {$saturday->toDateString()}");
+
+        return $failed > 0 && $sent === 0 ? 1 : 0;
     }
 
     private function buildMessage($days, $saturday, $sunday): string

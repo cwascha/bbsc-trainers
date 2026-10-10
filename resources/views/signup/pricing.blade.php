@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Get Started — Pitchside</title>
+    <title>Get Started — TrainerSync</title>
     @vite(['resources/css/app.css'])
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -19,7 +19,7 @@
     {{-- Pricing card --}}
     <div class="max-w-md mx-auto bg-white rounded-2xl shadow-lg overflow-hidden mb-12">
         <div class="bg-gray-900 px-8 py-6 text-center">
-            <p class="text-blue-400 font-semibold text-sm uppercase tracking-wide mb-2">Pitchside Pro</p>
+            <p class="text-blue-400 font-semibold text-sm uppercase tracking-wide mb-2">TrainerSync Pro</p>
             <div class="flex items-end justify-center gap-1">
                 <span class="text-5xl font-bold text-white">$99</span>
                 <span class="text-gray-400 mb-2">/ month</span>

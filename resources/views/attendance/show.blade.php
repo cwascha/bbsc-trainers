@@ -95,7 +95,7 @@
     @endforeach
 
     <p class="mt-8 text-center text-xs text-gray-400">
-        BBSC Trainer Dashboard &middot; Weekend {{ $weekend }}
+        TrainerSync &middot; Weekend {{ $weekend }}
     </p>
 
 </div>

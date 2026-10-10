@@ -24,7 +24,7 @@
             <h1>You've been invited as an Admin</h1>
             <p>Hi {{ $user->name }},</p>
             <p>
-                You've been added as an administrator on the <strong>BBSC Trainer Dashboard</strong>.
+                You've been added as an administrator on <strong>TrainerSync</strong>.
                 Click the button below to set your password and access your account.
             </p>
             <a href="{{ $setupUrl }}" class="btn">Set Up My Account</a>
@@ -32,7 +32,7 @@
             <p class="url">{{ $setupUrl }}</p>
         </div>
         <div class="footer">
-            BBSC Trainer Dashboard &mdash; If you did not expect this invitation, you can ignore this email.
+            TrainerSync &mdash; If you did not expect this invitation, you can ignore this email.
         </div>
     </div>
 </body>

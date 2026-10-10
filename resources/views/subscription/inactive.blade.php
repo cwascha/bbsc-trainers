@@ -22,7 +22,7 @@
         </p>
         <p class="text-xs text-gray-400">
             If you believe this is an error, contact
-            <a href="mailto:support@pitchside.app" class="underline">support@pitchside.app</a>.
+            <a href="mailto:support@trainersync.app" class="underline">support@trainersync.app</a>.
         </p>
     </div>
 </body>

@@ -21,7 +21,7 @@ class AdminInvitation extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'You\'ve been invited to BBSC Trainer Dashboard (Admin)',
+            subject: 'You\'ve been invited to TrainerSync (Admin)',
         );
     }
 

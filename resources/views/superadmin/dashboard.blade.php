@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Super Admin — Pitchside</title>
+    <title>Super Admin — TrainerSync</title>
     @vite(['resources/css/app.css'])
 </head>
 <body class="bg-gray-100 min-h-screen font-sans antialiased">
@@ -11,7 +11,7 @@
 <nav class="bg-gray-900 text-white px-6 py-4 flex items-center justify-between">
     <div class="flex items-center gap-3">
         <span class="text-xs font-bold bg-red-600 text-white px-2 py-0.5 rounded uppercase tracking-wide">Super Admin</span>
-        <span class="font-bold">Pitchside</span>
+        <span class="font-bold">TrainerSync</span>
     </div>
     <div class="flex items-center gap-4 text-sm">
         <span class="text-gray-400">{{ Auth::user()->name }}</span>

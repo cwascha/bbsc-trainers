@@ -27,8 +27,13 @@ class ClubMiddleware
 
     private function resolve(Request $request): ?Club
     {
+        // Super-admin impersonation takes highest priority
+        if ($clubId = session('impersonating_club_id')) {
+            return Club::find($clubId);
+        }
+
         // Local dev / CI: use CLUB_SLUG env var to bypass subdomain detection
-        if ($slug = env('CLUB_SLUG')) {
+        if ($slug = config('app.club_slug')) {
             return Club::where('slug', $slug)->first();
         }
 
@@ -37,7 +42,9 @@ class ClubMiddleware
         $parts = explode('.', $host);
 
         if (count($parts) >= 3) {
-            return Club::where('slug', $parts[0])->first();
+            // Ignore www
+            $sub = $parts[0] === 'www' ? ($parts[1] ?? null) : $parts[0];
+            return $sub ? Club::where('slug', $sub)->first() : null;
         }
 
         // Single-segment host (localhost, IP) — fall back to first club for convenience

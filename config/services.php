@@ -28,6 +28,14 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'stripe' => [
+        'key'            => env('STRIPE_KEY'),
+        'secret'         => env('STRIPE_SECRET'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+        'price_id'       => env('STRIPE_PRICE_ID'),  // your monthly price ID from Stripe dashboard
+        'trial_days'     => env('STRIPE_TRIAL_DAYS', 14),
+    ],
+
     'twilio' => [
         'sid'   => env('TWILIO_SID'),
         'token' => env('TWILIO_TOKEN'),

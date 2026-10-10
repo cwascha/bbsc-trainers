@@ -20,10 +20,11 @@
     <body class="font-sans text-gray-900 antialiased">
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
             <div class="flex flex-col items-center space-y-3">
+                @php $logoUrl = $currentClub?->logo_path ?: asset('images/BBSClogo.png'); @endphp
                 <a href="/">
-                    <img src="{{ asset('images/BBSClogo.png') }}" alt="BBSC Logo" style="height:80px;width:auto;">
+                    <img src="{{ $logoUrl }}" alt="{{ $currentClub?->name ?? 'TrainerSync' }}" style="height:80px;width:auto;">
                 </a>
-                <h1 class="text-2xl font-bold text-gray-800 tracking-tight">BBSC Trainer Dashboard</h1>
+                <h1 class="text-2xl font-bold text-gray-800 tracking-tight">{{ $currentClub?->name ?? config('app.name') }}</h1>
             </div>
 
             <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">

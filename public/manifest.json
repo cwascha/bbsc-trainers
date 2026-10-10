@@ -1,7 +1,7 @@
 {
-    "name": "BBSC Trainer Dashboard",
-    "short_name": "BBSC",
-    "description": "BBSC Trainer Scheduling & Assignment Dashboard",
+    "name": "TrainerSync",
+    "short_name": "TrainerSync",
+    "description": "Trainer operations for youth sports clubs",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#111827",

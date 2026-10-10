@@ -66,10 +66,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-{{-- ── Information Section ─────────────────────────────────────────────── --}}
+{{-- ── Information Section (only shown if club has configured any fields) ── --}}
+@if($currentClub->teams_field_name || $currentClub->teams_rules_url || $currentClub->teams_schedule_url || $currentClub->teams_jersey_info || $currentClub->teams_head_trainer)
 <div class="mb-10 bg-white rounded-xl shadow overflow-hidden">
 
-    {{-- Section header --}}
     <div class="bg-gray-800 px-6 py-4">
         <h2 class="text-xl font-bold text-white">Information</h2>
     </div>
@@ -77,73 +77,30 @@ document.addEventListener('DOMContentLoaded', () => {
     <div class="divide-y divide-gray-100">
 
         {{-- Field Location --}}
+        @if($currentClub->teams_field_name)
         <div class="px-6 py-6">
             <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Field Location</h3>
-            <p class="text-gray-900 font-medium mb-4">Birmingham Covington School</p>
+            <p class="text-gray-900 font-medium mb-4">{{ $currentClub->teams_field_name }}</p>
+            @if($currentClub->teams_field_map_query)
             <div class="rounded-xl overflow-hidden border border-gray-200" style="height:200px;">
                 <iframe
-                    title="Birmingham Covington School Map"
+                    title="{{ $currentClub->teams_field_name }} Map"
                     width="100%" height="100%"
                     style="border:0;"
                     loading="lazy"
                     referrerpolicy="no-referrer-when-downgrade"
-                    src="https://maps.google.com/maps?q=Birmingham+Covington+School,+Birmingham,+MI&t=&z=15&ie=UTF8&iwloc=&output=embed">
+                    src="https://maps.google.com/maps?q={{ urlencode($currentClub->teams_field_map_query) }}&t=&z=15&ie=UTF8&iwloc=&output=embed">
                 </iframe>
             </div>
+            @endif
         </div>
-
-        {{-- Session Formats --}}
-        <div class="px-6 py-6">
-            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Session Formats</h3>
-            <div>
-
-                {{-- K / 1st Grade --}}
-                <div class="bg-blue-50 border border-blue-200 rounded-xl p-5">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="inline-block bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">K &amp; 1st Grade</span>
-                        <span class="text-sm text-gray-500">1 hour total</span>
-                    </div>
-                    <ul class="text-sm text-gray-700 space-y-1.5">
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-400 mt-0.5">•</span>
-                            <span><strong>30 min</strong> trainer-led practice</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-400 mt-0.5">•</span>
-                            <span><strong>30 min</strong> game (4v4, or 5v5 if both coaches agree)</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-400 mt-0.5">•</span>
-                            <span>Listed start time is for the <strong>practice</strong> portion, followed by the game</span>
-                        </li>
-                    </ul>
-
-                    <div class="mt-4 pt-4 border-t border-blue-100">
-                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">What to bring</p>
-                        <ul class="text-sm text-gray-700 space-y-1">
-                            <li class="flex items-center gap-2"><span class="text-blue-400">•</span> Soccer ball</li>
-                            <li class="flex items-center gap-2"><span class="text-blue-400">•</span> Shin guards</li>
-                            <li class="flex items-center gap-2"><span class="text-blue-400">•</span> Water bottle</li>
-                            <li class="flex items-center gap-2"><span class="text-gray-400">•</span> Cleats <span class="text-gray-400 text-xs">(recommended, not required)</span></li>
-                        </ul>
-                    </div>
-                    <div class="mt-3 flex gap-3 text-xs">
-                        <span class="flex items-center gap-1.5 bg-red-100 text-red-700 font-medium px-2.5 py-1 rounded-full">
-                            <span class="inline-block w-2.5 h-2.5 bg-red-600 rounded-full"></span>
-                            Home = Red jersey
-                        </span>
-                        <span class="flex items-center gap-1.5 bg-gray-100 text-gray-600 font-medium px-2.5 py-1 rounded-full">
-                            <span class="inline-block w-2.5 h-2.5 bg-gray-400 rounded-full"></span>
-                            Away = Grey jersey
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
+        @endif
 
         {{-- Links --}}
+        @if($currentClub->teams_rules_url || $currentClub->teams_schedule_url)
         <div class="px-6 py-5 flex flex-wrap gap-4">
-            <a href="https://www.bbscsoccer.com/rules" target="_blank" rel="noopener noreferrer"
+            @if($currentClub->teams_rules_url)
+            <a href="{{ $currentClub->teams_rules_url }}" target="_blank" rel="noopener noreferrer"
                class="inline-flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-medium px-4 py-2.5 rounded-lg transition-colors">
                 <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -151,38 +108,44 @@ document.addEventListener('DOMContentLoaded', () => {
                 </svg>
                 League Rules
             </a>
-            <a href="https://www.bbscsoccer.com/fall-26-schedules" target="_blank" rel="noopener noreferrer"
+            @endif
+            @if($currentClub->teams_schedule_url)
+            <a href="{{ $currentClub->teams_schedule_url }}" target="_blank" rel="noopener noreferrer"
                class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
-                Fall 2026 Schedules
+                Schedules
             </a>
+            @endif
         </div>
+        @endif
 
         {{-- Jerseys --}}
-        <div class="px-6 py-5 border-t border-gray-100">
+        @if($currentClub->teams_jersey_info)
+        <div class="px-6 py-5">
             <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Jerseys</h3>
-            <p class="text-sm text-gray-700">
-                Jerseys are available for purchase at
-                <strong>Bloomfield Sports</strong>, located at Maple and Lahser.
-            </p>
+            <p class="text-sm text-gray-700">{{ $currentClub->teams_jersey_info }}</p>
         </div>
+        @endif
 
         {{-- Head Trainer --}}
-        <div class="px-6 py-5 bg-green-50 border-t border-green-100 flex items-start gap-3">
+        @if($currentClub->teams_head_trainer)
+        <div class="px-6 py-5 bg-green-50 flex items-start gap-3">
             <svg class="w-5 h-5 text-green-600 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
             </svg>
             <p class="text-sm text-green-800">
-                Our head trainer is <strong>Nico</strong> — you can find him on the field every week.
+                Our head trainer is <strong>{{ $currentClub->teams_head_trainer }}</strong> — you can find them on the field every week.
             </p>
         </div>
+        @endif
 
     </div>
 </div>
+@endif
 {{-- ── End Information Section ──────────────────────────────────────────── --}}
 
 {{-- Player search --}}

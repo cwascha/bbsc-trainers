@@ -22,6 +22,12 @@ class Club extends Model
         'roster_notify_phones',
         'timezone',
         'roster_last_sent_at',
+        'teams_field_name',
+        'teams_field_map_query',
+        'teams_rules_url',
+        'teams_schedule_url',
+        'teams_jersey_info',
+        'teams_head_trainer',
     ];
 
     protected function casts(): array

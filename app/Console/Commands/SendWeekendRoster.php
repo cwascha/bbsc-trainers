@@ -124,7 +124,7 @@ class SendWeekendRoster extends Command
 
         $sid   = config('services.twilio.sid');
         $token = config('services.twilio.token');
-        $from  = $club->twilio_from ?: config('services.twilio.from');
+        $from  = config('services.twilio.from');
 
         if (! $sid || ! $token) {
             $this->error('Twilio not configured.');

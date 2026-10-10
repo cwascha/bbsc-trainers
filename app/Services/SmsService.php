@@ -104,7 +104,7 @@ class SmsService
         if ($client) {
             try {
                 $msg    = $client->messages->create($phone, [
-                    'from' => currentClub()?->twilio_from ?: config('services.twilio.from'),
+                    'from' => config('services.twilio.from'),
                     'body' => $message,
                 ]);
                 $sid    = $msg->sid;
@@ -140,7 +140,7 @@ class SmsService
         if ($client) {
             try {
                 $msg = $client->messages->create($phone, [
-                    'from' => currentClub()?->twilio_from ?: config('services.twilio.from'),
+                    'from' => config('services.twilio.from'),
                     'body' => $message,
                 ]);
                 $sid = $msg->sid;

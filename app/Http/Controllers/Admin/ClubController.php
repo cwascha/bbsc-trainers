@@ -24,7 +24,6 @@ class ClubController extends Controller
             'logo'                 => 'nullable|image|mimes:png,jpg,jpeg,svg,webp|max:2048',
             'roster_notify_phones' => 'nullable|string|max:500',
             'timezone'             => 'nullable|string|max:50',
-            'twilio_from'          => 'nullable|string|max:20',
         ]);
 
         if ($request->hasFile('logo')) {
@@ -38,7 +37,6 @@ class ClubController extends Controller
             'accent_color'         => $request->accent_color,
             'roster_notify_phones' => $request->roster_notify_phones,
             'timezone'             => $request->timezone ?: 'America/New_York',
-            'twilio_from'          => $request->twilio_from ?: null,
         ])->save();
 
         if (session('welcome')) {

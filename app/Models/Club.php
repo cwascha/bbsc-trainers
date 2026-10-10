@@ -21,7 +21,6 @@ class Club extends Model
         'trial_ends_at',
         'roster_notify_phones',
         'timezone',
-        'twilio_from',
         'roster_last_sent_at',
     ];
 

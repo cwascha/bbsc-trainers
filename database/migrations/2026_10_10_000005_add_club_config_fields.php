@@ -10,15 +10,14 @@ return new class extends Migration
     {
         Schema::table('clubs', function (Blueprint $table) {
             $table->string('timezone', 50)->default('America/New_York')->after('roster_notify_phones');
-            $table->string('twilio_from', 20)->nullable()->after('timezone');
-            $table->timestamp('roster_last_sent_at')->nullable()->after('twilio_from');
+            $table->timestamp('roster_last_sent_at')->nullable()->after('timezone');
         });
     }
 
     public function down(): void
     {
         Schema::table('clubs', function (Blueprint $table) {
-            $table->dropColumn(['timezone', 'twilio_from', 'roster_last_sent_at']);
+            $table->dropColumn(['timezone', 'roster_last_sent_at']);
         });
     }
 };

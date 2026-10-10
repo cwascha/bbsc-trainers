@@ -49,15 +49,6 @@
                 <p class="mt-1 text-xs text-gray-400">Used for scheduling the Friday roster SMS and displaying session times.</p>
             </div>
 
-            <div>
-                <label class="block text-xs font-medium text-gray-600 mb-1">Twilio FROM Number <span class="font-normal text-gray-400">(optional)</span></label>
-                <input type="text" name="twilio_from"
-                       value="{{ old('twilio_from', $club->twilio_from) }}"
-                       placeholder="+12025551234"
-                       class="block w-full rounded border-gray-300 text-sm focus:ring-gray-500 focus:border-gray-500">
-                <p class="mt-1 text-xs text-gray-400">Override the default Twilio sender number for this club. Leave blank to use the platform default.</p>
-            </div>
-
             <button type="submit" class="px-4 py-2 bg-gray-800 text-white text-sm font-semibold rounded-lg hover:bg-gray-700 transition">
                 Save
             </button>

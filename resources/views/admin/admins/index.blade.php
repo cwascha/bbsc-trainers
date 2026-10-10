@@ -6,22 +6,58 @@
 
     {{-- Notifications --}}
     <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="font-semibold text-gray-800 mb-1">Notifications</h2>
-        <p class="text-sm text-gray-500 mb-4">Phone numbers that receive the automated Friday roster SMS.</p>
-        <form method="POST" action="{{ route('admin.club.update') }}" class="space-y-3">
+        <h2 class="font-semibold text-gray-800 mb-1">Notifications &amp; Scheduling</h2>
+        <p class="text-sm text-gray-500 mb-4">Configure roster SMS recipients, timezone, and Twilio settings.</p>
+        <form method="POST" action="{{ route('admin.club.update') }}" class="space-y-4">
             @csrf @method('PATCH')
             {{-- Pass through required branding fields unchanged --}}
             <input type="hidden" name="name" value="{{ $club->name }}">
             <input type="hidden" name="primary_color" value="{{ $club->primary_color }}">
             <input type="hidden" name="accent_color" value="{{ $club->accent_color }}">
+
             <div>
                 <label class="block text-xs font-medium text-gray-600 mb-1">Roster SMS Recipients</label>
                 <input type="text" name="roster_notify_phones"
                        value="{{ old('roster_notify_phones', $club->roster_notify_phones) }}"
                        placeholder="7342768619, 2488021988"
                        class="block w-full rounded border-gray-300 text-sm focus:ring-gray-500 focus:border-gray-500">
-                <p class="mt-1 text-xs text-gray-400">Comma-separated phone numbers (digits only). Leave blank to disable.</p>
+                <p class="mt-1 text-xs text-gray-400">Comma-separated phone numbers (digits only). Roster is sent every Friday at 6 PM in the club's timezone.</p>
             </div>
+
+            <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Club Timezone</label>
+                <select name="timezone" class="block w-full rounded border-gray-300 text-sm focus:ring-gray-500 focus:border-gray-500">
+                    @php
+                    $timezones = [
+                        'America/New_York'    => 'Eastern (ET)',
+                        'America/Chicago'     => 'Central (CT)',
+                        'America/Denver'      => 'Mountain (MT)',
+                        'America/Phoenix'     => 'Mountain – no DST (AZ)',
+                        'America/Los_Angeles' => 'Pacific (PT)',
+                        'America/Anchorage'   => 'Alaska (AKT)',
+                        'Pacific/Honolulu'    => 'Hawaii (HT)',
+                        'Europe/London'       => 'London (GMT/BST)',
+                        'Europe/Paris'        => 'Central Europe (CET)',
+                        'Australia/Sydney'    => 'Sydney (AEST)',
+                    ];
+                    $current = old('timezone', $club->timezone ?? 'America/New_York');
+                    @endphp
+                    @foreach($timezones as $tz => $label)
+                        <option value="{{ $tz }}" @selected($current === $tz)>{{ $label }}</option>
+                    @endforeach
+                </select>
+                <p class="mt-1 text-xs text-gray-400">Used for scheduling the Friday roster SMS and displaying session times.</p>
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Twilio FROM Number <span class="font-normal text-gray-400">(optional)</span></label>
+                <input type="text" name="twilio_from"
+                       value="{{ old('twilio_from', $club->twilio_from) }}"
+                       placeholder="+12025551234"
+                       class="block w-full rounded border-gray-300 text-sm focus:ring-gray-500 focus:border-gray-500">
+                <p class="mt-1 text-xs text-gray-400">Override the default Twilio sender number for this club. Leave blank to use the platform default.</p>
+            </div>
+
             <button type="submit" class="px-4 py-2 bg-gray-800 text-white text-sm font-semibold rounded-lg hover:bg-gray-700 transition">
                 Save
             </button>

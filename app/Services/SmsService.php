@@ -36,8 +36,9 @@ class SmsService
             return;
         }
 
+        $clubName = currentClub()?->name ?? 'TrainerSync';
         $date    = $day->date->format('l, F j, Y');
-        $message = "Hi {$user->name}! You've been assigned to work at BBSC on {$date} from {$day->session_time_range}. ";
+        $message = "Hi {$user->name}! You've been assigned to work at {$clubName} on {$date} from {$day->session_time_range}. ";
         $message .= $this->planLinksText($day);
         $message .= "Reply YES to confirm or NO to cancel.";
 
@@ -50,8 +51,9 @@ class SmsService
             return;
         }
 
+        $clubName = currentClub()?->name ?? 'TrainerSync';
         $date    = $day->date->format('l, F j, Y');
-        $message = "Hi {$user->name}! A spot has opened up at BBSC on {$date} from {$day->session_time_range} and you've been assigned. ";
+        $message = "Hi {$user->name}! A spot has opened up at {$clubName} on {$date} from {$day->session_time_range} and you've been assigned. ";
         $message .= $this->planLinksText($day);
         $message .= "Reply YES to confirm or NO to cancel.";
 
@@ -102,7 +104,7 @@ class SmsService
         if ($client) {
             try {
                 $msg    = $client->messages->create($phone, [
-                    'from' => config('services.twilio.from'),
+                    'from' => currentClub()?->twilio_from ?: config('services.twilio.from'),
                     'body' => $message,
                 ]);
                 $sid    = $msg->sid;
@@ -138,7 +140,7 @@ class SmsService
         if ($client) {
             try {
                 $msg = $client->messages->create($phone, [
-                    'from' => config('services.twilio.from'),
+                    'from' => currentClub()?->twilio_from ?: config('services.twilio.from'),
                     'body' => $message,
                 ]);
                 $sid = $msg->sid;

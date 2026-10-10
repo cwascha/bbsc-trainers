@@ -7,11 +7,16 @@ return new class extends Migration
 {
     public function up(): void
     {
-        DB::statement("ALTER TABLE users MODIFY role ENUM('admin', 'trainer', 'superadmin') NOT NULL DEFAULT 'trainer'");
+        // SQLite uses TEXT with no ENUM type — the role values are enforced at the app layer
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE users MODIFY role ENUM('admin', 'trainer', 'superadmin') NOT NULL DEFAULT 'trainer'");
+        }
     }
 
     public function down(): void
     {
-        DB::statement("ALTER TABLE users MODIFY role ENUM('admin', 'trainer') NOT NULL DEFAULT 'trainer'");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE users MODIFY role ENUM('admin', 'trainer') NOT NULL DEFAULT 'trainer'");
+        }
     }
 };

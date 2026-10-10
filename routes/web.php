@@ -21,12 +21,6 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Webhooks\TwilioController;
 use Illuminate\Support\Facades\Route;
 
-// ─── Root domain (no subdomain) → pricing page ───────────────────────────
-// Excludes /pricing and /signup/* so those routes are served normally.
-Route::domain('trainersync.co')->get('/', function () {
-    return redirect('https://trainersync.co/pricing', 301);
-});
-
 // ─── Public teams subdomain — must be first so it wins before the catch-all redirect ───
 Route::domain(config('app.teams_domain'))->group(function () {
     Route::get('/', [RosterController::class, 'index'])->name('teams.public.index');

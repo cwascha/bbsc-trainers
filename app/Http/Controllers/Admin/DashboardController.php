@@ -37,4 +37,10 @@ class DashboardController extends Controller
 
         return view('admin.dashboard', compact('totalTrainers', 'w9Received', 'w9Missing', 'upcomingDays', 'recentSignups'));
     }
+
+    public function onboarding()
+    {
+        $clubUrl = request()->getSchemeAndHttpHost();
+        return view('admin.onboarding', compact('clubUrl'));
+    }
 }

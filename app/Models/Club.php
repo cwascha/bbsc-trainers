@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Club extends Model
 {
@@ -14,6 +15,8 @@ class Club extends Model
         'accent_color',
         'logo_path',
         'stripe_customer_id',
+        'stripe_subscription_id',
+        'stripe_price_id',
         'subscription_status',
         'trial_ends_at',
     ];
@@ -37,6 +40,18 @@ class Club extends Model
 
     public function isActive(): bool
     {
-        return in_array($this->subscription_status, ['active', 'trial']);
+        if (in_array($this->subscription_status, ['active', 'trial'])) {
+            return true;
+        }
+        // Trial is active if trial_ends_at hasn't passed yet
+        if ($this->subscription_status === 'trial' && $this->trial_ends_at?->isFuture()) {
+            return true;
+        }
+        return false;
+    }
+
+    public function seasons(): HasMany
+    {
+        return $this->hasMany(\App\Models\Season::class);
     }
 }

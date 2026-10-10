@@ -13,6 +13,9 @@ use App\Http\Controllers\W9Controller;
 use App\Http\Controllers\Teams\RosterController;
 use App\Http\Controllers\Admin\ClubController;
 use App\Http\Controllers\Admin\SeasonController;
+use App\Http\Controllers\SignupController;
+use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboard;
+use App\Http\Controllers\Webhooks\StripeController;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Webhooks\TwilioController;
@@ -25,7 +28,7 @@ Route::domain(config('app.teams_domain'))->group(function () {
 });
 
 // ─── All main routes resolve the current club from the subdomain ──────────
-Route::middleware('club')->group(function () {
+Route::middleware(['club', 'subscribed'])->group(function () {
 
 Route::get('/', fn() => redirect()->route('dashboard'));
 
@@ -150,7 +153,25 @@ require __DIR__.'/auth.php';
 
 }); // end club middleware group
 
-// ─── Twilio Webhook (no auth, no CSRF, no club context needed) ───────────
+// ─── Twilio Webhook ───────────────────────────────────────────────────────
 Route::post('/webhooks/twilio/sms', [TwilioController::class, 'handle'])
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
     ->name('webhooks.twilio.sms');
+
+// ─── Stripe Webhook ───────────────────────────────────────────────────────
+Route::post('/webhooks/stripe', [StripeController::class, 'handle'])
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->name('webhooks.stripe');
+
+// ─── Public Signup / Pricing ─────────────────────────────────────────────
+Route::get('/pricing', [SignupController::class, 'pricing'])->name('signup.pricing');
+Route::post('/signup/checkout', [SignupController::class, 'checkout'])->name('signup.checkout');
+Route::get('/signup/success', [SignupController::class, 'success'])->name('signup.success');
+
+// ─── Super-admin (no club middleware — super-admin is cross-club) ─────────
+Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->name('superadmin.')->group(function () {
+    Route::get('/', [SuperAdminDashboard::class, 'index'])->name('dashboard');
+    Route::post('/clubs/{club}/impersonate', [SuperAdminDashboard::class, 'impersonate'])->name('clubs.impersonate');
+    Route::post('/stop-impersonating', [SuperAdminDashboard::class, 'stopImpersonating'])->name('stop-impersonating');
+    Route::patch('/clubs/{club}/status/{status}', [SuperAdminDashboard::class, 'updateStatus'])->name('clubs.status');
+});

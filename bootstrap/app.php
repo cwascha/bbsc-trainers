@@ -17,8 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Request::HEADER_X_FORWARDED_PROTO);
 
         $middleware->alias([
-            'admin' => \App\Http\Middleware\AdminMiddleware::class,
-            'club'  => \App\Http\Middleware\ClubMiddleware::class,
+            'admin'        => \App\Http\Middleware\AdminMiddleware::class,
+            'club'         => \App\Http\Middleware\ClubMiddleware::class,
+            'subscribed'   => \App\Http\Middleware\SubscriptionMiddleware::class,
+            'superadmin'   => \App\Http\Middleware\SuperAdminMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

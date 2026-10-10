@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weekend {{ $weekend }} Attendance — BBSC</title>
+    <title>Weekend {{ $weekend }} Attendance — {{ $currentClub->name ?? config('app.name') }}</title>
     @vite(['resources/css/app.css'])
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -12,7 +12,8 @@
 
     {{-- Header --}}
     <div class="flex items-center gap-3 mb-6">
-        <img src="{{ asset('images/BBSClogo.png') }}" alt="BBSC" class="h-10 w-auto">
+        @php $attendanceLogo = $currentClub?->logo_path ?: asset('images/BBSClogo.png'); @endphp
+        <img src="{{ $attendanceLogo }}" alt="{{ $currentClub->name ?? 'Logo' }}" class="h-10 w-auto">
         <div>
             <h1 class="text-xl font-bold text-gray-900">Weekend {{ $weekend }} Attendance</h1>
             <p class="text-sm text-gray-500">Tap a trainer to toggle their attendance</p>

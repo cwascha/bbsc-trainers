@@ -17,8 +17,9 @@
 </head>
 <body>
     <div class="wrapper">
+        @php $inviteLogo = $club?->logo_path ?: asset('images/BBSClogo.png'); @endphp
         <div class="header">
-            <img src="{{ asset('images/BBSClogo.png') }}" alt="BBSC">
+            <img src="{{ $inviteLogo }}" alt="{{ $club?->name ?? config('app.name') }}">
         </div>
         <div class="body">
             <h1>You've been invited as an Admin</h1>

@@ -40,7 +40,7 @@ class AdminUserController extends Controller
         Password::deleteToken($user);
         $token = Password::createToken($user);
 
-        Mail::to($user->email)->send(new AdminInvitation($user, $token));
+        Mail::to($user->email)->send(new AdminInvitation($user, $token, currentClub()));
 
         return back()->with('success', "Admin account created for {$user->name}. An invitation email has been sent to {$user->email}.");
     }

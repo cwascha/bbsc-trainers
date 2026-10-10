@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', $team->name . ' — BBSC Fall 2026')
+@section('title', $team->name . ' — ' . ($currentClub->name ?? config('app.name')))
 
 @section('content')
 

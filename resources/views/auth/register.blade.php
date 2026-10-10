@@ -15,7 +15,7 @@
             <x-text-input id="phone" class="block mt-1 w-full" type="tel" name="phone" :value="old('phone')" required autocomplete="tel" placeholder="e.g. 555-867-5309" />
             <x-input-error :messages="$errors->get('phone')" class="mt-2" />
             <p class="mt-1 text-xs text-gray-500">
-                By providing your mobile number, you consent to receive SMS notifications from BBSC
+                By providing your mobile number, you consent to receive SMS notifications from {{ $currentClub->name ?? config('app.name') }}
                 about your training session assignments. Message &amp; data rates may apply.
                 Reply STOP to opt out at any time. View our
                 <a href="{{ route('privacy') }}" class="underline hover:text-gray-700">Privacy Policy</a>

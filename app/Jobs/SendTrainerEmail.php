@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Mail\TrainerEmail;
+use App\Models\Club;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -22,11 +23,14 @@ class SendTrainerEmail implements ShouldQueue
         public readonly string $toName,
         public readonly string $subject,
         public readonly string $body,
+        public readonly ?int $clubId = null,
     ) {}
 
     public function handle(): void
     {
+        $club = $this->clubId ? Club::find($this->clubId) : null;
+
         Mail::to($this->toEmail, $this->toName)
-            ->send(new TrainerEmail($this->subject, $this->body, $this->toName));
+            ->send(new TrainerEmail($this->subject, $this->body, $this->toName, $club));
     }
 }

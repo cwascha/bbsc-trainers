@@ -25,6 +25,12 @@ class ClubMiddleware
         return $next($request);
     }
 
+    // Legacy custom domains that predate subdomain routing.
+    // Maps full hostname → club slug.
+    private const LEGACY_DOMAINS = [
+        'trainers.bbscsoccer.com' => 'bbsc',
+    ];
+
     private function resolve(Request $request): ?Club
     {
         // Super-admin impersonation takes highest priority
@@ -37,8 +43,14 @@ class ClubMiddleware
             return Club::where('slug', $slug)->first();
         }
 
-        // Production: extract subdomain from host (bbsc.pitchside.app → bbsc)
-        $host  = $request->getHost();
+        $host = $request->getHost();
+
+        // Legacy custom domains (e.g. trainers.bbscsoccer.com → bbsc)
+        if ($slug = self::LEGACY_DOMAINS[$host] ?? null) {
+            return Club::where('slug', $slug)->first();
+        }
+
+        // Production: extract subdomain from host (bbsc.trainersync.co → bbsc)
         $parts = explode('.', $host);
 
         if (count($parts) >= 3) {

@@ -14,7 +14,7 @@
         <div class="bg-white rounded-lg shadow p-6">
             <h2 class="font-semibold text-gray-800 text-lg mb-1">Import Rosters from Spreadsheet</h2>
             <p class="text-sm text-gray-500 mb-4">
-                Upload the BBSC roster <code class="bg-gray-100 px-1 rounded">.xlsx</code> file directly.
+                Upload your roster <code class="bg-gray-100 px-1 rounded">.xlsx</code> file directly.
                 The importer reads the <strong>Kindergarten Girls</strong>, <strong>Kindergarten Boys</strong>,
                 <strong>1st Grade Girls</strong>, <strong>1st Grade Boys</strong>, and <strong>Coaches</strong> tabs automatically.
                 <span class="text-red-500">Uploading replaces all existing rosters.</span>

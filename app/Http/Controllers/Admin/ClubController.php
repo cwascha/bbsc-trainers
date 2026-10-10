@@ -18,7 +18,8 @@ class ClubController extends Controller
         $club = currentClub();
 
         $request->validate([
-            'name'                 => 'required|string|max:100',
+            'name'                  => 'required|string|max:100',
+            'contact_email'         => 'nullable|email|max:200',
             'primary_color'        => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
             'accent_color'         => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
             'logo'                 => 'nullable|image|mimes:png,jpg,jpeg,svg,webp|max:2048',
@@ -39,6 +40,7 @@ class ClubController extends Controller
 
         $club->fill([
             'name'                 => $request->name,
+            'contact_email'        => $request->contact_email ?: null,
             'primary_color'        => $request->primary_color,
             'accent_color'         => $request->accent_color,
             'roster_notify_phones' => $request->roster_notify_phones,

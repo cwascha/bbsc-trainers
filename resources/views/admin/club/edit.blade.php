@@ -32,6 +32,17 @@
                 @error('name')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
             </div>
 
+            {{-- Contact email --}}
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Contact Email
+                    <span class="font-normal text-gray-400 ml-1">(shown as sender on trainer emails)</span>
+                </label>
+                <input type="email" name="contact_email" value="{{ old('contact_email', $club->contact_email) }}"
+                       placeholder="admin@yourclub.com"
+                       class="w-full rounded-lg border-gray-300 shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500">
+                @error('contact_email')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
+            </div>
+
             {{-- Logo --}}
             <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">Logo</label>

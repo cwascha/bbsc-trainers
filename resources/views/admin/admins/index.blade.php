@@ -145,7 +145,7 @@
                     <label class="block text-xs font-medium text-gray-600 mb-1">Email <span class="text-red-500">*</span></label>
                     <input type="email" name="email" value="{{ old('email') }}" required
                            class="block w-full rounded border-gray-300 text-sm focus:ring-gray-500 focus:border-gray-500"
-                           placeholder="jane@bbscsoccer.com">
+                           placeholder="jane@yourclub.com">
                     @error('email') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <div class="pt-1">

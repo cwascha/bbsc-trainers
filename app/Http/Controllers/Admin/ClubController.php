@@ -18,10 +18,11 @@ class ClubController extends Controller
         $club = currentClub();
 
         $request->validate([
-            'name'          => 'required|string|max:100',
-            'primary_color' => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
-            'accent_color'  => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
-            'logo'          => 'nullable|image|mimes:png,jpg,jpeg,svg,webp|max:2048',
+            'name'                 => 'required|string|max:100',
+            'primary_color'        => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
+            'accent_color'         => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
+            'logo'                 => 'nullable|image|mimes:png,jpg,jpeg,svg,webp|max:2048',
+            'roster_notify_phones' => 'nullable|string|max:500',
         ]);
 
         if ($request->hasFile('logo')) {
@@ -30,9 +31,10 @@ class ClubController extends Controller
         }
 
         $club->fill([
-            'name'          => $request->name,
-            'primary_color' => $request->primary_color,
-            'accent_color'  => $request->accent_color,
+            'name'                 => $request->name,
+            'primary_color'        => $request->primary_color,
+            'accent_color'         => $request->accent_color,
+            'roster_notify_phones' => $request->roster_notify_phones,
         ])->save();
 
         if (session('welcome')) {

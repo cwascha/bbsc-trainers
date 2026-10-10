@@ -11,6 +11,7 @@ class Club extends Model
     protected $fillable = [
         'name',
         'slug',
+        'contact_email',
         'primary_color',
         'accent_color',
         'logo_path',

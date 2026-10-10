@@ -32,6 +32,7 @@
                 @error('name')<p class="mt-1 text-sm text-red-600">{{ $message }}</p>@enderror
             </div>
 
+
             {{-- Logo --}}
             <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">Logo</label>

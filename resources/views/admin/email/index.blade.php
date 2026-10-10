@@ -78,7 +78,7 @@
 
             <div class="flex items-center justify-between pt-4 border-t">
                 <p class="text-sm text-gray-400">
-                    Sent from <strong class="text-gray-600">chris@bbscsoccer.com</strong>
+                    Sent from <strong class="text-gray-600">{{ $currentClub->contact_email ?: config('mail.from.address') }}</strong>
                     &middot; Each trainer receives a personalised "Hi [Name]" greeting
                 </p>
                 <button type="submit"

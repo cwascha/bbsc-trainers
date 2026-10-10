@@ -21,6 +21,11 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Webhooks\TwilioController;
 use Illuminate\Support\Facades\Route;
 
+// ─── Root domain redirect → www (marketing site) ─────────────────────────
+Route::domain('trainersync.co')->get('/{any?}', function () {
+    return redirect('https://www.trainersync.co', 301);
+})->where('any', '.*');
+
 // ─── Public teams subdomain — must be first so it wins before the catch-all redirect ───
 Route::domain(config('app.teams_domain'))->group(function () {
     Route::get('/', [RosterController::class, 'index'])->name('teams.public.index');

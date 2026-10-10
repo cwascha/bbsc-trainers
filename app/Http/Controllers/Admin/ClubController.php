@@ -23,6 +23,7 @@ class ClubController extends Controller
             'accent_color'         => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
             'logo'                 => 'nullable|image|mimes:png,jpg,jpeg,svg,webp|max:2048',
             'roster_notify_phones' => 'nullable|string|max:500',
+            'timezone'             => 'nullable|string|max:50',
         ]);
 
         if ($request->hasFile('logo')) {
@@ -35,6 +36,7 @@ class ClubController extends Controller
             'primary_color'        => $request->primary_color,
             'accent_color'         => $request->accent_color,
             'roster_notify_phones' => $request->roster_notify_phones,
+            'timezone'             => $request->timezone ?: 'America/New_York',
         ])->save();
 
         if (session('welcome')) {

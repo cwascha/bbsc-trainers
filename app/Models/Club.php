@@ -20,12 +20,15 @@ class Club extends Model
         'subscription_status',
         'trial_ends_at',
         'roster_notify_phones',
+        'timezone',
+        'roster_last_sent_at',
     ];
 
     protected function casts(): array
     {
         return [
-            'trial_ends_at' => 'datetime',
+            'trial_ends_at'      => 'datetime',
+            'roster_last_sent_at' => 'datetime',
         ];
     }
 

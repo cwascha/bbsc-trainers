@@ -17,11 +17,9 @@ Artisan::command('inspire', function () {
 //   ->withoutOverlapping()
 //   ->description('Assign trainers to the upcoming weekend and send SMS notifications');
 
-// Send the weekend trainer roster to admins every Friday at 6pm ET.
-Schedule::command('roster:notify')
-    ->fridays()
-    ->at('18:00')
-    ->timezone('America/New_York')
+// Run every minute on Fridays; the command checks each club's timezone and sends at 6 PM local time.
+Schedule::command('roster:notify --all-clubs')
+    ->cron('* * * * 5')
     ->name('send-weekend-roster')
     ->withoutOverlapping()
-    ->description('Send upcoming weekend trainer roster via SMS to configured recipients');
+    ->description('Send upcoming weekend trainer roster via SMS — per club timezone');

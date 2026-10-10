@@ -11,12 +11,55 @@ use Twilio\Rest\Client;
 
 class SendWeekendRoster extends Command
 {
-    protected $signature   = 'roster:notify {--dry-run : Print message without sending} {--club= : Club slug to send for (defaults to CLUB_SLUG env or first club)}';
+    protected $signature   = 'roster:notify
+                                {--dry-run : Print message without sending}
+                                {--club= : Club slug to send for (defaults to CLUB_SLUG env or first club)}
+                                {--all-clubs : Iterate all active clubs and send for any whose 6 PM window has arrived}';
     protected $description = 'Send the upcoming weekend trainer roster via SMS to configured recipients';
 
     public function handle(): int
     {
-        // Resolve club — option > env > first club
+        if ($this->option('all-clubs')) {
+            return $this->handleAllClubs();
+        }
+
+        return $this->handleSingleClub();
+    }
+
+    private function handleAllClubs(): int
+    {
+        $clubs = Club::whereIn('subscription_status', ['active', 'trial'])->get();
+        $errors = 0;
+
+        foreach ($clubs as $club) {
+            $tz  = $club->timezone ?: 'America/New_York';
+            $now = now()->timezone($tz);
+
+            // Only send on Fridays between 18:00–18:04 in the club's timezone
+            if ($now->dayOfWeek !== 5 || $now->hour !== 18 || $now->minute > 4) {
+                continue;
+            }
+
+            // Prevent double-sending
+            if ($club->roster_last_sent_at && $club->roster_last_sent_at->timezone($tz)->isToday()) {
+                $this->info("Already sent for {$club->slug} today, skipping.");
+                continue;
+            }
+
+            $this->info("Sending roster for club: {$club->slug} ({$tz})");
+            app()->instance('currentClub', $club);
+
+            $result = $this->sendForClub($club);
+            if ($result !== 0) {
+                $errors++;
+            }
+        }
+
+        return $errors > 0 ? 1 : 0;
+    }
+
+    private function handleSingleClub(): int
+    {
         if (! currentClub()) {
             $slug = $this->option('club') ?? config('app.club_slug');
             $club = $slug
@@ -31,10 +74,12 @@ class SendWeekendRoster extends Command
             app()->instance('currentClub', $club);
         }
 
-        $club = currentClub();
+        return $this->sendForClub(currentClub());
+    }
 
-        // Per-club phones from DB take priority; fall back to env var for backwards compatibility
-        $rawPhones = $club?->roster_notify_phones ?: config('services.roster.notify_phones', '');
+    private function sendForClub(Club $club): int
+    {
+        $rawPhones = $club->roster_notify_phones ?: config('services.roster.notify_phones', '');
 
         $phones = collect(explode(',', $rawPhones))
             ->map(fn($p) => preg_replace('/\D/', '', trim($p)))
@@ -42,13 +87,13 @@ class SendWeekendRoster extends Command
             ->values();
 
         if ($phones->isEmpty()) {
-            $this->error('No recipient phones configured. Set roster notify phones in Club Settings or ROSTER_NOTIFY_PHONES in .env.');
-            Log::error('roster:notify — no roster notify phones configured for club: ' . ($club?->slug ?? 'unknown'));
+            $this->error("No recipient phones configured for club: {$club->slug}");
+            Log::error('roster:notify — no roster notify phones configured for club: ' . $club->slug);
             return 1;
         }
 
-        // Find the upcoming Saturday (or today if it's already Saturday)
-        $saturday = now()->timezone('America/New_York')->startOfDay();
+        $tz       = $club->timezone ?: 'America/New_York';
+        $saturday = now()->timezone($tz)->startOfDay();
         while ($saturday->dayOfWeek !== 6) {
             $saturday->addDay();
         }
@@ -66,7 +111,7 @@ class SendWeekendRoster extends Command
             return 0;
         }
 
-        $message = $this->buildMessage($days, $saturday, $sunday);
+        $message = $this->buildMessage($days, $saturday, $sunday, $club);
 
         $this->line($message);
 
@@ -85,7 +130,6 @@ class SendWeekendRoster extends Command
         }
 
         $twilio = new Client($sid, $token);
-
         $sent   = 0;
         $failed = 0;
 
@@ -102,18 +146,24 @@ class SendWeekendRoster extends Command
             }
         }
 
-        Log::info("roster:notify — done. Sent: {$sent}, Failed: {$failed}. Weekend: {$saturday->toDateString()}");
+        Log::info("roster:notify — done for {$club->slug}. Sent: {$sent}, Failed: {$failed}. Weekend: {$saturday->toDateString()}");
 
-        return $failed > 0 && $sent === 0 ? 1 : 0;
+        $result = $failed > 0 && $sent === 0 ? 1 : 0;
+
+        if ($result === 0 && ! $this->option('dry-run')) {
+            $club->update(['roster_last_sent_at' => now()]);
+        }
+
+        return $result;
     }
 
-    private function buildMessage($days, $saturday, $sunday): string
+    private function buildMessage($days, $saturday, $sunday, Club $club): string
     {
         $weekendNum = $days->first()->weekend_number;
         $satLabel   = $saturday->format('M j');
         $sunLabel   = $sunday->format('M j');
 
-        $lines = ["BBSC Weekend {$weekendNum} Roster ({$satLabel}–{$sunLabel})"];
+        $lines = ["{$club->name} Weekend {$weekendNum} Roster ({$satLabel}–{$sunLabel})"];
 
         foreach ($days as $day) {
             $dayName  = $day->date->isSaturday() ? 'SAT ' . $day->date->format('M j') : 'SUN ' . $day->date->format('M j');
@@ -131,7 +181,6 @@ class SendWeekendRoster extends Command
             $lines[] = $trainers ?: 'None assigned';
         }
 
-        // Attendance link expires Monday night (3 days from Friday)
         $attendanceUrl = URL::signedRoute('attendance.show', ['weekend' => $weekendNum], now()->addDays(3));
         $lines[] = '';
         $lines[] = "Mark attendance: {$attendanceUrl}";

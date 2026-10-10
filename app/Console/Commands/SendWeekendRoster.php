@@ -52,8 +52,6 @@ class SendWeekendRoster extends Command
             $result = $this->sendForClub($club);
             if ($result !== 0) {
                 $errors++;
-            } else {
-                $club->update(['roster_last_sent_at' => now()]);
             }
         }
 
@@ -150,7 +148,13 @@ class SendWeekendRoster extends Command
 
         Log::info("roster:notify — done for {$club->slug}. Sent: {$sent}, Failed: {$failed}. Weekend: {$saturday->toDateString()}");
 
-        return $failed > 0 && $sent === 0 ? 1 : 0;
+        $result = $failed > 0 && $sent === 0 ? 1 : 0;
+
+        if ($result === 0 && ! $this->option('dry-run')) {
+            $club->update(['roster_last_sent_at' => now()]);
+        }
+
+        return $result;
     }
 
     private function buildMessage($days, $saturday, $sunday, Club $club): string

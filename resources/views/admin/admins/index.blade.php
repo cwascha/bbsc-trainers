@@ -55,6 +55,73 @@
         </form>
     </div>
 
+    {{-- Teams Page --}}
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="font-semibold text-gray-800 mb-1">Teams Page</h2>
+        <p class="text-sm text-gray-500 mb-4">Information shown on your public-facing teams roster page. Leave any section blank to hide it.</p>
+        <form method="POST" action="{{ route('admin.club.update') }}" class="space-y-4">
+            @csrf @method('PATCH')
+            <input type="hidden" name="name" value="{{ $club->name }}">
+            <input type="hidden" name="primary_color" value="{{ $club->primary_color }}">
+            <input type="hidden" name="accent_color" value="{{ $club->accent_color }}">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Field / Venue Name</label>
+                    <input type="text" name="teams_field_name"
+                           value="{{ old('teams_field_name', $club->teams_field_name) }}"
+                           placeholder="Birmingham Covington School"
+                           class="block w-full rounded border-gray-300 text-sm focus:ring-gray-500 focus:border-gray-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Map Search Query</label>
+                    <input type="text" name="teams_field_map_query"
+                           value="{{ old('teams_field_map_query', $club->teams_field_map_query) }}"
+                           placeholder="Birmingham+Covington+School,+Birmingham,+MI"
+                           class="block w-full rounded border-gray-300 text-sm focus:ring-gray-500 focus:border-gray-500">
+                    <p class="mt-1 text-xs text-gray-400">Used for the embedded Google map. Copy from a Google Maps URL.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">League Rules URL</label>
+                    <input type="url" name="teams_rules_url"
+                           value="{{ old('teams_rules_url', $club->teams_rules_url) }}"
+                           placeholder="https://www.yourleague.com/rules"
+                           class="block w-full rounded border-gray-300 text-sm focus:ring-gray-500 focus:border-gray-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Schedule URL</label>
+                    <input type="url" name="teams_schedule_url"
+                           value="{{ old('teams_schedule_url', $club->teams_schedule_url) }}"
+                           placeholder="https://www.yourleague.com/schedules"
+                           class="block w-full rounded border-gray-300 text-sm focus:ring-gray-500 focus:border-gray-500">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Jersey / Kit Info</label>
+                <input type="text" name="teams_jersey_info"
+                       value="{{ old('teams_jersey_info', $club->teams_jersey_info) }}"
+                       placeholder="Available at Bloomfield Sports, Maple and Lahser"
+                       class="block w-full rounded border-gray-300 text-sm focus:ring-gray-500 focus:border-gray-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-gray-600 mb-1">Head Trainer Name</label>
+                <input type="text" name="teams_head_trainer"
+                       value="{{ old('teams_head_trainer', $club->teams_head_trainer) }}"
+                       placeholder="Nico"
+                       class="block w-full rounded border-gray-300 text-sm focus:ring-gray-500 focus:border-gray-500">
+            </div>
+
+            <button type="submit" class="px-4 py-2 bg-gray-800 text-white text-sm font-semibold rounded-lg hover:bg-gray-700 transition">
+                Save
+            </button>
+        </form>
+    </div>
+
     <h2 class="text-lg font-bold text-gray-800">Admin Users</h2>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

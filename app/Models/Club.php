@@ -19,6 +19,7 @@ class Club extends Model
         'stripe_price_id',
         'subscription_status',
         'trial_ends_at',
+        'roster_notify_phones',
     ];
 
     protected function casts(): array

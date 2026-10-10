@@ -31,14 +31,19 @@ class SendWeekendRoster extends Command
             app()->instance('currentClub', $club);
         }
 
-        $phones = collect(explode(',', config('services.roster.notify_phones', '')))
+        $club = currentClub();
+
+        // Per-club phones from DB take priority; fall back to env var for backwards compatibility
+        $rawPhones = $club?->roster_notify_phones ?: config('services.roster.notify_phones', '');
+
+        $phones = collect(explode(',', $rawPhones))
             ->map(fn($p) => preg_replace('/\D/', '', trim($p)))
             ->filter(fn($p) => strlen($p) >= 10)
             ->values();
 
         if ($phones->isEmpty()) {
-            $this->error('No recipient phones configured. Set ROSTER_NOTIFY_PHONES in .env.');
-            Log::error('roster:notify — ROSTER_NOTIFY_PHONES is empty or not set');
+            $this->error('No recipient phones configured. Set roster notify phones in Club Settings or ROSTER_NOTIFY_PHONES in .env.');
+            Log::error('roster:notify — no roster notify phones configured for club: ' . ($club?->slug ?? 'unknown'));
             return 1;
         }
 

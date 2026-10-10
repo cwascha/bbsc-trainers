@@ -53,7 +53,7 @@
 HTML,
             ],
             'a-seasons' => [
-                'title' => 'Seasons &amp; Training Days',
+                'title' => 'Seasons & Training Days',
                 'icon'  => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
                 'body'  => <<<HTML
 <p>Before trainers can sign up for availability, you need to create the training days for the season.</p>
@@ -81,7 +81,7 @@ HTML,
 HTML,
             ],
             'a-sessions' => [
-                'title' => 'Sessions &amp; Assignments',
+                'title' => 'Sessions & Assignments',
                 'icon'  => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2',
                 'body'  => <<<HTML
 <p>The <strong>Sessions</strong> page shows every training day with the trainers signed up for it.</p>
@@ -152,7 +152,7 @@ HTML,
 HTML,
             ],
             'a-payroll' => [
-                'title' => 'Payroll &amp; Reports',
+                'title' => 'Payroll & Reports',
                 'icon'  => 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
                 'body'  => <<<HTML
 <p>The <strong>Payroll</strong> page calculates what each trainer is owed based on sessions worked and their hourly rate.</p>
@@ -189,7 +189,7 @@ HTML,
 HTML,
             ],
             'a-teams' => [
-                'title' => 'Teams &amp; Rosters',
+                'title' => 'Teams & Rosters',
                 'icon'  => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z',
                 'body'  => <<<HTML
 <p>The Teams section manages the player rosters that trainers work with each weekend.</p>
@@ -224,7 +224,7 @@ HTML,
 HTML,
             ],
             'a-admins' => [
-                'title' => 'Admin Users &amp; Settings',
+                'title' => 'Admin Users & Settings',
                 'icon'  => 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z',
                 'body'  => <<<HTML
 <h4>Adding admin users</h4>
@@ -373,7 +373,7 @@ HTML,
 HTML,
             ],
             't-w9' => [
-                'title' => 'W-9 &amp; Profile',
+                'title' => 'W-9 & Profile',
                 'icon'  => 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
                 'body'  => <<<HTML
 <h4>Updating your profile</h4>

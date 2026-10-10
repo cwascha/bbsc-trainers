@@ -94,7 +94,7 @@
                 <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                     <h3 class="font-semibold text-gray-800">W9 Form</h3>
                     @if($user->w9_received_at)
-                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">✓ Received by BBSC</span>
+                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">✓ Received by {{ $currentClub->name ?? config('app.name') }}</span>
                     @elseif($user->w9_uploaded_at)
                         <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full font-medium">Uploaded — Pending Review</span>
                     @else
@@ -113,11 +113,11 @@
                     </div>
                     @if($user->w9_received_at)
                         <p class="text-sm text-green-700">
-                            Your W9 was received by BBSC on {{ $user->w9_received_at->format('M j, Y') }}. No further action needed.
+                            Your W9 was received by {{ $currentClub->name ?? config('app.name') }} on {{ $user->w9_received_at->format('M j, Y') }}. No further action needed.
                         </p>
                     @elseif($user->w9_uploaded_at)
                         <p class="text-sm text-gray-600 mb-3">
-                            W9 uploaded on {{ $user->w9_uploaded_at->format('M j, Y') }}. BBSC will confirm receipt.
+                            W9 uploaded on {{ $user->w9_uploaded_at->format('M j, Y') }}. {{ $currentClub->name ?? config('app.name') }} will confirm receipt.
                             You can replace it below if needed.
                         </p>
                         <form method="POST" action="{{ route('w9.upload') }}" enctype="multipart/form-data" class="flex items-center gap-3">
@@ -130,7 +130,7 @@
                         </form>
                     @else
                         <p class="text-sm text-gray-600 mb-3">
-                            Please upload your W9 form so BBSC can process your payment. PDF files only, max 5MB.
+                            Please upload your W9 form so {{ $currentClub->name ?? config('app.name') }} can process your payment. PDF files only, max 5MB.
                         </p>
                         <form method="POST" action="{{ route('w9.upload') }}" enctype="multipart/form-data" class="flex items-center gap-3">
                             @csrf

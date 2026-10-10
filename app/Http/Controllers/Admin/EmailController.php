@@ -43,6 +43,7 @@ class EmailController extends Controller
                 $trainer->name,
                 $request->subject,
                 $request->body,
+                currentClub()?->id,
             )->delay(now()->addSeconds($i));
         }
 

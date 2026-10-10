@@ -12,7 +12,7 @@ class GoogleSheetsService
     public function __construct()
     {
         $client = new Client();
-        $client->setApplicationName('BBSC Teams');
+        $client->setApplicationName(config('app.name', 'TrainerSync'));
         $client->setScopes([Sheets::SPREADSHEETS_READONLY]);
 
         $credentialsPath = config('google.credentials_path');

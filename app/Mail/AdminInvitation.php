@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\Club;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
@@ -16,6 +17,7 @@ class AdminInvitation extends Mailable
     public function __construct(
         public readonly User $user,
         public readonly string $token,
+        public readonly ?Club $club = null,
     ) {}
 
     public function envelope(): Envelope
@@ -37,6 +39,7 @@ class AdminInvitation extends Mailable
             with: [
                 'user'     => $this->user,
                 'setupUrl' => $setupUrl,
+                'club'     => $this->club,
             ],
         );
     }

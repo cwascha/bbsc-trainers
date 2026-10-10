@@ -1,12 +1,12 @@
 @extends('layouts.public')
 
-@section('title', 'BBSC Teams — Fall 2026')
+@section('title', ($currentClub->name ?? config('app.name')) . ' Teams')
 
 @section('content')
 
 <div class="mb-8">
     <h1 class="text-3xl font-bold text-gray-900">Fall 2026 Teams</h1>
-    <p class="mt-1 text-gray-500">Rosters and program details for the BBSC Fall 2026 season.</p>
+    <p class="mt-1 text-gray-500">Rosters and program details for the {{ $currentClub->name ?? config('app.name') }} season.</p>
 </div>
 
 @php

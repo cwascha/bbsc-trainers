@@ -15,15 +15,16 @@
 </head>
 <body>
     <div class="wrapper">
+        @php $emailLogo = $club?->logo_path ?: asset('images/BBSClogo.png'); @endphp
         <div class="header">
-            <img src="{{ asset('images/BBSClogo.png') }}" alt="BBSC">
+            <img src="{{ $emailLogo }}" alt="{{ $club?->name ?? config('app.name') }}">
         </div>
         <div class="body">
             <p class="greeting">Hi {{ $recipientName }},</p>
             <div class="message">{{ $emailBody }}</div>
         </div>
         <div class="footer">
-            BBSC · <a href="mailto:chris@bbscsoccer.com" style="color:#999;">chris@bbscsoccer.com</a>
+            {{ $club?->name ?? config('app.name') }}
         </div>
     </div>
 </body>

@@ -35,6 +35,17 @@ class SmsController extends Controller
         return back()->with('success', "Queued SMS to {$count} trainer(s). Messages will arrive within a few minutes.");
     }
 
+    public function sendRoster(): RedirectResponse
+    {
+        $exitCode = \Artisan::call('roster:notify');
+
+        if ($exitCode === 0) {
+            return back()->with('success', 'Weekend roster SMS sent successfully.');
+        }
+
+        return back()->with('error', 'Roster SMS failed — check that ROSTER_NOTIFY_PHONES and Twilio are configured. See the application logs for details.');
+    }
+
     public function sendToDay(Request $request, TrainingDay $trainingDay): RedirectResponse
     {
         $request->validate(['message' => 'required|string|max:1600']);

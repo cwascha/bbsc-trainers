@@ -17,3 +17,6 @@ deploy:
     - php artisan route:cache
     - php artisan view:cache
     - php artisan storage:link
+
+scheduler:
+  enabled: true

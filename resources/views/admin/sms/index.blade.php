@@ -4,6 +4,28 @@
 <div class="space-y-6">
     <h1 class="text-2xl font-bold text-gray-800">Send SMS</h1>
 
+    {{-- Weekend Roster SMS --}}
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+            <div>
+                <h2 class="font-semibold text-gray-800 mb-1">Weekend Roster SMS</h2>
+                <p class="text-sm text-gray-500">
+                    Sends the upcoming weekend's trainer roster to your configured admin phones
+                    ({{ config('services.roster.notify_phones') ? 'configured' : 'not configured — set ROSTER_NOTIFY_PHONES in .env' }}).
+                    This runs automatically every Friday at 6 PM ET. Use this button if it didn't arrive.
+                </p>
+            </div>
+            <form method="POST" action="{{ route('admin.sms.send-roster') }}">
+                @csrf
+                <button type="submit"
+                        onclick="return confirm('Send the weekend roster SMS now?')"
+                        class="whitespace-nowrap px-5 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition">
+                    Send Roster Now
+                </button>
+            </form>
+        </div>
+    </div>
+
     <div class="bg-white rounded-lg shadow p-6">
         <form method="POST" action="{{ route('admin.sms.send') }}">
             @csrf

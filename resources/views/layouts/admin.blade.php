@@ -55,7 +55,7 @@
 
 @if($currentClub->is_demo)
 <div class="bg-amber-400 text-amber-900 text-sm font-medium text-center px-4 py-2">
-    🔍 This is a <strong>shared demo environment</strong> — data resets every hour. <a href="https://trainersync.co" class="underline font-semibold">Start your free trial →</a>
+    🔍 This is a <strong>shared demo environment</strong> — data resets every hour. <a href="https://trainersync.co" class="underline font-semibold">Get started →</a>
 </div>
 @endif
 

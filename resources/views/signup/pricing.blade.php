@@ -13,7 +13,8 @@
     {{-- Header --}}
     <div class="text-center mb-12">
         <h1 class="text-4xl font-bold text-gray-900 mb-3">Simple, transparent pricing</h1>
-        <p class="text-lg text-gray-500">Start with a {{ config('services.stripe.trial_days', 14) }}-day free trial. No credit card charged until your trial ends.</p>
+        @php $trialDays = (int) config('services.stripe.trial_days', 14); @endphp
+        <p class="text-lg text-gray-500">{{ $trialDays > 0 ? "Start with a {$trialDays}-day free trial. No credit card charged until your trial ends." : '$99/month per club. Cancel any time.' }}</p>
     </div>
 
     {{-- Pricing card --}}
@@ -75,11 +76,11 @@
                 </div>
                 <button type="submit"
                         class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition text-sm">
-                    Start Free Trial →
+                    {{ $trialDays > 0 ? 'Start Free Trial →' : 'Get Started →' }}
                 </button>
                 <p class="text-xs text-center text-gray-400">
                     You'll be taken to Stripe to enter payment details.<br>
-                    Your card won't be charged for {{ config('services.stripe.trial_days', 14) }} days.
+                    {{ $trialDays > 0 ? "Your card won't be charged for {$trialDays} days." : 'Billed monthly. Cancel any time.' }}
                 </p>
             </form>
         </div>

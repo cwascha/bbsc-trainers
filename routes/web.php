@@ -36,6 +36,20 @@ Route::get('/', fn() => redirect()->route('dashboard'));
 Route::view('/privacy', 'privacy')->name('privacy');
 Route::view('/terms', 'terms')->name('terms');
 
+// ─── Demo auto-login (demo subdomain only) ────────────────────────────────
+Route::get('/demo-login', function () {
+    $club = currentClub();
+    if (! $club?->is_demo) {
+        abort(404);
+    }
+    $admin = \App\Models\User::where('club_id', $club->id)->where('role', 'admin')->first();
+    if (! $admin) {
+        abort(404);
+    }
+    auth()->login($admin);
+    return redirect()->route('admin.dashboard');
+})->name('demo.login');
+
 // ─── Signed Training Plan Download (SMS link, no login required) ───────────
 Route::get('/training-plans/{trainingPlan}/view', [TrainingPlanController::class, 'viewSigned'])
     ->middleware('signed')

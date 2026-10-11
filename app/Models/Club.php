@@ -29,6 +29,7 @@ class Club extends Model
         'teams_schedule_url',
         'teams_jersey_info',
         'teams_head_trainer',
+        'is_demo',
     ];
 
     protected function casts(): array
@@ -36,6 +37,7 @@ class Club extends Model
         return [
             'trial_ends_at'      => 'datetime',
             'roster_last_sent_at' => 'datetime',
+            'is_demo'            => 'boolean',
         ];
     }
 

@@ -30,9 +30,19 @@ class SmsService
         return $this->twilio;
     }
 
+    private function isDemo(): bool
+    {
+        return (bool) currentClub()?->is_demo;
+    }
+
     public function sendAssignmentNotification(User $user, TrainingDay $day): void
     {
         if (! $user->phone) {
+            return;
+        }
+
+        if ($this->isDemo()) {
+            Log::info("Demo SMS suppressed (assignment): {$user->name} for {$day->date}");
             return;
         }
 
@@ -48,6 +58,11 @@ class SmsService
     public function sendReassignmentNotification(User $user, TrainingDay $day): void
     {
         if (! $user->phone) {
+            return;
+        }
+
+        if ($this->isDemo()) {
+            Log::info("Demo SMS suppressed (reassignment): {$user->name} for {$day->date}");
             return;
         }
 
@@ -95,6 +110,11 @@ class SmsService
     public function sendCustom(User $user, string $message): void
     {
         if (! $user->phone) return;
+
+        if ($this->isDemo()) {
+            Log::info("Demo SMS suppressed (custom) to {$user->name}: {$message}");
+            return;
+        }
 
         $phone  = $this->formatPhone($user->phone);
         $sid    = null;

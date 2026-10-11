@@ -3,7 +3,7 @@
 
 <div class="space-y-6">
     <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-gray-800">Email Trainers</h1>
+        <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">Email Trainers <x-info-tip text="Send a one-off email to any group of trainers. Each trainer gets a personalised greeting. Use the weekend filter to quickly select everyone assigned to a specific weekend." /></h1>
         <a href="{{ route('admin.trainers.index') }}"
            class="text-sm text-gray-500 hover:text-gray-700">← Back to Trainers</a>
     </div>

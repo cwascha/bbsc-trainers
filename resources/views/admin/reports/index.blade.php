@@ -9,7 +9,7 @@
 @endphp
 
 <div class="space-y-6">
-    <h1 class="text-2xl font-bold text-gray-800">Payroll Report</h1>
+    <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">Payroll Report <x-info-tip text="Hours are calculated from confirmed session times. You can override hours per trainer, mark them as paid, and export a CSV for your records. Recurring services (e.g. monthly stipends) are added automatically." /></h1>
 
     {{-- Filter Form --}}
     <div class="bg-white rounded-lg shadow p-6">

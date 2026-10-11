@@ -61,7 +61,7 @@ function editModal() {
 
 <div class="space-y-6">
     <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-gray-800">Trainers <span class="text-lg font-normal text-gray-500">({{ $trainers->count() }})</span></h1>
+        <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">Trainers <span class="text-lg font-normal text-gray-500">({{ $trainers->count() }})</span> <x-info-tip text="Trainers register themselves via your club's registration link. You can set their pay rate, mark them as lead trainers, and track W9 status here." /></h1>
         <a href="{{ route('admin.email.index') }}"
            class="px-4 py-2 bg-gray-800 text-white text-sm rounded hover:bg-gray-700">
             Email Trainers

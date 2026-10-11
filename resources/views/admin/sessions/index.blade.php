@@ -82,7 +82,7 @@ function smsDayModal() {
 
 <div class="space-y-6">
     <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-gray-800">Sessions & Assignments</h1>
+        <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">Sessions & Assignments <x-info-tip text="Each card is a training day. Trainers mark availability in their portal, then you (or the auto-scheduler) assign up to the max spots. Assigned trainers receive an SMS and reply YES/NO to confirm." /></h1>
         <form method="POST" action="{{ route('admin.assignments.run') }}">
             @csrf
             <button class="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 text-sm font-medium">

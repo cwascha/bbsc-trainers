@@ -3,7 +3,7 @@
 
 <div class="space-y-6">
     <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-gray-800">Training Plans</h1>
+        <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">Training Plans <x-info-tip text="Upload PDF or Excel plans by weekend and program. Saturday trainers automatically receive a link to both the K/1st and Sparks plans in their assignment SMS." /></h1>
         <form method="POST" action="{{ route('admin.training-plans.copy-to-fall') }}"
               onsubmit="return confirm('Copy all Spring plans (weekends 1–8) to Fall (weekends 9–16)? Existing Fall plans will be skipped.')">
             @csrf

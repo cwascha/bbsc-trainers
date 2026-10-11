@@ -7,21 +7,21 @@
     {{-- Stats --}}
     <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div class="bg-white rounded-lg shadow p-6">
-            <p class="text-sm text-gray-500">Total Trainers</p>
+            <p class="text-sm text-gray-500 flex items-center gap-1">Total Trainers <x-info-tip text="All trainers who have registered an account under your club." /></p>
             <p class="text-3xl font-bold text-gray-800">{{ $totalTrainers }}</p>
         </div>
         <div class="bg-white rounded-lg shadow p-6">
-            <p class="text-sm text-gray-500">Upcoming Sessions</p>
+            <p class="text-sm text-gray-500 flex items-center gap-1">Upcoming Sessions <x-info-tip text="Training days scheduled in the future. Trainers mark availability and are assigned each Thursday automatically." /></p>
             <p class="text-3xl font-bold text-gray-800">{{ $upcomingDays->count() }}</p>
         </div>
         <div class="bg-white rounded-lg shadow p-6">
-            <p class="text-sm text-gray-500">W9s Received</p>
+            <p class="text-sm text-gray-500 flex items-center gap-1">W9s Received <x-info-tip text="W9 tax forms you have manually marked as received. Required for trainers who earn over $600/year." /></p>
             <p class="text-3xl font-bold text-gray-800">{{ $w9Received }}</p>
             <p class="text-xs text-gray-400 mt-1">of {{ $totalTrainers }} trainers</p>
         </div>
         <a href="{{ route('admin.trainers.index') }}"
            class="bg-white rounded-lg shadow p-6 block hover:bg-gray-50 transition {{ $w9Missing > 0 ? 'border-l-4 border-red-400' : '' }}">
-            <p class="text-sm text-gray-500">W9s Missing</p>
+            <p class="text-sm text-gray-500 flex items-center gap-1">W9s Missing</p>
             <p class="text-3xl font-bold {{ $w9Missing > 0 ? 'text-red-500' : 'text-gray-800' }}">{{ $w9Missing }}</p>
             <p class="text-xs text-gray-400 mt-1">click to view trainers</p>
         </a>
@@ -30,7 +30,7 @@
     {{-- Upcoming Days --}}
     <div class="bg-white rounded-lg shadow overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-            <h2 class="font-semibold text-gray-800">Upcoming Sessions</h2>
+            <h2 class="font-semibold text-gray-800 flex items-center gap-2">Upcoming Sessions <x-info-tip text="Assigned = trainer has been given the session. Confirmed = trainer replied YES via SMS. Pending = trainer signed up but not yet assigned." /></h2>
             <a href="{{ route('admin.sessions.index') }}" class="text-sm text-blue-600 hover:underline">Manage →</a>
         </div>
         <table class="w-full text-sm">

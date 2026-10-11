@@ -2,7 +2,7 @@
 @section('content')
 
 <div class="space-y-6">
-    <h1 class="text-2xl font-bold text-gray-800">Send SMS</h1>
+    <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">Send SMS <x-info-tip text="Send a one-off text message to any group of trainers, or trigger the Friday roster SMS manually. Trainers must have a phone number on file to receive messages." /></h1>
 
     {{-- Weekend Roster SMS --}}
     <div class="bg-white rounded-lg shadow p-6">

@@ -2,11 +2,11 @@
 @section('content')
 
 <div class="space-y-8">
-    <h1 class="text-2xl font-bold text-gray-800">Club Settings</h1>
+    <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">Club Settings <x-info-tip text="Configure notifications, scheduling, your public-facing teams page, and admin user accounts for your club." /></h1>
 
     {{-- Notifications --}}
     <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="font-semibold text-gray-800 mb-1">Notifications &amp; Scheduling</h2>
+        <h2 class="font-semibold text-gray-800 mb-1 flex items-center gap-2">Notifications &amp; Scheduling <x-info-tip text="The roster SMS goes to these phone numbers every Friday at 6 PM in your club's timezone, listing who is confirmed for the upcoming weekend." /></h2>
         <p class="text-sm text-gray-500 mb-4">Configure roster SMS recipients, timezone, and Twilio settings.</p>
         <form method="POST" action="{{ route('admin.club.update') }}" class="space-y-4">
             @csrf @method('PATCH')
@@ -66,7 +66,7 @@
 
     {{-- Teams Page --}}
     <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="font-semibold text-gray-800 mb-1">Teams Page</h2>
+        <h2 class="font-semibold text-gray-800 mb-1 flex items-center gap-2">Teams Page <x-info-tip text="This populates your public teams roster page (yourclub.trainersync.co/teams). Any field left blank is hidden from the page." /></h2>
         <p class="text-sm text-gray-500 mb-4">Information shown on your public-facing teams roster page. Leave any section blank to hide it.</p>
         <form method="POST" action="{{ route('admin.club.update') }}" class="space-y-4">
             @csrf @method('PATCH')

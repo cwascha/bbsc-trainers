@@ -17,7 +17,7 @@
     </div>
     @endif
 
-    <h1 class="text-2xl font-bold text-gray-800">Club Branding</h1>
+    <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">Club Branding <x-info-tip text="Your logo and colors appear throughout the trainer-facing portal and emails, giving your team a branded experience." /></h1>
 
     <div class="bg-white rounded-lg shadow p-6">
         <form method="POST" action="{{ route('admin.club.update') }}" enctype="multipart/form-data" class="space-y-6">

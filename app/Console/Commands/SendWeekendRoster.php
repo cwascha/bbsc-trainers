@@ -79,6 +79,11 @@ class SendWeekendRoster extends Command
 
     private function sendForClub(Club $club): int
     {
+        if ($club->is_demo) {
+            Log::info('roster:notify — skipped for demo club');
+            return 0;
+        }
+
         $rawPhones = $club->roster_notify_phones ?: config('services.roster.notify_phones', '');
 
         $phones = collect(explode(',', $rawPhones))

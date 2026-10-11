@@ -53,6 +53,12 @@
     </div>
 </nav>
 
+@if($currentClub->is_demo)
+<div class="bg-amber-400 text-amber-900 text-sm font-medium text-center px-4 py-2">
+    🔍 This is a <strong>shared demo environment</strong> — data resets every hour. <a href="https://trainersync.co" class="underline font-semibold">Start your free trial →</a>
+</div>
+@endif
+
 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     @if(session('success'))
         <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-800 rounded">

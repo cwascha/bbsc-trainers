@@ -17,6 +17,13 @@ Artisan::command('inspire', function () {
 //   ->withoutOverlapping()
 //   ->description('Assign trainers to the upcoming weekend and send SMS notifications');
 
+// Reset the demo environment every hour
+Schedule::command('demo:reset')
+    ->hourly()
+    ->name('demo-reset')
+    ->withoutOverlapping()
+    ->description('Reset the demo club to a clean seed state');
+
 // Run every minute on Fridays; the command checks each club's timezone and sends at 6 PM local time.
 Schedule::command('roster:notify --all-clubs')
     ->cron('* * * * 5')

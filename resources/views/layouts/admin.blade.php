@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Admin — {{ $currentClub->name ?? config('app.name') }}</title>
-    @php $logoUrl = $currentClub?->logo_path ?: asset('images/BBSClogo.png'); @endphp
-    <link rel="icon" type="image/png" href="{{ $logoUrl }}">
-    <link rel="apple-touch-icon" href="{{ $logoUrl }}">
+    <link rel="icon" type="image/png" href="{{ $currentClub?->logo_path ?: asset('images/trainersync-logo.svg') }}">
+    <link rel="apple-touch-icon" href="{{ $currentClub?->logo_path ?: asset('images/trainersync-logo.svg') }}">
     <style>
       :root {
         --club-primary: {{ $currentClub->primary_color ?? '#1e3a5f' }};
@@ -27,7 +26,7 @@
         <div class="flex items-center justify-between h-16">
             <div class="flex items-center space-x-4">
                 <a href="{{ route('admin.dashboard') }}">
-                    <img src="{{ $logoUrl }}" alt="{{ $currentClub->name ?? 'Logo' }}" style="height:36px;width:auto;">
+                    <x-club-logo height="36px" />
                 </a>
                 <span class="font-bold text-lg hidden md:block">{{ $currentClub->name ?? config('app.name') }} Admin</span>
             </div>

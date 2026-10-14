@@ -15,7 +15,7 @@
 </head>
 <body>
     <div class="wrapper">
-        @php $emailLogo = $club?->logo_path ?: asset('images/BBSClogo.png'); @endphp
+        @php $emailLogo = $club?->logo_path ?: (rtrim(config('app.url'), '/') . '/images/trainersync-logo.svg'); @endphp
         <div class="header">
             <img src="{{ $emailLogo }}" alt="{{ $club?->name ?? config('app.name') }}">
         </div>

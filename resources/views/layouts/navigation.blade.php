@@ -5,7 +5,7 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center space-x-3">
                     <a href="{{ route('dashboard') }}">
-                        <img src="{{ $logoUrl ?? asset('images/BBSClogo.png') }}" alt="{{ $currentClub->name ?? 'Logo' }}" style="height:40px;width:auto;">
+                        <x-club-logo height="40px" />
                     </a>
                     <span class="hidden md:block font-bold text-gray-800 text-lg">{{ $currentClub->name ?? config('app.name') }}</span>
                 </div>

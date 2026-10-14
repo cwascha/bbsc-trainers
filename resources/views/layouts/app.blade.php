@@ -6,9 +6,8 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ $currentClub->name ?? config('app.name') }}</title>
-        @php $logoUrl = $currentClub?->logo_path ?: asset('images/BBSClogo.png'); @endphp
-        <link rel="icon" type="image/png" href="{{ $logoUrl }}">
-        <link rel="apple-touch-icon" href="{{ $logoUrl }}">
+        <link rel="icon" type="image/png" href="{{ $currentClub?->logo_path ?: asset('images/trainersync-logo.svg') }}">
+        <link rel="apple-touch-icon" href="{{ $currentClub?->logo_path ?: asset('images/trainersync-logo.svg') }}">
         <style>
           :root {
             --club-primary: {{ $currentClub->primary_color ?? '#1e3a5f' }};

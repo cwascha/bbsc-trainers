@@ -39,11 +39,17 @@ class StripeController extends Controller
             return response('Webhook error: ' . $e->getMessage(), 400);
         }
 
+        Log::info('Stripe webhook event received', [
+            'type'     => $event->type,
+            'id'       => $event->id,
+            'data_obj' => json_encode($event->data->object ?? null),
+        ]);
+
         match ($event->type) {
             'checkout.session.completed'    => $this->handleCheckoutCompleted($event->data->object),
             'customer.subscription.updated' => $this->handleSubscriptionUpdated($event->data->object),
             'customer.subscription.deleted' => $this->handleSubscriptionDeleted($event->data->object),
-            default                         => null,
+            default                         => Log::warning('Stripe webhook: unhandled event type: ' . $event->type),
         };
 
         return response('OK', 200);

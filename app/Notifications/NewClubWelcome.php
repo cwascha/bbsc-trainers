@@ -25,17 +25,16 @@ class NewClubWelcome extends Notification
     {
         // Password reset routes require a club subdomain — build the URL manually
         $appDomain = config('app.domain', parse_url(config('app.url'), PHP_URL_HOST));
-        $baseUrl    = 'https://' . $this->clubSlug . '.' . $appDomain;
-        $url        = $baseUrl . '/reset-password/' . $this->token
-                    . '?email=' . urlencode($notifiable->getEmailForPasswordReset());
+        $clubUrl   = 'https://' . $this->clubSlug . '.' . $appDomain;
+        $resetUrl  = $clubUrl . '/reset-password/' . $this->token
+                   . '?email=' . urlencode($notifiable->getEmailForPasswordReset());
 
         return (new MailMessage)
             ->subject('Welcome to TrainerSync — Set up your account')
-            ->greeting('Welcome to TrainerSync!')
-            ->line("Your **{$this->clubName}** account is ready. TrainerSync handles trainer scheduling, availability, SMS assignments, and payroll — all in one place.")
-            ->line('To get started, set a password for your account:')
-            ->action('Set Your Password', $url)
-            ->line('This link expires in 60 minutes. If you need a new one, visit your club login page and use "Forgot password".')
-            ->salutation('— The TrainerSync Team');
+            ->markdown('emails.welcome-club', [
+                'clubName' => $this->clubName,
+                'clubUrl'  => $clubUrl,
+                'resetUrl' => $resetUrl,
+            ]);
     }
 }

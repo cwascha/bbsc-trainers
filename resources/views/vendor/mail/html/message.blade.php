@@ -2,7 +2,7 @@
 {{-- Header --}}
 <x-slot:header>
 <x-mail::header :url="config('app.url')">
-TrainerSync
+<img src="{{ rtrim(config('app.url'), '/') }}/images/trainersync-logo.svg" alt="TrainerSync" style="height:44px;width:auto;display:block;margin:0 auto;">
 </x-mail::header>
 </x-slot:header>
 

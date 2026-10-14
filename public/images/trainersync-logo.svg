@@ -1,14 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 72" width="280" height="72">
-  <defs>
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@800&amp;display=swap');
-      text { font-family: 'Inter', 'Arial Black', sans-serif; font-weight: 800; }
-    </style>
-  </defs>
-  <!-- "Trainer" in dark green -->
-  <text x="0" y="52" font-size="52" fill="#0c3a15" letter-spacing="-1">Trainer</text>
-  <!-- "Sync" in lime green -->
-  <text x="168" y="52" font-size="52" fill="#c4e21b" letter-spacing="-1">Sync</text>
-  <!-- Green accent underline below "Trainer" -->
-  <rect x="0" y="62" width="60" height="4" fill="#c4e21b" rx="2"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 80">
+  <text x="4" y="60" font-size="56" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-weight="900" letter-spacing="-1">
+    <tspan fill="#0c3a15">Trainer</tspan><tspan fill="#c4e21b">Sync</tspan>
+  </text>
+  <rect x="4" y="68" width="72" height="5" fill="#c4e21b" rx="2"/>
 </svg>

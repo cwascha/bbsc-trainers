@@ -24,14 +24,19 @@ class StripeController extends Controller
         $sig     = $request->header('Stripe-Signature');
         $secret  = config('services.stripe.webhook_secret');
 
+        Log::info('Stripe webhook received', [
+            'secret_set' => !empty($secret),
+            'sig_header' => $sig ? substr($sig, 0, 30) . '...' : 'MISSING',
+        ]);
+
         try {
             $event = Webhook::constructEvent($payload, $sig, $secret);
         } catch (SignatureVerificationException $e) {
             Log::warning('Stripe webhook signature mismatch: ' . $e->getMessage());
-            return response('Invalid signature', 400);
+            return response('Signature mismatch: ' . $e->getMessage(), 400);
         } catch (\Exception $e) {
             Log::error('Stripe webhook error: ' . $e->getMessage());
-            return response('Webhook error', 400);
+            return response('Webhook error: ' . $e->getMessage(), 400);
         }
 
         match ($event->type) {

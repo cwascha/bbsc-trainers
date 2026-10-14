@@ -23,16 +23,15 @@ class SignupController extends Controller
 
         Stripe::setApiKey(config('services.stripe.secret'));
 
-        $session = StripeSession::create([
+        $trialDays = (int) config('services.stripe.trial_days', 0);
+
+        $params = [
             'mode'                 => 'subscription',
             'payment_method_types' => ['card'],
             'line_items'           => [[
                 'price'    => config('services.stripe.price_id'),
                 'quantity' => 1,
             ]],
-            'subscription_data' => [
-                'trial_period_days' => config('services.stripe.trial_days', 14),
-            ],
             'customer_email' => $request->admin_email,
             'metadata' => [
                 'club_name'   => $request->club_name,
@@ -41,7 +40,13 @@ class SignupController extends Controller
             ],
             'success_url' => route('signup.success') . '?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url'  => route('signup.pricing'),
-        ]);
+        ];
+
+        if ($trialDays > 0) {
+            $params['subscription_data'] = ['trial_period_days' => $trialDays];
+        }
+
+        $session = StripeSession::create($params);
 
         return redirect($session->url);
     }

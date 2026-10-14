@@ -65,6 +65,8 @@ class StripeController extends Controller
             $slug = $baseSlug . '-' . $i++;
         }
 
+        $trialDays = (int) config('services.stripe.trial_days', 0);
+
         $club = Club::create([
             'name'                   => $clubName,
             'slug'                   => $slug,
@@ -72,8 +74,8 @@ class StripeController extends Controller
             'accent_color'           => '#3b82f6',
             'stripe_customer_id'     => $session->customer,
             'stripe_subscription_id' => $session->subscription,
-            'subscription_status'    => 'trial',
-            'trial_ends_at'          => now()->addDays(config('services.stripe.trial_days', 14)),
+            'subscription_status'    => $trialDays > 0 ? 'trial' : 'active',
+            'trial_ends_at'          => $trialDays > 0 ? now()->addDays($trialDays) : null,
         ]);
 
         // Bind the new club so BelongsToClub scopes work

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Stripe\Exception\ApiErrorException;
 use Stripe\Stripe;
 use Stripe\Checkout\Session as StripeSession;
 
@@ -46,7 +48,15 @@ class SignupController extends Controller
             $params['subscription_data'] = ['trial_period_days' => $trialDays];
         }
 
-        $session = StripeSession::create($params);
+        try {
+            $session = StripeSession::create($params);
+        } catch (ApiErrorException $e) {
+            Log::error('Stripe checkout session failed: ' . $e->getMessage(), [
+                'price_id' => config('services.stripe.price_id'),
+                'stripe_key_set' => !empty(config('services.stripe.secret')),
+            ]);
+            return back()->withErrors(['checkout' => 'Payment setup failed: ' . $e->getMessage()])->withInput();
+        }
 
         return redirect($session->url);
     }

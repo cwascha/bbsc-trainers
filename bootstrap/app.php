@@ -16,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Request::HEADER_X_FORWARDED_PORT |
             \Illuminate\Http\Request::HEADER_X_FORWARDED_PROTO);
 
+        // Stripe and Twilio webhooks are external POST requests with no CSRF token
+        $middleware->validateCsrfTokens(except: ['webhooks/*']);
+
         $middleware->alias([
             'admin'        => \App\Http\Middleware\AdminMiddleware::class,
             'club'         => \App\Http\Middleware\ClubMiddleware::class,

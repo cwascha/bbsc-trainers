@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Club;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Notifications\NewClubWelcome;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
@@ -115,8 +116,9 @@ class StripeController extends Controller
             $user->save();
         }
 
-        // Send a password-reset link so they can set their own password
-        Password::sendResetLink(['email' => $adminEmail]);
+        // Send welcome email with password setup link
+        $token = Password::createToken($user);
+        $user->notify(new NewClubWelcome($token, $club->name));
 
         Log::info("New club provisioned: {$club->name} (slug: {$slug}) for {$adminEmail}");
     }

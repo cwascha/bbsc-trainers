@@ -6,8 +6,8 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'Laravel') }}</title>
-        <link rel="icon" type="image/png" href="/images/BBSClogo.png">
-        <link rel="apple-touch-icon" href="/images/BBSClogo.png">
+        <link rel="icon" type="image/png" href="{{ $currentClub?->logo_path ?: '/images/trainersync-logo.svg' }}">
+        <link rel="apple-touch-icon" href="{{ $currentClub?->logo_path ?: '/images/trainersync-logo.svg' }}">
         <link rel="manifest" href="/manifest.json">
 
         <!-- Fonts -->
@@ -20,11 +20,14 @@
     <body class="font-sans text-gray-900 antialiased">
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
             <div class="flex flex-col items-center space-y-3">
-                @php $logoUrl = $currentClub?->logo_path ?: asset('images/BBSClogo.png'); @endphp
                 <a href="/">
-                    <img src="{{ $logoUrl }}" alt="{{ $currentClub?->name ?? 'TrainerSync' }}" style="height:80px;width:auto;">
+                    @if($currentClub?->logo_path)
+                        <img src="{{ $currentClub->logo_path }}" alt="{{ $currentClub->name }}" style="height:80px;width:auto;">
+                    @else
+                        <img src="{{ asset('images/trainersync-logo.svg') }}" alt="TrainerSync" style="height:56px;width:auto;">
+                    @endif
                 </a>
-                <h1 class="text-2xl font-bold text-gray-800 tracking-tight">{{ $currentClub?->name ?? config('app.name') }}</h1>
+                <h1 class="text-2xl font-bold text-gray-800 tracking-tight">{{ $currentClub?->name ?? 'TrainerSync' }}</h1>
             </div>
 
             <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">

@@ -111,6 +111,12 @@
                                     @endforeach
                                 </div>
                             </div>
+                            {{-- Delete --}}
+                            <form method="POST" action="{{ route('superadmin.clubs.destroy', $club) }}"
+                                  onsubmit="return confirm('Permanently delete {{ addslashes($club->name) }} and all its data? This cannot be undone.')">
+                                @csrf @method('DELETE')
+                                <button class="text-xs text-red-500 hover:text-red-700 font-medium">Delete</button>
+                            </form>
                         </div>
                     </td>
                 </tr>

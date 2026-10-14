@@ -64,7 +64,12 @@ class StripeController extends Controller
         $adminEmail = $meta['admin_email'] ?? null;
 
         if (! $adminEmail) {
-            Log::error('Stripe checkout.session.completed: missing admin_email in metadata', ['session' => $session->id]);
+            Log::error('Stripe checkout.session.completed: missing admin_email in metadata', [
+                'session_id'       => $session->id ?? 'no-id',
+                'raw_metadata'     => json_encode($session->metadata ?? null),
+                'session_keys'     => is_object($session) ? array_keys((array) $session) : 'not-object',
+                'customer_details' => json_encode($session->customer_details ?? null),
+            ]);
             return;
         }
 

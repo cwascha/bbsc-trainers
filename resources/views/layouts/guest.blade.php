@@ -24,7 +24,12 @@
                     @if($currentClub?->logo_path)
                         <img src="{{ $currentClub->logo_path }}" alt="{{ $currentClub->name }}" style="height:80px;width:auto;">
                     @else
-                        <img src="{{ asset('images/trainersync-logo.svg') }}" alt="TrainerSync" style="height:56px;width:auto;">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="52" viewBox="0 0 400 80" style="display:block;">
+                            <text x="4" y="60" font-size="56" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-weight="900" letter-spacing="-1">
+                                <tspan fill="#0c3a15">Trainer</tspan><tspan fill="#c4e21b">Sync</tspan>
+                            </text>
+                            <rect x="4" y="68" width="72" height="5" fill="#c4e21b" rx="2"/>
+                        </svg>
                     @endif
                 </a>
                 <h1 class="text-2xl font-bold text-gray-800 tracking-tight">{{ $currentClub?->name ?? 'TrainerSync' }}</h1>

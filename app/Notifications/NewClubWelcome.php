@@ -13,6 +13,7 @@ class NewClubWelcome extends Notification
     public function __construct(
         private string $token,
         private string $clubName,
+        private string $clubSlug,
     ) {}
 
     public function via(object $notifiable): array
@@ -22,10 +23,11 @@ class NewClubWelcome extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        $url = url(route('password.reset', [
-            'token' => $this->token,
-            'email' => $notifiable->getEmailForPasswordReset(),
-        ], false));
+        // Password reset routes require a club subdomain — build the URL manually
+        $appDomain = config('app.domain', parse_url(config('app.url'), PHP_URL_HOST));
+        $baseUrl    = 'https://' . $this->clubSlug . '.' . $appDomain;
+        $url        = $baseUrl . '/reset-password/' . $this->token
+                    . '?email=' . urlencode($notifiable->getEmailForPasswordReset());
 
         return (new MailMessage)
             ->subject('Welcome to TrainerSync — Set up your account')

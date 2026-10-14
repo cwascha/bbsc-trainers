@@ -28,9 +28,8 @@ class SignupController extends Controller
         $trialDays = (int) config('services.stripe.trial_days', 0);
 
         $params = [
-            'mode'                 => 'subscription',
-            'payment_method_types' => ['card'],
-            'line_items'           => [[
+            'mode'       => 'subscription',
+            'line_items' => [[
                 'price'    => config('services.stripe.price_id'),
                 'quantity' => 1,
             ]],

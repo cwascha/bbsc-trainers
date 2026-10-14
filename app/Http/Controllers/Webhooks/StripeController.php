@@ -57,7 +57,7 @@ class StripeController extends Controller
 
     private function handleCheckoutCompleted(object $session): void
     {
-        $meta = (array) $session->metadata;
+        $meta = $session->metadata ? $session->metadata->toArray() : [];
 
         $clubName   = $meta['club_name']   ?? 'New Club';
         $adminName  = $meta['admin_name']  ?? 'Admin';

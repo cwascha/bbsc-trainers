@@ -126,7 +126,7 @@ class StripeController extends Controller
 
         // Send welcome email with password setup link
         $token = Password::createToken($user);
-        $user->notify(new NewClubWelcome($token, $club->name));
+        $user->notify(new NewClubWelcome($token, $club->name, $club->slug));
 
         Log::info("New club provisioned: {$club->name} (slug: {$slug}) for {$adminEmail}");
     }

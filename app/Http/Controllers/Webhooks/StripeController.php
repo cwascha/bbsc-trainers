@@ -46,12 +46,20 @@ class StripeController extends Controller
             'data_obj' => json_encode($event->data->object ?? null),
         ]);
 
-        match ($event->type) {
-            'checkout.session.completed'    => $this->handleCheckoutCompleted($event->data->object),
-            'customer.subscription.updated' => $this->handleSubscriptionUpdated($event->data->object),
-            'customer.subscription.deleted' => $this->handleSubscriptionDeleted($event->data->object),
-            default                         => Log::warning('Stripe webhook: unhandled event type: ' . $event->type),
-        };
+        try {
+            match ($event->type) {
+                'checkout.session.completed'    => $this->handleCheckoutCompleted($event->data->object),
+                'customer.subscription.updated' => $this->handleSubscriptionUpdated($event->data->object),
+                'customer.subscription.deleted' => $this->handleSubscriptionDeleted($event->data->object),
+                default                         => Log::warning('Stripe webhook: unhandled event type: ' . $event->type),
+            };
+        } catch (\Throwable $e) {
+            Log::error('Stripe webhook handler exception', [
+                'event_type' => $event->type,
+                'error'      => $e->getMessage(),
+                'trace'      => $e->getTraceAsString(),
+            ]);
+        }
 
         return response('OK', 200);
     }

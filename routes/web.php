@@ -190,4 +190,5 @@ Route::middleware(['auth', 'superadmin'])->prefix('superadmin')->name('superadmi
     Route::post('/clubs/{club}/impersonate', [SuperAdminDashboard::class, 'impersonate'])->name('clubs.impersonate');
     Route::post('/stop-impersonating', [SuperAdminDashboard::class, 'stopImpersonating'])->name('stop-impersonating');
     Route::patch('/clubs/{club}/status/{status}', [SuperAdminDashboard::class, 'updateStatus'])->name('clubs.status');
+    Route::delete('/clubs/{club}', [SuperAdminDashboard::class, 'destroy'])->name('clubs.destroy');
 });

@@ -17,7 +17,7 @@
 </head>
 <body>
     <div class="wrapper">
-        @php $inviteLogo = $club?->logo_path ?: asset('images/BBSClogo.png'); @endphp
+        @php $inviteLogo = $club?->logo_path ?: (rtrim(config('app.url'), '/') . '/images/trainersync-logo.svg'); @endphp
         <div class="header">
             <img src="{{ $inviteLogo }}" alt="{{ $club?->name ?? config('app.name') }}">
         </div>

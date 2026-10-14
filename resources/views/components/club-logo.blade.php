@@ -1,0 +1,12 @@
+@props(['height' => '40px', 'alt' => $currentClub->name ?? 'TrainerSync'])
+
+@if($currentClub?->logo_path)
+    <img src="{{ $currentClub->logo_path }}" alt="{{ $alt }}" style="height:{{ $height }};width:auto;display:block;">
+@else
+    <svg xmlns="http://www.w3.org/2000/svg" style="height:{{ $height }};width:auto;display:block;" viewBox="0 0 400 80">
+        <text x="4" y="60" font-size="56" font-family="'Arial Black','Helvetica Neue',Arial,sans-serif" font-weight="900" letter-spacing="-1">
+            <tspan fill="#0c3a15">Trainer</tspan><tspan fill="#c4e21b">Sync</tspan>
+        </text>
+        <rect x="4" y="68" width="72" height="5" fill="#c4e21b" rx="2"/>
+    </svg>
+@endif

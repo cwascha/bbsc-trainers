@@ -12,8 +12,7 @@
 
     {{-- Header --}}
     <div class="flex items-center gap-3 mb-6">
-        @php $attendanceLogo = $currentClub?->logo_path ?: asset('images/BBSClogo.png'); @endphp
-        <img src="{{ $attendanceLogo }}" alt="{{ $currentClub->name ?? 'Logo' }}" class="h-10 w-auto">
+        <x-club-logo height="40px" />
         <div>
             <h1 class="text-xl font-bold text-gray-900">Weekend {{ $weekend }} Attendance</h1>
             <p class="text-sm text-gray-500">Tap a trainer to toggle their attendance</p>

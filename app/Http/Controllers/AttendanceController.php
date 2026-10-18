@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Availability;
 use App\Models\TrainingDay;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 
 class AttendanceController extends Controller
 {
@@ -33,7 +34,8 @@ class AttendanceController extends Controller
             $availability->update(['status' => 'no_show', 'no_showed_at' => now()]);
         }
 
-        return redirect()->route('attendance.show', ['weekend' => $weekend])
+        // The attendance page is behind the `signed` middleware, so the redirect must be signed too
+        return redirect()->to(URL::signedRoute('attendance.show', ['weekend' => $weekend], now()->addDays(3)))
             ->with('message', $availability->status === 'no_show'
                 ? 'Marked as no-show.'
                 : 'Marked as attended.');

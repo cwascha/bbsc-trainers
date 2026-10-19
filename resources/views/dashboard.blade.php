@@ -122,7 +122,7 @@
                         </p>
                         <form method="POST" action="{{ route('w9.upload') }}" enctype="multipart/form-data" class="flex items-center gap-3">
                             @csrf
-                            <input type="file" name="w9" accept=".pdf" required
+                            <input type="file" name="w9" accept=".pdf,.jpg,.jpeg,.png" required
                                    class="block text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-sm file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 cursor-pointer">
                             <button type="submit" class="px-4 py-1.5 bg-gray-800 text-white text-sm rounded hover:bg-gray-700 whitespace-nowrap">
                                 Replace W9
@@ -130,11 +130,11 @@
                         </form>
                     @else
                         <p class="text-sm text-gray-600 mb-3">
-                            Please upload your W9 form so {{ $currentClub->name ?? config('app.name') }} can process your payment. PDF files only, max 5MB.
+                            Please upload your W9 form so {{ $currentClub->name ?? config('app.name') }} can process your payment. PDF, JPG or PNG, max 5MB.
                         </p>
                         <form method="POST" action="{{ route('w9.upload') }}" enctype="multipart/form-data" class="flex items-center gap-3">
                             @csrf
-                            <input type="file" name="w9" accept=".pdf" required
+                            <input type="file" name="w9" accept=".pdf,.jpg,.jpeg,.png" required
                                    class="block text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-sm file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 cursor-pointer">
                             <button type="submit" class="px-4 py-1.5 bg-gray-800 text-white text-sm rounded hover:bg-gray-700 whitespace-nowrap">
                                 Upload W9

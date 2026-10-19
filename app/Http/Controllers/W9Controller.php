@@ -17,7 +17,7 @@ class W9Controller extends Controller
     public function upload(Request $request): RedirectResponse
     {
         $request->validate([
-            'w9' => 'required|file|mimes:pdf|max:5120',
+            'w9' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
 
         $user = $request->user();
@@ -27,9 +27,11 @@ class W9Controller extends Controller
             Storage::delete($user->w9_path);
         }
 
-        $path = $request->file('w9')->storeAs(
+        // Keep the real extension (from the file's contents) so images download correctly
+        $file = $request->file('w9');
+        $path = $file->storeAs(
             'w9s',
-            $user->id . '_w9.pdf'
+            $user->id . '_w9.' . $file->extension()
         );
 
         $user->update([

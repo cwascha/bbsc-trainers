@@ -134,6 +134,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::delete('/recurring-services/{recurringService}', [Admin\RecurringServiceController::class, 'destroy'])->name('recurring-services.destroy');
 
     Route::get('/trainers/{user}/w9', [Admin\W9Controller::class, 'download'])->name('trainers.w9.download');
+    Route::post('/trainers/{user}/w9', [Admin\W9Controller::class, 'upload'])->name('trainers.w9.upload');
     Route::post('/trainers/{user}/w9-received', [Admin\W9Controller::class, 'markReceived'])->name('trainers.w9.received');
 
     Route::get('/club', [ClubController::class, 'edit'])->name('club.edit');

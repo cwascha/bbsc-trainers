@@ -225,6 +225,13 @@ function editModal() {
                                         Unmark
                                     </button>
                                 </form>
+                                <form method="POST" action="{{ route('admin.trainers.w9.upload', $trainer) }}" enctype="multipart/form-data">
+                                    @csrf
+                                    <label class="cursor-pointer text-xs text-gray-500 hover:text-blue-600 whitespace-nowrap" title="Upload a PDF W9 for this trainer">
+                                        {{ $trainer->w9_uploaded_at ? '↑ Replace' : '↑ Upload' }}
+                                        <input type="file" name="w9" accept=".pdf" class="hidden" onchange="this.form.submit()">
+                                    </label>
+                                </form>
                             </div>
                         @else
                             {{-- Not received yet: show upload status + Mark Received button --}}
@@ -243,6 +250,13 @@ function editModal() {
                                             class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs hover:bg-green-100 hover:text-green-700 whitespace-nowrap">
                                         Mark Received
                                     </button>
+                                </form>
+                                <form method="POST" action="{{ route('admin.trainers.w9.upload', $trainer) }}" enctype="multipart/form-data">
+                                    @csrf
+                                    <label class="cursor-pointer text-xs text-gray-500 hover:text-blue-600 whitespace-nowrap" title="Upload a PDF W9 for this trainer">
+                                        {{ $trainer->w9_uploaded_at ? '↑ Replace' : '↑ Upload' }}
+                                        <input type="file" name="w9" accept=".pdf" class="hidden" onchange="this.form.submit()">
+                                    </label>
                                 </form>
                             </div>
                         @endif

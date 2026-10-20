@@ -18,7 +18,7 @@ class W9Controller extends Controller
             return back()->with('error', 'W9 file not found.');
         }
 
-        return Storage::download($user->w9_path, $user->name . ' W9.pdf');
+        return Storage::download($user->w9_path, $user->name . ' W9.' . pathinfo($user->w9_path, PATHINFO_EXTENSION));
     }
 
     // Admin uploads a W9 on the trainer's behalf (e.g. received by email or on paper)
@@ -26,7 +26,7 @@ class W9Controller extends Controller
     {
         // The admin layout only renders flash errors, so surface validation failures that way
         $validator = Validator::make($request->all(), [
-            'w9' => 'required|file|mimes:pdf|max:5120',
+            'w9' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
 
         if ($validator->fails()) {
@@ -37,9 +37,11 @@ class W9Controller extends Controller
             Storage::delete($user->w9_path);
         }
 
-        $path = $request->file('w9')->storeAs(
+        // Keep the real extension (from the file's contents) so images download correctly
+        $file = $request->file('w9');
+        $path = $file->storeAs(
             'w9s',
-            $user->id . '_w9.pdf'
+            $user->id . '_w9.' . $file->extension()
         );
 
         // The admin has the form in hand, so it counts as received

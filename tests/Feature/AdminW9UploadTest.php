@@ -46,11 +46,41 @@ class AdminW9UploadTest extends TestCase
         Storage::assertExists($this->trainer->w9_path);
     }
 
-    public function test_non_pdf_is_rejected(): void
+    public function test_admin_can_upload_an_image_w9(): void
     {
         $this->actingAs($this->admin)
             ->post(route('admin.trainers.w9.upload', $this->trainer), [
-                'w9' => UploadedFile::fake()->image('w9.png'),
+                'w9' => UploadedFile::fake()->image('w9.jpg'),
+            ])
+            ->assertSessionHas('success');
+
+        $this->trainer->refresh();
+        $this->assertSame("w9s/{$this->trainer->id}_w9.jpg", $this->trainer->w9_path);
+        Storage::assertExists($this->trainer->w9_path);
+
+        $this->actingAs($this->admin)
+            ->get(route('admin.trainers.w9.download', $this->trainer))
+            ->assertDownload("{$this->trainer->name} W9.jpg");
+    }
+
+    public function test_replacing_with_a_different_type_removes_the_old_file(): void
+    {
+        $this->actingAs($this->admin)->post(route('admin.trainers.w9.upload', $this->trainer), [
+            'w9' => UploadedFile::fake()->create('w9.pdf', 100, 'application/pdf'),
+        ]);
+        $this->actingAs($this->admin)->post(route('admin.trainers.w9.upload', $this->trainer), [
+            'w9' => UploadedFile::fake()->image('w9.png'),
+        ]);
+
+        Storage::assertMissing("w9s/{$this->trainer->id}_w9.pdf");
+        Storage::assertExists("w9s/{$this->trainer->id}_w9.png");
+    }
+
+    public function test_unsupported_file_type_is_rejected(): void
+    {
+        $this->actingAs($this->admin)
+            ->post(route('admin.trainers.w9.upload', $this->trainer), [
+                'w9' => UploadedFile::fake()->create('w9.docx', 100, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),
             ])
             ->assertSessionHas('error');
 

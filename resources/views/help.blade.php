@@ -386,7 +386,7 @@ HTML,
 <p>If the club requires a W-9 for tax purposes:</p>
 <ol>
     <li>Go to your <strong>Profile</strong> page.</li>
-    <li>Click <strong>Upload W-9</strong> and select your completed PDF.</li>
+    <li>Click <strong>Upload W-9</strong> and select your completed W-9 (PDF, JPG or PNG).</li>
     <li>The admin will be notified and can download it from the Trainers page.</li>
 </ol>
 <p>You can replace your W-9 at any time by uploading a new file.</p>

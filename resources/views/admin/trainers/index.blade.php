@@ -227,9 +227,9 @@ function editModal() {
                                 </form>
                                 <form method="POST" action="{{ route('admin.trainers.w9.upload', $trainer) }}" enctype="multipart/form-data">
                                     @csrf
-                                    <label class="cursor-pointer text-xs text-gray-500 hover:text-blue-600 whitespace-nowrap" title="Upload a PDF W9 for this trainer">
+                                    <label class="cursor-pointer text-xs text-gray-500 hover:text-blue-600 whitespace-nowrap" title="Upload a W9 for this trainer (PDF, JPG or PNG)">
                                         {{ $trainer->w9_uploaded_at ? '↑ Replace' : '↑ Upload' }}
-                                        <input type="file" name="w9" accept=".pdf" class="hidden" onchange="this.form.submit()">
+                                        <input type="file" name="w9" accept=".pdf,.jpg,.jpeg,.png" class="hidden" onchange="this.form.submit()">
                                     </label>
                                 </form>
                             </div>
@@ -253,9 +253,9 @@ function editModal() {
                                 </form>
                                 <form method="POST" action="{{ route('admin.trainers.w9.upload', $trainer) }}" enctype="multipart/form-data">
                                     @csrf
-                                    <label class="cursor-pointer text-xs text-gray-500 hover:text-blue-600 whitespace-nowrap" title="Upload a PDF W9 for this trainer">
+                                    <label class="cursor-pointer text-xs text-gray-500 hover:text-blue-600 whitespace-nowrap" title="Upload a W9 for this trainer (PDF, JPG or PNG)">
                                         {{ $trainer->w9_uploaded_at ? '↑ Replace' : '↑ Upload' }}
-                                        <input type="file" name="w9" accept=".pdf" class="hidden" onchange="this.form.submit()">
+                                        <input type="file" name="w9" accept=".pdf,.jpg,.jpeg,.png" class="hidden" onchange="this.form.submit()">
                                     </label>
                                 </form>
                             </div>
